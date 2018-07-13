@@ -523,6 +523,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddaba627478e8894485e9945545acf26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NoConstructionPrefab:
+  - {fileID: 1651655180755464, guid: b0cea3e7ed8cc834fb399ff88dfbd7ba, type: 2}
+  - {fileID: 1651655180755464, guid: b844b554050609840a71e7fb0f7e9b1e, type: 2}
+  - {fileID: 1651655180755464, guid: 263da7a360c5dfe43aa7b99017d3fb6a, type: 2}
   GridLinePrefab: {fileID: 1560482786901918, guid: 6fb04b7e5d465a2439bbcea1500895dd,
     type: 2}
   GridCellPrefab: {fileID: 1651655180755464, guid: 87d9b7dbd3a1cc74daab5ae68fc61070,
@@ -531,6 +535,7 @@ MonoBehaviour:
   BoardSizeInPixle: 700
   BoardCellsInRow: 7
   GridLineWidth: 5
+  NoConstructionCells: 4
   verticalParent: {fileID: 566040235}
   horizontalParent: {fileID: 1812495308}
   cellsParent: {fileID: 1102334500}
