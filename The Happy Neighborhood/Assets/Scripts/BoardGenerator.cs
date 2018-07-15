@@ -19,6 +19,7 @@ public class BoardGenerator : MonoBehaviour
     private float firstGridPosition;
     private float firstCellPosition;
     private float cellSizeWithGridLineOffset;
+    private CellsManager cellsManager;
 
     public Transform verticalParent;
     public Transform horizontalParent;
@@ -29,13 +30,13 @@ public class BoardGenerator : MonoBehaviour
 
     void Start()
     {
+        cellsManager = GetComponent<CellsManager>();
         BoardCellsArray = new GameObject[BoardCellsInRow, BoardCellsInRow];
         GenerateBoard();
-
     }
 
 
-
+    #region GenerateBoard()
     void GenerateBoard()
     {
 
@@ -47,6 +48,7 @@ public class BoardGenerator : MonoBehaviour
         GeneratingNoConstCells();
 
     }
+    #endregion
 
     #region generateGridLines()
     void generateGridLines()
@@ -110,6 +112,9 @@ public class BoardGenerator : MonoBehaviour
                 cellRectTransform.anchoredPosition = new Vector3(firstCellPosition + (cellSizeWithGridLineOffset / 2) + (j * cellSizeWithGridLineOffset),
                                                                   firstCellPosition + (cellSizeWithGridLineOffset / 2) + (i * cellSizeWithGridLineOffset),
                                                                   0);
+
+                // Initializing HouseCells Array With Empty Tiles 
+                cellsManager.HouseCellsArray[i, j] = CellsManager.HouseCellsType.EmptyTile;
             }
         }
 
@@ -140,7 +145,6 @@ public class BoardGenerator : MonoBehaviour
                         if (randomCellsSecondtDemension == tempNoConstruction[1, j])
                         {
                             RepeatedCell = true;
-                            print("Repeated");
                         }
                     }
                 }
@@ -153,6 +157,9 @@ public class BoardGenerator : MonoBehaviour
 
             // Making NoConstructionCell to unInteractable Button
             BoardCellsArray[randomCellsFirstDemension, randomCellsSecondtDemension].GetComponent<Button>().interactable = false;
+
+            // Assigning Banned Tile To HouseCells Array
+            cellsManager.HouseCellsArray[randomCellsFirstDemension, randomCellsSecondtDemension] = CellsManager.HouseCellsType.BannedTile;
 
             tempNoConstruction[0, i] = randomCellsFirstDemension;
             tempNoConstruction[1, i] = randomCellsSecondtDemension;
