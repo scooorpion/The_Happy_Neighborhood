@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CellsManager : MonoBehaviour {
+public class CellsManager : MonoBehaviour
+{
 
     public enum CharactersType
     {
@@ -22,7 +23,7 @@ public class CellsManager : MonoBehaviour {
         ThreeHouseLGuy,
         FourHouseGuy,
         Ghost,
-        FamilyThreeGuys,
+        FamilyTwoGuys,
         Animal,
         GuyWithAnimal,
         GuyNeedParking,
@@ -32,7 +33,6 @@ public class CellsManager : MonoBehaviour {
         Gangster,
         Wizard
     }
-
     public enum HouseCellsType
     {
         BannedTile,
@@ -68,7 +68,6 @@ public class CellsManager : MonoBehaviour {
             for (int j = 0; j < CharactersCellsArray.GetLength(1); j++)
             {
                 CharactersCellsArray[i, j] = CharactersType.Empty;
-                print("CharactersCellsArray[" + i + "," + j + "]: " + CharactersCellsArray[i, j]);
             }
         }
         #endregion
