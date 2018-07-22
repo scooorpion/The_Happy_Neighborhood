@@ -5,11 +5,58 @@ using System;
 
 public class BoardGenerator : MonoBehaviour
 {
+    #region Fileds
+    public enum CharactersType
+    {
+        Empty,
+        NoramlGuy,
+        DoubleGuys,
+        TripleGuys,
+        RedGuy,
+        RedNoBlueGuy,
+        BlueGuy,
+        BlueNoYellow,
+        PurpuleGuy,
+        PurpleNoRedGuy,
+        OldGuy,
+        PenthouseGuy,
+        TwoHouseGuy,
+        ThreeHouseLGuy,
+        FourHouseGuy,
+        Ghost,
+        FamilyTwoGuys,
+        Animal,
+        GuyWithAnimal,
+        GuyNeedParking,
+        GuyNeedGarden,
+        Baby,
+        GhostCatcher,
+        Gangster,
+        Wizard
+    }
+    public enum HouseCellsType
+    {
+        BannedTile,
+        EmptyTile,
+        BlueTile,
+        RedTile,
+        PurpleTile,
+        YellowTile,
+        OldBlueTile,
+        OldRedTile,
+        OldPurpleTile,
+        OldYellowTile,
+        PentHouse,
+        Parking,
+        Terrace,
+        Garden,
+    }
 
     public GameObject[] NoConstructionPrefab;
     public GameObject GridLinePrefab;
     public GameObject GridCellPrefab;
     public GameObject BoardBackground;
+
     public float BoardSizeInPixle = 700f;
     public byte BoardCellsInRow = 7;
     public byte GridLineWidth = 5;
@@ -19,7 +66,6 @@ public class BoardGenerator : MonoBehaviour
     private float firstGridPosition;
     private float firstCellPosition;
     private float cellSizeWithGridLineOffset;
-    private CellsManager cellsManager;
 
     public Transform verticalParent;
     public Transform horizontalParent;
@@ -27,11 +73,26 @@ public class BoardGenerator : MonoBehaviour
 
     public GameObject[,] BoardCellsArray;
 
+    public HouseCellsType[,] HouseCellsArray;
+    public CharactersType[,] CharactersCellsArray;
+    #endregion
 
     void Start()
     {
-        cellsManager = GetComponent<CellsManager>();
         BoardCellsArray = new GameObject[BoardCellsInRow, BoardCellsInRow];
+        HouseCellsArray = new HouseCellsType[BoardCellsInRow, BoardCellsInRow];
+        CharactersCellsArray = new CharactersType[BoardCellsInRow, BoardCellsInRow];
+
+        #region Initializing CharactersCellsArray With Empty Characters
+        for (int i = 0; i < BoardCellsInRow; i++)
+        {
+            for (int j = 0; j < BoardCellsInRow; j++)
+            {
+                CharactersCellsArray[i, j] = CharactersType.Empty;
+            }
+        }
+        #endregion
+
         GenerateBoard();
     }
 
@@ -114,7 +175,8 @@ public class BoardGenerator : MonoBehaviour
                                                                   0);
 
                 // Initializing HouseCells Array With Empty Tiles 
-                cellsManager.HouseCellsArray[i, j] = CellsManager.HouseCellsType.EmptyTile;
+                HouseCellsArray[i, j] = HouseCellsType.EmptyTile;
+                //print("i: "+i+" -- j: "+j);
             }
         }
 
@@ -159,7 +221,7 @@ public class BoardGenerator : MonoBehaviour
             BoardCellsArray[randomCellsFirstDemension, randomCellsSecondtDemension].GetComponent<Button>().interactable = false;
 
             // Assigning Banned Tile To HouseCells Array
-            cellsManager.HouseCellsArray[randomCellsFirstDemension, randomCellsSecondtDemension] = CellsManager.HouseCellsType.BannedTile;
+            HouseCellsArray[randomCellsFirstDemension, randomCellsSecondtDemension] = HouseCellsType.BannedTile;
 
             tempNoConstruction[0, i] = randomCellsFirstDemension;
             tempNoConstruction[1, i] = randomCellsSecondtDemension;

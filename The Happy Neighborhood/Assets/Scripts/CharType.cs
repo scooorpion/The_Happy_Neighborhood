@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CharType : MonoBehaviour
 {
-    public CellsManager.CharactersType charactersType;
+    public BoardGenerator.CharactersType charactersType;
     public byte CardRatioInDeck = 1;
 
 }
