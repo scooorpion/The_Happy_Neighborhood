@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114937020750513312}
   m_Layer: 0
   m_Name: PlayerConnection
-  m_TagString: Untagged
+  m_TagString: PlayerConnection
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -85,4 +85,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayersToStartGame: 2
-  PlayerUnit: {fileID: 1458865654083740, guid: b19082cfb90d1ff4d98a1fe4ade3b9e1, type: 2}
+  PlayerUnitPrefab: {fileID: 1458865654083740, guid: b19082cfb90d1ff4d98a1fe4ade3b9e1,
+    type: 2}

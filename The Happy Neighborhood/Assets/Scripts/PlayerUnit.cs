@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class PlayerUnit : NetworkBehaviour
 {
-    public string UserName;
+
 
 	void Start () {
 		

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - VerticalLines
   - GameManager
+  - PlayerUnit
+  - PlayerConnection
   layers:
   - Default
   - TransparentFX
