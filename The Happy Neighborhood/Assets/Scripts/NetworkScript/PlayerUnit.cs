@@ -7,12 +7,13 @@ public class PlayerUnit : NetworkBehaviour
 {
 
 
-	void Start () {
-		
+	void Start ()
+    {
+        
 	}
 	
 	void Update ()
     {
-		
-	}
+
+    }
 }
