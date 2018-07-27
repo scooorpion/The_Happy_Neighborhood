@@ -95,11 +95,18 @@ public class BoardGenerator : MonoBehaviour
         #endregion
 
         GenerateBoard();
+        for (int i = 0; i < BoardCellsInRow; i++)
+        {
+            for (int j = 0; j < BoardCellsInRow; j++)
+            {
+                Debug.Log(BoardCellsArray[i,j]);
+            }
+        }
     }
 
 
     #region GenerateBoard()
-    void GenerateBoard()
+    public void GenerateBoard()
     {
 
         // Set the Board Size Based on the input
@@ -184,49 +191,23 @@ public class BoardGenerator : MonoBehaviour
     }
     #endregion
 
-    #region NoRandomRepeatedCell
-    void GeneratingNoConstCells()
+    #region GeneratingNoConstCells(int[] FirstDimension,int[] SecondDimension)
+    public void GeneratingNoConstCells(int[] FirstDimension,int[] SecondDimension)
     {
         int[,] tempNoConstruction = new int[2, NoConstructionCells];
         for (int i = 0; i < NoConstructionCells; i++)
         {
-            bool RepeatedCell = false;
-            int randomCellsFirstDemension;
-            int randomCellsSecondtDemension;
             int randomNoConstPrefabIndex = UnityEngine.Random.Range(0, (NoConstructionPrefab.Length));
 
-            // Checking not to use repeated cell for NoConstructionCell
-            do
-            {
-                RepeatedCell = false;
-                randomCellsFirstDemension = UnityEngine.Random.Range(0, BoardCellsInRow);
-                randomCellsSecondtDemension = UnityEngine.Random.Range(0, BoardCellsInRow);
-                for (int j = 0; j < NoConstructionCells; j++)
-                {
-                    if (randomCellsFirstDemension == tempNoConstruction[0, j])
-                    {
-                        if (randomCellsSecondtDemension == tempNoConstruction[1, j])
-                        {
-                            RepeatedCell = true;
-                        }
-                    }
-                }
-            }
-            while (RepeatedCell);
-
             // Changing Board Cell Image to a NoConstructionCell
-            BoardCellsArray[randomCellsFirstDemension, randomCellsSecondtDemension].GetComponent<Image>().overrideSprite =
+            BoardCellsArray[FirstDimension[i], SecondDimension[i]].GetComponent<Image>().overrideSprite =
                 NoConstructionPrefab[randomNoConstPrefabIndex].GetComponent<Image>().sprite;
 
             // Making NoConstructionCell to unInteractable Button
-            BoardCellsArray[randomCellsFirstDemension, randomCellsSecondtDemension].GetComponent<Button>().interactable = false;
+            BoardCellsArray[FirstDimension[i], SecondDimension[i]].GetComponent<Button>().interactable = false;
 
             // Assigning Banned Tile To HouseCells Array
-            HouseCellsArray[randomCellsFirstDemension, randomCellsSecondtDemension] = HouseCellsType.BannedTile;
-
-            tempNoConstruction[0, i] = randomCellsFirstDemension;
-            tempNoConstruction[1, i] = randomCellsSecondtDemension;
-
+            HouseCellsArray[FirstDimension[i], SecondDimension[i]] = HouseCellsType.BannedTile;
         }
     }
     #endregion

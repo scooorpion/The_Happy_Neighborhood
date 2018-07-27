@@ -90,10 +90,11 @@ public class GameManager : MonoBehaviour {
             UIAnimator.SetBool("loadGame", false);
         }
         SetDiactiveUIBeginingWaitingPanel();
-        myBoardGenerator = MyBoard.GetComponent<BoardGenerator>();
-        myEnemyBoardGenerator = EnemyBoard.GetComponent<BoardGenerator>();
         MyBoard.SetActive(false);
         EnemyBoard.SetActive(false);
+        myBoardGenerator = MyBoard.GetComponent<BoardGenerator>();
+        myEnemyBoardGenerator = EnemyBoard.GetComponent<BoardGenerator>();
+
 
     }
     #endregion

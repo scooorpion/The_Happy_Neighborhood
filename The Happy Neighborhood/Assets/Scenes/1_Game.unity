@@ -1870,7 +1870,7 @@ MonoBehaviour:
   m_OfflineScene: 
   m_OnlineScene: 
   m_SpawnPrefabs:
-  - {fileID: 1458865654083740, guid: b19082cfb90d1ff4d98a1fe4ade3b9e1, type: 2}
+  - {fileID: 0}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -2520,6 +2520,7 @@ MonoBehaviour:
   GridCellPrefab: {fileID: 1651655180755464, guid: 87d9b7dbd3a1cc74daab5ae68fc61070,
     type: 2}
   BoardBackground: {fileID: 1778579906}
+  UserNameTextBox: {fileID: 0}
   BoardSizeInPixle: 700
   BoardCellsInRow: 7
   GridLineWidth: 5
@@ -2882,7 +2883,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2139478983
 RectTransform:
   m_ObjectHideFlags: 0
