@@ -10,11 +10,21 @@ public class PlayerConnection : NetworkBehaviour
 {
     #region Fields
 
+    [SyncVar]
+    public string UserName;
+
+    public string EnemyName;
+
+    private PlayerConnection enemyPlayerConnection;
     static int ActiveConnections = 0;
-    public GameObject PlayerUnitPrefab;
     private GameManager gameManagerscript;
+    private bool IsGameStarted = false;
+
 
     #endregion
+
+
+
 
     void Start()
     {
@@ -28,7 +38,12 @@ public class PlayerConnection : NetworkBehaviour
 
         CmdAskToTellActiveConnection();
 
-        CmdSpwanMyPlayerUnit();
+        //First change the name locally then on the server
+        UserName = PlayerPrefs.GetString(MenuManager.UserNamePlayerPrefs);
+
+        CmdAskToSetUserName(UserName);
+
+
     }
 
 
@@ -41,8 +56,16 @@ public class PlayerConnection : NetworkBehaviour
         }
 
         ShowAnimationBasedOnActiveConnectionNumbers();
+        gameManagerscript.SetUserNames(UserName, EnemyName);
 
     }
+
+    #region OnStartLocalPlayer()
+    public override void OnStartLocalPlayer()
+    {
+        gameObject.tag = "MyConnection";
+    }
+    #endregion
 
     #region ShowAnimationBasedOnActiveConnectionNumbers()
     /// <summary>
@@ -50,38 +73,58 @@ public class PlayerConnection : NetworkBehaviour
     /// </summary>
     void ShowAnimationBasedOnActiveConnectionNumbers()
     {
-        switch (ActiveConnections)
+        if(!IsGameStarted)
         {
-            case 0:
-                break;
-            case 1:
-                gameManagerscript.ShowWaitingAnimation();
-                break;
-            case 2:
-                gameManagerscript.ShowGameLoading();
-                break;
-            default:
-                gameManagerscript.ShowRoomIsFull();
-                break;
+            switch (ActiveConnections)
+            {
+                case 0:
+                    break;
+                case 1:
+                    // Wait for other player to connecte
+                    gameManagerscript.ShowWaitingAnimation();
+                    break;
+                case 2:
+                    // Start the game
+                    setEnemyName();
+                    gameManagerscript.ShowGameLoading();
+                    gameManagerscript.SetDiactiveUIBeginingWaitingPanel();
+                    IsGameStarted = true;
+                    break;
+                default:
+                    // Display an error that server is full and a back button 
+                    gameManagerscript.ShowRoomIsFull();
+                    break;
+            }
         }
     }
     #endregion
 
+    #region setEnemyName()
+    /// <summary>
+    /// Set the enemy name on our local system from enemy GameObject component
+    /// </summary>
+    void setEnemyName()
+    {
+        PlayerConnection[] PlayerConnections = GameObject.FindObjectsOfType<PlayerConnection>();
+
+        for (int i = 0; i < PlayerConnections.Length; i++)
+        {
+            
+            if(!PlayerConnections[i].CompareTag("MyConnection"))
+            {
+                EnemyName = PlayerConnections[i].UserName;
+                return;
+            }
+        }
+    }
+
+    #endregion
+
+
+    // --------------------- Network section ---------------------
+
 
     #region COMMANDS
-
-    #region CmdSpwanMyPlayerUnit()
-    /// <summary>
-    /// Command Server to spawn PlayerUnit Prefab
-    /// </summary>
-    [Command]
-    void CmdSpwanMyPlayerUnit()
-    {
-        GameObject go = Instantiate<GameObject>(PlayerUnitPrefab);
-
-        NetworkServer.SpawnWithClientAuthority(go, connectionToClient);
-    }
-    #endregion
 
     #region CmdAskToTellActiveConnection()
     /// <summary>
@@ -92,6 +135,19 @@ public class PlayerConnection : NetworkBehaviour
     {
         ActiveConnections = NetworkServer.connections.Count;
         RpcTellActiveClients(ActiveConnections);
+    }
+    #endregion
+
+    #region CmdAskToSetUserName(string name)
+    /// <summary>
+    /// Command Server To Set User Name And Tell Every Clients
+    /// </summary>
+    /// <param name="name">change user name to this name</param>
+    [Command]
+    void CmdAskToSetUserName(string name)
+    {
+        UserName = name;
+        print("Server: Change the name syncVari");
     }
     #endregion
 
@@ -114,8 +170,13 @@ public class PlayerConnection : NetworkBehaviour
 
     #endregion
 
+
+
+
+
     // To-Do:
     // 1- Creat a custom HUD network manager
     // 2- When Stop or disconnection button on HUD network manager pressed, gameManagerscript.Initialazation(true) should be called
+    // 3- Place back button in waiting room and room is full panel
 
 }

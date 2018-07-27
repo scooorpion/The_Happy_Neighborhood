@@ -56,6 +56,7 @@ public class BoardGenerator : MonoBehaviour
     public GameObject GridLinePrefab;
     public GameObject GridCellPrefab;
     public GameObject BoardBackground;
+    public Text UserNameTextBox;
 
     public float BoardSizeInPixle = 700f;
     public byte BoardCellsInRow = 7;
@@ -106,7 +107,7 @@ public class BoardGenerator : MonoBehaviour
 
         generateGridLines();
         generateGridCells();
-        GeneratingNoConstCells();
+        //GeneratingNoConstCells();
 
     }
     #endregion

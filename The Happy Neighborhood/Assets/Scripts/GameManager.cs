@@ -2,6 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#region CharactersType Enum
+public enum CharactersType
+{
+    Empty,
+    NoramlGuy,
+    DoubleGuys,
+    TripleGuys,
+    RedGuy,
+    RedNoBlueGuy,
+    BlueGuy,
+    BlueNoYellow,
+    PurpuleGuy,
+    PurpleNoRedGuy,
+    OldGuy,
+    PenthouseGuy,
+    TwoHouseGuy,
+    ThreeHouseLGuy,
+    FourHouseGuy,
+    Ghost,
+    FamilyTwoGuys,
+    Animal,
+    GuyWithAnimal,
+    GuyNeedParking,
+    GuyNeedGarden,
+    Baby,
+    GhostCatcher,
+    Gangster,
+    Wizard
+}
+#endregion
+
+#region HouseCellsType Enum
+public enum HouseCellsType
+{
+    BannedTile,
+    EmptyTile,
+    BlueTile,
+    RedTile,
+    PurpleTile,
+    YellowTile,
+    OldBlueTile,
+    OldRedTile,
+    OldPurpleTile,
+    OldYellowTile,
+    PentHouse,
+    Parking,
+    Terrace,
+    Garden,
+}
+#endregion
+
 public class GameManager : MonoBehaviour {
 
     public Animator UIAnimator;
@@ -9,7 +60,16 @@ public class GameManager : MonoBehaviour {
     public GameObject ServerFullPanel;
     public GameObject GameLoadingPanel;
 
-    
+    public GameObject MyBoard;
+    public GameObject EnemyBoard;
+
+    private BoardGenerator myBoardGenerator;
+    private BoardGenerator myEnemyBoardGenerator;
+
+
+    private
+
+
 
     void Awake()
     {
@@ -25,12 +85,25 @@ public class GameManager : MonoBehaviour {
     {
         if (ToReset)
         {
-            UIAnimator.SetBool("Default", true);
             UIAnimator.SetBool("serverFull", false);
             UIAnimator.SetBool("waiting", false);
             UIAnimator.SetBool("loadGame", false);
         }
+        SetDiactiveUIBeginingWaitingPanel();
+        myBoardGenerator = MyBoard.GetComponent<BoardGenerator>();
+        myEnemyBoardGenerator = EnemyBoard.GetComponent<BoardGenerator>();
+        MyBoard.SetActive(false);
+        EnemyBoard.SetActive(false);
 
+    }
+    #endregion
+
+    #region SetDiactiveUIBeginingWaitingPanel()
+    /// <summary>
+    /// DeActive 3 Panels in UI which show pre-game state at begining(wain,server full,loading)
+    /// </summary>
+    public void SetDiactiveUIBeginingWaitingPanel()
+    {
         WaitingPanel.SetActive(false);
         ServerFullPanel.SetActive(false);
         GameLoadingPanel.SetActive(false);
@@ -45,6 +118,7 @@ public class GameManager : MonoBehaviour {
     {
         GameLoadingPanel.SetActive(true);
         UIAnimator.SetBool("loadGame", true);
+        StartGame();
     }
     #endregion
 
@@ -70,6 +144,26 @@ public class GameManager : MonoBehaviour {
     }
     #endregion
 
+    #region StartGame()
+    public void StartGame()
+    {
+        MyBoard.SetActive(true);
+        EnemyBoard.SetActive(true);
+    }
+    #endregion
+
+    # region SetUserNames(string MyName,string EnemyName)
+    /// <summary>
+    /// Set User Name and Enemy Name in UI TextBox
+    /// </summary>
+    /// <param name="MyName"></param>
+    /// <param name="EnemyName"></param>
+    public void SetUserNames(string MyName,string EnemyName)
+    {
+        myBoardGenerator.UserNameTextBox.text = MyName;
+        myEnemyBoardGenerator.UserNameTextBox.text = EnemyName;
+    }
+    #endregion
 
 
 }
