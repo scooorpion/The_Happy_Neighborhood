@@ -26,12 +26,20 @@ public class PlayerConnection : NetworkBehaviour
     private GameManager gameManagerscript;
     private bool IsGameStarted = false;
 
-    // Server-Side And Client-Side Arrays
-    public int[] BanedCells0_P1;   // because 2D array is not supported on network I use 2 seperated array
-    public int[] BanedCells1_P1;
+    private bool IsReadyForUpdateScreen = false;
 
-    public int[] BanedCells0_P2;
-    public int[] BanedCells1_P2;   
+    public HouseCellsType[] MyHouseCells = new HouseCellsType[49];
+    public CharactersType[] MyCharCells = new CharactersType[49];
+
+
+    // Server-Side Arrays
+
+    static HouseCellsType[] HouseCells_P1_Server = new HouseCellsType[49];
+    static HouseCellsType[] HouseCells_P2_Server = new HouseCellsType[49];
+
+    static CharactersType[] CharCells_P1_Server = new CharactersType[49];
+    static CharactersType[] CharCells_P2_Server = new CharactersType[49];
+
 
 
     #endregion
@@ -49,15 +57,14 @@ public class PlayerConnection : NetworkBehaviour
 
         gameManagerscript = FindObjectOfType<GameManager>().GetComponent<GameManager>();
 
-        CmdAskToSetPlayerTurn();
-
         CmdAskToTellActiveConnection();
+
+        CmdAskToSetPlayerTurn();
 
         //First change the name locally then on the server
         UserName = PlayerPrefs.GetString(MenuManager.UserNamePlayerPrefs);
 
         CmdAskToSetUserName(UserName);
-
 
 
     }
@@ -71,10 +78,41 @@ public class PlayerConnection : NetworkBehaviour
             return;
         }
 
-        ShowAnimationBasedOnActiveConnectionNumbers();
+        // Wait untill MyTurnId is set by RPC
+        if(MyTurnID == 0)
+        {
+            return;
+        }
+
         gameManagerscript.SetUserNames(UserName, EnemyName);
 
+        ShowAnimationBasedOnActiveConnectionNumbers();
+
+        if(IsReadyForUpdateScreen)
+        {
+
+            // Simiulating my cell array
+            gameManagerscript.UpdateHouseTileMap(MyHouseCells);
+
+
+            // Simiulating my enemy cell array
+            PlayerConnection[] PlayerConnections = GameObject.FindObjectsOfType<PlayerConnection>();
+
+            for (int i = 0; i < PlayerConnections.Length; i++)
+            {
+
+                if (!PlayerConnections[i].CompareTag("MyConnection"))
+                {
+                    gameManagerscript.UpdateHouseTileMap(PlayerConnections[i].MyHouseCells, false);
+                    return;
+                }
+            }
+
+            IsReadyForUpdateScreen = false;
+
+        }
     }
+
 
     #region OnStartLocalPlayer()
     public override void OnStartLocalPlayer()
@@ -101,14 +139,10 @@ public class PlayerConnection : NetworkBehaviour
                     break;
                 case 2:
                     // Start the game
-
-
                     setEnemyName();
-                    CmdAskToCalculateRandomBannedLocation(ServerTurn);                    
                     gameManagerscript.ShowGameLoading();
                     gameManagerscript.SetDiactiveUIBeginingWaitingPanel();
-
-                    
+                    CmdAskToCreateHouseTilesArray(MyTurnID);
                     IsGameStarted = true;
                     break;
                 default:
@@ -196,61 +230,65 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-    #region CmdAskToCalculateRandomBannedLocation(int Turn)
+    #region CmdAskToCreateHouseTilesArray(int Turn)
     /// <summary>
     /// Command server to create an array of banned construction to fill the map
     /// </summary>
     [Command]
-    void CmdAskToCalculateRandomBannedLocation(int Turn)
+    void CmdAskToCreateHouseTilesArray(int Turn)
     {
-        int[] BanedCells0_temp = new int[BanedConstructionCellNumber];
-        int[] BanedCells1_temp = new int[BanedConstructionCellNumber];
+        HouseCellsType[] cellhouseTemp = new HouseCellsType[49];
+        int[] bannedCellsTemp = new int[BanedConstructionCellNumber];
+
+        for (int i = 0; i < 49; i++)
+        {
+            cellhouseTemp[i] = HouseCellsType.EmptyTile;
+        }
 
         for (int i = 0; i < BanedConstructionCellNumber; i++)
         {
             bool RepeatedCell;
-            int randomCellsFirstDemension;
-            int randomCellsSecondtDemension;
+            int randomCell;
 
             // Checking not to use repeated cell for NoConstructionCell
             do
             {
                 RepeatedCell = false;
-                randomCellsFirstDemension = UnityEngine.Random.Range(0, 7);
-                randomCellsSecondtDemension = UnityEngine.Random.Range(0, 7);
+                randomCell = UnityEngine.Random.Range(0, 49);
+
                 for (int j = 0; j < BanedConstructionCellNumber; j++)
                 {
-                    if (BanedCells0_temp[j] == randomCellsFirstDemension)
+                    if (bannedCellsTemp[j] == randomCell)
                     {
-                        if (BanedCells1_temp[j] == randomCellsSecondtDemension)
-                        {
-                            RepeatedCell = true;
-                        }
+                        RepeatedCell = true;
+                        continue;
                     }
                 }
             }
             while (RepeatedCell);
 
-            BanedCells0_temp[i] = randomCellsFirstDemension;
-            BanedCells1_temp[i] = randomCellsSecondtDemension;
+            bannedCellsTemp[i] = randomCell;
+        }
 
+        for (int i = 0; i < BanedConstructionCellNumber; i++)
+        {
+            cellhouseTemp[ bannedCellsTemp[i] ] = HouseCellsType.BannedTile;
         }
 
         if (Turn == 1)
         {
-            BanedCells0_P1 = BanedCells0_temp;
-            BanedCells1_P1 = BanedCells1_temp;
+            HouseCells_P1_Server = cellhouseTemp;
         }
         else if (Turn == 2)
         {
-            BanedCells0_P2 = BanedCells0_temp;
-            BanedCells1_P2 = BanedCells1_temp;
+            HouseCells_P2_Server = cellhouseTemp;
         }
 
 
-        RpcTellBannedConstructionCells(BanedCells0_temp, BanedCells1_temp);
+        RpcTellHouseCells(cellhouseTemp);
     }
     #endregion
+
 
 
     #endregion
@@ -270,30 +308,30 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-    #region RpcTellBannedConstructionCells(int[] BannedConsCells0, int[] BannedConsCells1)
+
+    #region RpcTellHouseCells(HouseCellsType[] cellhouseArray)
     /// <summary>
-    /// Tell Clients Banned Cells
+    /// Tell Clients about House Cells Array
     /// </summary>
-    /// <param name="BannedConsCells0"></param>
-    /// <param name="BannedConsCells1"></param>
+    /// <param name="cellhouseArray"></param>
     [ClientRpc]
-    void RpcTellBannedConstructionCells(int[] BannedConsCells0, int[] BannedConsCells1)
+    public void RpcTellHouseCells(HouseCellsType[] cellhouseArray)
     {
-        if(MyTurnID == 1)
+        print("RPC, My ID: " + MyTurnID);
+        for (int i = 0; i < 49; i++)
         {
-            BanedCells0_P1 = BannedConsCells0;
-            BanedCells1_P1 = BannedConsCells1;
-
-        }
-        else if(MyTurnID == 2)
-        {
-            BanedCells0_P2 = BannedConsCells0;
-            BanedCells1_P2 = BannedConsCells1;
-
+            print("Temp Cell: "+cellhouseArray[i]);
         }
 
+        MyHouseCells = cellhouseArray;
+
+        IsReadyForUpdateScreen = true;      // New Variable............
+
+        print("House Cell is created and stored");
     }
     #endregion
+
+
 
     #endregion
 
@@ -307,5 +345,5 @@ public class PlayerConnection : NetworkBehaviour
     // 3- Place back button in waiting room and room is full panel
 
 
-    // ==> To Continiue : Banned Cell is calculated and stored on the server, now player should create his map based on this fields
+    // ==> To Continiue : simulate cell arrays on screen
 }

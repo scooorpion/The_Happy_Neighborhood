@@ -1222,6 +1222,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1bfc8e8b5c38414ea5a254ce60f761f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BannedTile: {fileID: 21300002, guid: 56771dfd566146240b6af31fe83d159d, type: 3}
+  EmptyTile: {fileID: 21300000, guid: d47538ed2bec2a54d8e7cd97dd5e93ab, type: 3}
+  BlueTile: {fileID: 21300040, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  RedTile: {fileID: 21300014, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  PurpleTile: {fileID: 21300028, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  YellowTile: {fileID: 21300042, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  OldBlueTile: {fileID: 21300006, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  OldRedTile: {fileID: 21300018, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  OldPurpleTile: {fileID: 21300032, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  OldYellowTile: {fileID: 21300004, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  PentHouse: {fileID: 21300000, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  Parking: {fileID: 21300030, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  Terrace: {fileID: 21300016, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  Garden: {fileID: 21300002, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
   UIAnimator: {fileID: 456893621}
   WaitingPanel: {fileID: 2138120583}
   ServerFullPanel: {fileID: 464639163}

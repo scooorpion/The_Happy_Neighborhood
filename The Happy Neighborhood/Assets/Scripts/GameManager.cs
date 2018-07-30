@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 #region CharactersType Enum
 public enum CharactersType
@@ -53,7 +54,27 @@ public enum HouseCellsType
 }
 #endregion
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
+
+    #region sprite for house cells
+
+    public Sprite BannedTile;
+    public Sprite EmptyTile;
+    public Sprite BlueTile;
+    public Sprite RedTile;
+    public Sprite PurpleTile;
+    public Sprite YellowTile;
+    public Sprite OldBlueTile;
+    public Sprite OldRedTile;
+    public Sprite OldPurpleTile;
+    public Sprite OldYellowTile;
+    public Sprite PentHouse;
+    public Sprite Parking;
+    public Sprite Terrace;
+    public Sprite Garden;
+
+    #endregion
 
     public Animator UIAnimator;
     public GameObject WaitingPanel;
@@ -166,5 +187,106 @@ public class GameManager : MonoBehaviour {
     }
     #endregion
 
+
+
+
+    // New Functions: 
+
+
+
+    public void UpdateHouseTileMap(HouseCellsType[] HouseCellsArray, bool IsMyBoard = true)
+    {
+        if(IsMyBoard)
+        {
+            for (int i = 0; i < HouseCellsArray.Length; i++)
+            {
+                myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < HouseCellsArray.Length; i++)
+            {
+                myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
+            }
+
+        }
+    }
+
+    public void UpdateHouseTileMap(int ChangedArrayField, HouseCellsType HouseCell, bool IsMyBoard = true)
+    {
+        myBoardGenerator.BoardCellsArray[1, 1].GetComponent<Image>().enabled = false;
+    }
+
+
+    public Sprite SpriteBasedOnHouseCellType(HouseCellsType HouseCellType)
+    {
+        Sprite tempSprite;
+
+        switch (HouseCellType)
+        {
+            case HouseCellsType.BannedTile:
+                tempSprite = BannedTile;
+                break;
+
+            case HouseCellsType.EmptyTile:
+                tempSprite = EmptyTile;
+                break;
+
+            case HouseCellsType.BlueTile:
+                tempSprite = BlueTile;
+                break;
+
+            case HouseCellsType.RedTile:
+                tempSprite = RedTile;
+                break;
+
+            case HouseCellsType.PurpleTile:
+                tempSprite = PurpleTile;
+                break;
+
+            case HouseCellsType.YellowTile:
+                tempSprite = YellowTile;
+                break;
+
+            case HouseCellsType.OldBlueTile:
+                tempSprite = OldBlueTile;
+                break;
+
+            case HouseCellsType.OldRedTile:
+                tempSprite = OldRedTile;
+                break;
+
+            case HouseCellsType.OldPurpleTile:
+                tempSprite = OldPurpleTile;
+                break;
+
+            case HouseCellsType.OldYellowTile:
+                tempSprite = OldYellowTile;
+                break;
+
+            case HouseCellsType.PentHouse:
+                tempSprite = PentHouse;
+                break;
+
+            case HouseCellsType.Parking:
+                tempSprite = Parking;
+                break;
+
+            case HouseCellsType.Terrace:
+                tempSprite = Terrace;
+                break;
+
+            case HouseCellsType.Garden:
+                tempSprite = Garden;
+                break;
+
+            default:
+                tempSprite = EmptyTile;
+                break;
+        }
+
+        return tempSprite;
+    }
 
 }

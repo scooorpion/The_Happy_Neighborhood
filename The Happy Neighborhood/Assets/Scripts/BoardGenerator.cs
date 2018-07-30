@@ -36,8 +36,6 @@ public class BoardGenerator : MonoBehaviour
     }
     public enum HouseCellsType
     {
-        BannedTile,
-        EmptyTile,
         BlueTile,
         RedTile,
         PurpleTile,
@@ -50,6 +48,9 @@ public class BoardGenerator : MonoBehaviour
         Parking,
         Terrace,
         Garden,
+        BannedTile,
+        EmptyTile,
+
     }
 
     public GameObject[] NoConstructionPrefab;
@@ -74,6 +75,7 @@ public class BoardGenerator : MonoBehaviour
 
     public GameObject[,] BoardCellsArray;
 
+
     public HouseCellsType[,] HouseCellsArray;
     public CharactersType[,] CharactersCellsArray;
     #endregion
@@ -95,13 +97,6 @@ public class BoardGenerator : MonoBehaviour
         #endregion
 
         GenerateBoard();
-        for (int i = 0; i < BoardCellsInRow; i++)
-        {
-            for (int j = 0; j < BoardCellsInRow; j++)
-            {
-                Debug.Log(BoardCellsArray[i,j]);
-            }
-        }
     }
 
 
@@ -191,6 +186,7 @@ public class BoardGenerator : MonoBehaviour
     }
     #endregion
 
+
     #region GeneratingNoConstCells(int[] FirstDimension,int[] SecondDimension)
     public void GeneratingNoConstCells(int[] FirstDimension,int[] SecondDimension)
     {
@@ -212,4 +208,7 @@ public class BoardGenerator : MonoBehaviour
     }
     #endregion
 
+
+
+    
 }
