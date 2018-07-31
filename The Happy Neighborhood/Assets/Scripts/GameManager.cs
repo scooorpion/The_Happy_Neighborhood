@@ -174,15 +174,24 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    # region SetUserNames(string MyName,string EnemyName)
+    # region SetMyName(string MyName)
     /// <summary>
-    /// Set User Name and Enemy Name in UI TextBox
+    /// Set User Name  in UI TextBox
     /// </summary>
     /// <param name="MyName"></param>
-    /// <param name="EnemyName"></param>
-    public void SetUserNames(string MyName,string EnemyName)
+    public void SetMyName(string MyName)
     {
         myBoardGenerator.UserNameTextBox.text = MyName;
+    }
+    #endregion
+
+    #region SetEnemyName(string EnemyName)
+    /// <summary>
+    /// Set Enemy Name in UI TextBox
+    /// </summary>
+    /// <param name="EnemyName"></param>
+    public void SetEnemyName(string EnemyName)
+    {
         myEnemyBoardGenerator.UserNameTextBox.text = EnemyName;
     }
     #endregion

@@ -27,6 +27,7 @@ public class PlayerConnection : NetworkBehaviour
     private bool IsGameStarted = false;
 
     private bool IsReadyForUpdateScreen = false;
+    private PlayerConnection enemyConnection;
 
     public HouseCellsType[] MyHouseCells = new HouseCellsType[49];
     public CharactersType[] MyCharCells = new CharactersType[49];
@@ -78,41 +79,44 @@ public class PlayerConnection : NetworkBehaviour
             return;
         }
 
-        // Wait untill MyTurnId is set by RPC
+        // Wait untill MyTurnId is set by RPC to 1 or 2
         if(MyTurnID == 0)
         {
             return;
         }
 
-        gameManagerscript.SetUserNames(UserName, EnemyName);
+        gameManagerscript.SetMyName(UserName);
 
         ShowAnimationBasedOnActiveConnectionNumbers();
 
         if(IsReadyForUpdateScreen)
         {
-
             // Simiulating my cell array
             gameManagerscript.UpdateHouseTileMap(MyHouseCells);
 
-
             // Simiulating my enemy cell array
-            PlayerConnection[] PlayerConnections = GameObject.FindObjectsOfType<PlayerConnection>();
+            StartCoroutine(CreateEnemyMap(0.5f));
 
-            for (int i = 0; i < PlayerConnections.Length; i++)
-            {
 
-                if (!PlayerConnections[i].CompareTag("MyConnection"))
-                {
-                    gameManagerscript.UpdateHouseTileMap(PlayerConnections[i].MyHouseCells, false);
-                    return;
-                }
-            }
-
+            // Set Flag For Update Screen to flase
             IsReadyForUpdateScreen = false;
 
         }
     }
 
+    #region CreateEnemyMap(float waitTime)
+    /// <summary>
+    /// Courotine for creating enemy map and show the name after a delay to prevent server problem
+    /// </summary>
+    /// <param name="waitTime"></param>
+    /// <returns></returns>
+    IEnumerator CreateEnemyMap(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        gameManagerscript.SetEnemyName(EnemyName);
+        gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
+    }
+    #endregion
 
     #region OnStartLocalPlayer()
     public override void OnStartLocalPlayer()
@@ -139,6 +143,7 @@ public class PlayerConnection : NetworkBehaviour
                     break;
                 case 2:
                     // Start the game
+                    GetEnemyScript();
                     setEnemyName();
                     gameManagerscript.ShowGameLoading();
                     gameManagerscript.SetDiactiveUIBeginingWaitingPanel();
@@ -153,6 +158,27 @@ public class PlayerConnection : NetworkBehaviour
         }
     }
     #endregion
+   
+    #region GetEnemyScript()
+    /// <summary>
+    /// Get PlayerConnection which belongs to enemy and store in enemyConnection
+    /// </summary>
+    void GetEnemyScript()
+    {
+        PlayerConnection[] PlayerConnections = GameObject.FindObjectsOfType<PlayerConnection>();
+
+        for (int i = 0; i < PlayerConnections.Length; i++)
+        {
+
+            if (!PlayerConnections[i].CompareTag("MyConnection"))
+            {
+                enemyConnection = PlayerConnections[i];
+                return;
+            }
+        }
+
+    }
+    #endregion
 
     #region setEnemyName()
     /// <summary>
@@ -160,17 +186,7 @@ public class PlayerConnection : NetworkBehaviour
     /// </summary>
     void setEnemyName()
     {
-        PlayerConnection[] PlayerConnections = GameObject.FindObjectsOfType<PlayerConnection>();
-
-        for (int i = 0; i < PlayerConnections.Length; i++)
-        {
-            
-            if(!PlayerConnections[i].CompareTag("MyConnection"))
-            {
-                EnemyName = PlayerConnections[i].UserName;
-                return;
-            }
-        }
+        EnemyName = enemyConnection.UserName;
     }
 
     #endregion
@@ -308,7 +324,6 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-
     #region RpcTellHouseCells(HouseCellsType[] cellhouseArray)
     /// <summary>
     /// Tell Clients about House Cells Array
@@ -317,17 +332,9 @@ public class PlayerConnection : NetworkBehaviour
     [ClientRpc]
     public void RpcTellHouseCells(HouseCellsType[] cellhouseArray)
     {
-        print("RPC, My ID: " + MyTurnID);
-        for (int i = 0; i < 49; i++)
-        {
-            print("Temp Cell: "+cellhouseArray[i]);
-        }
-
         MyHouseCells = cellhouseArray;
 
-        IsReadyForUpdateScreen = true;      // New Variable............
-
-        print("House Cell is created and stored");
+        IsReadyForUpdateScreen = true;      
     }
     #endregion
 
@@ -345,5 +352,5 @@ public class PlayerConnection : NetworkBehaviour
     // 3- Place back button in waiting room and room is full panel
 
 
-    // ==> To Continiue : simulate cell arrays on screen
+    // ==> To Continiue : Create Card Deck on server and show on clients system
 }
