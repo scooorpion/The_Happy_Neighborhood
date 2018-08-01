@@ -33,6 +33,10 @@ public class PlayerConnection : NetworkBehaviour
     public CharactersType[] MyCharCells = new CharactersType[49];
 
 
+    static HouseCellsType[] HouseCardsInGameDeck = new HouseCellsType[4];
+    static CharactersType[] CharacterCardsInGameDeck = new CharactersType[4];
+
+
     // Server-Side Arrays
 
     static HouseCellsType[] HouseCells_P1_Server = new HouseCellsType[49];
@@ -41,6 +45,11 @@ public class PlayerConnection : NetworkBehaviour
     static CharactersType[] CharCells_P1_Server = new CharactersType[49];
     static CharactersType[] CharCells_P2_Server = new CharactersType[49];
 
+    static public List<HouseCellsType> HouseCardsDeckInGame_Server = new List<HouseCellsType>();
+    static public List<CharactersType> CharacterCardsDeckInGame_Server = new List<CharactersType>();
+
+    public static List<HouseCellsType> HousesDeckList_Server = new List<HouseCellsType>();
+    public static List<CharactersType> CharactersDeckList_Server = new List<CharactersType>();
 
 
     #endregion
@@ -80,10 +89,11 @@ public class PlayerConnection : NetworkBehaviour
         }
 
         // Wait untill MyTurnId is set by RPC to 1 or 2
-        if(MyTurnID == 0)
+        if (MyTurnID == 0)
         {
             return;
         }
+
 
         gameManagerscript.SetMyName(UserName);
 
@@ -147,6 +157,13 @@ public class PlayerConnection : NetworkBehaviour
                     setEnemyName();
                     gameManagerscript.ShowGameLoading();
                     gameManagerscript.SetDiactiveUIBeginingWaitingPanel();
+
+                    CmdAskToCreateDeckLists(MyTurnID);
+
+                    CmdAskToFillEmptyCharInGameDeck();
+                    CmdAskToFillEmptyHouseInGameDeck();
+
+
                     CmdAskToCreateHouseTilesArray(MyTurnID);
                     IsGameStarted = true;
                     break;
@@ -305,6 +322,212 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
+    #region CmdAskToCreateDeckLists(int PlayerTurnID)
+    /// <summary>
+    /// Command Server to Create Deck Lists of Character and House and store it
+    /// </summary>
+    /// <param name="PlayerTurnID">set a clients id in order not to called by all clients</param>
+    [Command]
+    void CmdAskToCreateDeckLists(int PlayerTurnID)
+    {
+        // Use Player ID to check no to call this Command twice by two player
+        // because we need to create just one time this deck
+
+        if (PlayerTurnID == 1)
+        {
+            #region Creating CharacterList Deck
+
+            int EnumCharacterLenght = Enum.GetNames(typeof(CharactersType)).Length;
+
+            for (int i = 0; i < EnumCharacterLenght; i++)
+            {
+                CharactersType CharacterTemp = (CharactersType)i;
+
+                // These Character shouldnt be added to deck based on game design
+                if(CharacterTemp == CharactersType.Ghost || CharacterTemp == CharactersType.Empty || CharacterTemp == CharactersType.TripleGuys)
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < 3; j++)  // Each card has 3 Ratio in a deck
+                {
+                    CharactersDeckList_Server.Add(CharacterTemp);
+                }
+
+            }
+
+
+            #endregion
+
+            #region Creating HouseList Deck
+
+            int EnumHouseLenght = Enum.GetNames(typeof(HouseCellsType)).Length;
+
+            for (int i = 0; i < EnumHouseLenght; i++)
+            {
+                HouseCellsType HouseCellTemp = (HouseCellsType)i;
+                int CardRatioNumber;
+
+                // Assign proper card ratio to each card
+                switch (HouseCellTemp)
+                {
+                    case HouseCellsType.BannedTile:
+                        CardRatioNumber = 0;
+                        break;
+                    case HouseCellsType.EmptyTile:
+                        CardRatioNumber = 0;
+                        break;
+                    case HouseCellsType.BlueTile:
+                        CardRatioNumber = 15;
+                        break;
+                    case HouseCellsType.RedTile:
+                        CardRatioNumber = 15;
+                        break;
+                    case HouseCellsType.PurpleTile:
+                        CardRatioNumber = 15;
+                        break;
+                    case HouseCellsType.YellowTile:
+                        CardRatioNumber = 15;
+                        break;
+                    case HouseCellsType.OldBlueTile:
+                        CardRatioNumber = 5;
+                        break;
+                    case HouseCellsType.OldRedTile:
+                        CardRatioNumber = 5;
+                        break;
+                    case HouseCellsType.OldPurpleTile:
+                        CardRatioNumber = 5;
+                        break;
+                    case HouseCellsType.OldYellowTile:
+                        CardRatioNumber = 5;
+                        break;
+                    case HouseCellsType.PentHouse:
+                        CardRatioNumber = 8;
+                        break;
+                    case HouseCellsType.Parking:
+                        CardRatioNumber = 8;
+                        break;
+                    case HouseCellsType.Terrace:
+                        CardRatioNumber = 10;
+                        break;
+                    case HouseCellsType.Garden:
+                        CardRatioNumber = 8;
+                        break;
+                    default:
+                        CardRatioNumber = 0;
+                        break;
+                }
+
+                for (int j = 0; j < CardRatioNumber; j++)  // Each card has Specific Ratio in a deck
+                {
+                    HousesDeckList_Server.Add(HouseCellTemp);
+                }
+
+
+            }
+
+            #endregion
+
+        }
+
+
+    }
+    #endregion
+
+
+
+    #region CmdAskToFillEmptyCharInGameDeck()
+    /// <summary>
+    /// Command Server To Fill each empty character slot in In-Game Deck Slot which has 4 slot and broadcast the list
+    /// </summary>
+    [Command]
+    void CmdAskToFillEmptyCharInGameDeck()
+    {
+        if (CharactersDeckList_Server.Count < 4)
+        {
+            print("There is less than 4 Cards");
+            return;
+        }
+
+
+
+        while (CharacterCardsDeckInGame_Server.Count < 4)
+        {
+            CharactersType CharTempDeck;
+            int RandomIndex;
+            bool RepeatedCard;
+
+            // Check not to have a repetetive cell 
+            do
+            {
+                RepeatedCard = false;
+
+                RandomIndex = UnityEngine.Random.Range(0, CharactersDeckList_Server.Count);
+
+                CharTempDeck = CharactersDeckList_Server[RandomIndex];
+
+                if (CharacterCardsDeckInGame_Server.Contains(CharTempDeck))
+                {
+                    RepeatedCard = true;
+                }
+
+            } while (RepeatedCard);
+
+
+            CharacterCardsDeckInGame_Server.Add(CharTempDeck);
+            CharactersDeckList_Server.RemoveAt(RandomIndex);
+        }
+
+        RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
+    }
+    #endregion
+
+    #region CmdAskToFillEmptyHouseInGameDeck()
+    /// <summary>
+    /// Command Server To Fill each empty House slot in In-Game Deck Slot which has 4 slot and broadcast the list
+    /// </summary>
+    [Command]
+    void CmdAskToFillEmptyHouseInGameDeck()
+    {
+
+        if(HousesDeckList_Server.Count < 4)
+        {
+            print("There is less than 4 Cards");
+            return;
+        }
+
+
+        while (HouseCardsDeckInGame_Server.Count < 4)
+        {
+            HouseCellsType HouseTemp;
+            int RandomIndex;
+            bool RepeatedCard;
+
+            // Check not to have a repetetive cell 
+            do
+            {
+                RepeatedCard = false;
+
+                RandomIndex = UnityEngine.Random.Range(0, HousesDeckList_Server.Count);
+
+                HouseTemp = HousesDeckList_Server[RandomIndex];
+
+                if(HouseCardsDeckInGame_Server.Contains(HouseTemp))
+                {
+                    RepeatedCard = true;
+                }
+
+            } while (RepeatedCard);
+
+
+            HouseCardsDeckInGame_Server.Add(HouseTemp);
+            HousesDeckList_Server.RemoveAt(RandomIndex);
+        }
+
+        RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
+
+    }
+    #endregion
 
 
     #endregion
@@ -338,7 +561,31 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
+    #region RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
+    /// <summary>
+    /// Tell Clients About In-Game Character Deck
+    /// </summary>
+    /// <param name="characterCardsDeckInGame_Server"></param>
+    [ClientRpc]
+    public void RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
+    {
+        CharacterCardsInGameDeck = characterCardsDeckInGame_Server;
+    }
 
+    #endregion
+
+    #region RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
+    /// <summary>
+    /// Tell Clients About In-Game House Deck
+    /// </summary>
+    /// <param name="houseCardsDeckInGame_Server"></param>
+    [ClientRpc]
+    public void RpcTellHouseInGameDeck(HouseCellsType[] houseCardsDeckInGame_Server)
+    {
+        HouseCardsInGameDeck = houseCardsDeckInGame_Server;
+    }
+
+    #endregion
 
     #endregion
 
@@ -352,5 +599,5 @@ public class PlayerConnection : NetworkBehaviour
     // 3- Place back button in waiting room and room is full panel
 
 
-    // ==> To Continiue : Create Card Deck on server and show on clients system
+    // ==> To Continiue : Update Deck in UI based on the recieved deck
 }
