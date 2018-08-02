@@ -26,7 +26,11 @@ public class PlayerConnection : NetworkBehaviour
     private GameManager gameManagerscript;
     private bool IsGameStarted = false;
 
-    private bool IsReadyForUpdateScreen = false;
+    private bool IsReadyForUpdateCellsOnScreen = false;
+    private bool IsReadyForUpdateHouseCardsOnScreen = false;
+    private bool IsReadyForUpdateCharacterCardsOnScreen = false;
+
+
     private PlayerConnection enemyConnection;
 
     public HouseCellsType[] MyHouseCells = new HouseCellsType[49];
@@ -99,7 +103,7 @@ public class PlayerConnection : NetworkBehaviour
 
         ShowAnimationBasedOnActiveConnectionNumbers();
 
-        if(IsReadyForUpdateScreen)
+        if(IsReadyForUpdateCellsOnScreen)
         {
             // Simiulating my cell array
             gameManagerscript.UpdateHouseTileMap(MyHouseCells);
@@ -109,8 +113,20 @@ public class PlayerConnection : NetworkBehaviour
 
 
             // Set Flag For Update Screen to flase
-            IsReadyForUpdateScreen = false;
+            IsReadyForUpdateCellsOnScreen = false;
 
+        }
+
+        if(IsReadyForUpdateCharacterCardsOnScreen)
+        {
+            gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
+            IsReadyForUpdateCharacterCardsOnScreen = false;
+        }
+
+        if(IsReadyForUpdateHouseCardsOnScreen)
+        {
+            gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
+            IsReadyForUpdateHouseCardsOnScreen = false;
         }
     }
 
@@ -557,7 +573,7 @@ public class PlayerConnection : NetworkBehaviour
     {
         MyHouseCells = cellhouseArray;
 
-        IsReadyForUpdateScreen = true;      
+        IsReadyForUpdateCellsOnScreen = true;      
     }
     #endregion
 
@@ -570,11 +586,12 @@ public class PlayerConnection : NetworkBehaviour
     public void RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
     {
         CharacterCardsInGameDeck = characterCardsDeckInGame_Server;
+        IsReadyForUpdateCharacterCardsOnScreen = true;
     }
 
     #endregion
 
-    #region RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
+    #region RpcTellHouseInGameDeck(HouseCellsType[] houseCardsDeckInGame_Server)
     /// <summary>
     /// Tell Clients About In-Game House Deck
     /// </summary>
@@ -583,6 +600,8 @@ public class PlayerConnection : NetworkBehaviour
     public void RpcTellHouseInGameDeck(HouseCellsType[] houseCardsDeckInGame_Server)
     {
         HouseCardsInGameDeck = houseCardsDeckInGame_Server;
+        IsReadyForUpdateHouseCardsOnScreen = true;
+
     }
 
     #endregion

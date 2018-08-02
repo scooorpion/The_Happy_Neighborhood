@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CharType : MonoBehaviour
 {
-    public BoardGenerator.CharactersType charactersType;
-    public byte CardRatioInDeck = 1;
+    public CharactersType charactersType;
 
 }

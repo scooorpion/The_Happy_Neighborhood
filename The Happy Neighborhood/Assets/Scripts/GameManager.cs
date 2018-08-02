@@ -56,36 +56,21 @@ public enum HouseCellsType
 
 public class GameManager : MonoBehaviour
 {
-
-    #region sprite for house cells
-
-    public Sprite BannedTile;
-    public Sprite EmptyTile;
-    public Sprite BlueTile;
-    public Sprite RedTile;
-    public Sprite PurpleTile;
-    public Sprite YellowTile;
-    public Sprite OldBlueTile;
-    public Sprite OldRedTile;
-    public Sprite OldPurpleTile;
-    public Sprite OldYellowTile;
-    public Sprite PentHouse;
-    public Sprite Parking;
-    public Sprite Terrace;
-    public Sprite Garden;
-
-    #endregion
-
     public Animator UIAnimator;
     public GameObject WaitingPanel;
     public GameObject ServerFullPanel;
     public GameObject GameLoadingPanel;
+    public GameObject CharacterDeck;
+    public GameObject HouseDeck;
 
     public GameObject MyBoard;
     public GameObject EnemyBoard;
 
     private BoardGenerator myBoardGenerator;
     private BoardGenerator myEnemyBoardGenerator;
+
+    [SerializeField]
+    public SpriteReference spriteReference;
 
 
     private
@@ -95,6 +80,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         Initialazation();
+        
     }
 
     #region Initialazation(bool ToReset = false)
@@ -111,11 +97,12 @@ public class GameManager : MonoBehaviour
             UIAnimator.SetBool("loadGame", false);
         }
         SetDiactiveUIBeginingWaitingPanel();
+        CharacterDeck.SetActive(false);
+        HouseDeck.SetActive(false);
         MyBoard.SetActive(false);
         EnemyBoard.SetActive(false);
         myBoardGenerator = MyBoard.GetComponent<BoardGenerator>();
         myEnemyBoardGenerator = EnemyBoard.GetComponent<BoardGenerator>();
-
 
     }
     #endregion
@@ -171,6 +158,8 @@ public class GameManager : MonoBehaviour
     {
         MyBoard.SetActive(true);
         EnemyBoard.SetActive(true);
+        CharacterDeck.SetActive(true);
+        HouseDeck.SetActive(true);
     }
     #endregion
 
@@ -205,14 +194,15 @@ public class GameManager : MonoBehaviour
 
     public void UpdateHouseTileMap(HouseCellsType[] HouseCellsArray, bool IsMyBoard = true)
     {
-        if(IsMyBoard)
+
+        if (IsMyBoard)
         {
             for (int i = 0; i < HouseCellsArray.Length; i++)
             {
                 myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
             }
         }
-        else
+        else if (!IsMyBoard)
         {
             for (int i = 0; i < HouseCellsArray.Length; i++)
             {
@@ -222,80 +212,216 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateHouseTileMap(int ChangedArrayField, HouseCellsType HouseCell, bool IsMyBoard = true)
+    public void UpdateHouseDeck(HouseCellsType[] HouseCellsArray)
     {
-        myBoardGenerator.BoardCellsArray[1, 1].GetComponent<Image>().enabled = false;
+        for (int i = 0; i < 4; i++)
+        {
+            Image imageTempComponent = HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<Image>();
+            Color tempColor;
+
+            tempColor = imageTempComponent.color;
+            tempColor.a = 1;
+            imageTempComponent.color = tempColor;
+
+            imageTempComponent.sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
+            HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<HouseType>().houseCellsType = HouseCellsArray[i];
+            HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<Button>().interactable = true;
+
+        }
+    }
+
+    public void UpdateCharacterDeck(CharactersType[] CharactersType)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            Image imageTempComponent = CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Image>();
+            Color tempColor;
+
+            tempColor = imageTempComponent.color;
+            tempColor.a = 1;
+            imageTempComponent.color = tempColor;
+
+
+            imageTempComponent.sprite = SpriteBasedOnCharacterCellType(CharactersType[i]);
+            CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<CharType>().charactersType = CharactersType[i];
+            CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Button>().interactable = true;
+
+        }
     }
 
 
+    #region Sprite SpriteBasedOnHouseCellType(HouseCellsType HouseCellType)
+    /// <summary>
+    /// Return a Sprite based on the enum house cell type
+    /// </summary>
+    /// <param name="HouseCellType"></param>
+    /// <returns></returns>
     public Sprite SpriteBasedOnHouseCellType(HouseCellsType HouseCellType)
     {
-        Sprite tempSprite;
+        Sprite tempHouseSprite;
 
         switch (HouseCellType)
         {
             case HouseCellsType.BannedTile:
-                tempSprite = BannedTile;
+                tempHouseSprite = spriteReference.BannedTile;
                 break;
 
             case HouseCellsType.EmptyTile:
-                tempSprite = EmptyTile;
+                tempHouseSprite = spriteReference.EmptyTile;
                 break;
 
             case HouseCellsType.BlueTile:
-                tempSprite = BlueTile;
+                tempHouseSprite = spriteReference.BlueTile;
                 break;
 
             case HouseCellsType.RedTile:
-                tempSprite = RedTile;
+                tempHouseSprite = spriteReference.RedTile;
                 break;
 
             case HouseCellsType.PurpleTile:
-                tempSprite = PurpleTile;
+                tempHouseSprite = spriteReference.PurpleTile;
                 break;
 
             case HouseCellsType.YellowTile:
-                tempSprite = YellowTile;
+                tempHouseSprite = spriteReference.YellowTile;
                 break;
 
             case HouseCellsType.OldBlueTile:
-                tempSprite = OldBlueTile;
+                tempHouseSprite = spriteReference.OldBlueTile;
                 break;
 
             case HouseCellsType.OldRedTile:
-                tempSprite = OldRedTile;
+                tempHouseSprite = spriteReference.OldRedTile;
                 break;
 
             case HouseCellsType.OldPurpleTile:
-                tempSprite = OldPurpleTile;
+                tempHouseSprite = spriteReference.OldPurpleTile;
                 break;
 
             case HouseCellsType.OldYellowTile:
-                tempSprite = OldYellowTile;
+                tempHouseSprite = spriteReference.OldYellowTile;
                 break;
 
             case HouseCellsType.PentHouse:
-                tempSprite = PentHouse;
+                tempHouseSprite = spriteReference.PentHouse;
                 break;
 
             case HouseCellsType.Parking:
-                tempSprite = Parking;
+                tempHouseSprite = spriteReference.Parking;
                 break;
 
             case HouseCellsType.Terrace:
-                tempSprite = Terrace;
+                tempHouseSprite = spriteReference.Terrace;
                 break;
 
             case HouseCellsType.Garden:
-                tempSprite = Garden;
+                tempHouseSprite = spriteReference.Garden;
                 break;
 
             default:
-                tempSprite = EmptyTile;
+                tempHouseSprite = spriteReference.EmptyTile;
                 break;
         }
 
-        return tempSprite;
+        return tempHouseSprite;
     }
+    #endregion
+
+    #region Sprite SpriteBasedOnCharacterCellType(CharactersType CharactersType)
+    /// <summary>
+    /// Return a Sprite based on the enum character cell type
+    /// </summary>
+    /// <param name="CharactersType"></param>
+    /// <returns></returns>
+    public Sprite SpriteBasedOnCharacterCellType(CharactersType CharactersType)
+    {
+        Sprite tempCharacterSprite;
+
+        switch (CharactersType)
+        {
+            case CharactersType.Empty:
+                tempCharacterSprite = spriteReference.Empty;
+                break;
+            case CharactersType.NoramlGuy:
+                tempCharacterSprite = spriteReference.NoramlGuy;
+                break;
+            case CharactersType.DoubleGuys:
+                tempCharacterSprite = spriteReference.DoubleGuys;
+                break;
+            case CharactersType.TripleGuys:
+                tempCharacterSprite = spriteReference.TripleGuys;
+                break;
+            case CharactersType.RedGuy:
+                tempCharacterSprite = spriteReference.RedGuy;
+                break;
+            case CharactersType.RedNoBlueGuy:
+                tempCharacterSprite = spriteReference.RedNoBlueGuy;
+                break;
+            case CharactersType.BlueGuy:
+                tempCharacterSprite = spriteReference.BlueGuy;
+                break;
+            case CharactersType.BlueNoYellow:
+                tempCharacterSprite = spriteReference.BlueNoYellow;
+                break;
+            case CharactersType.PurpuleGuy:
+                tempCharacterSprite = spriteReference.PurpuleGuy;
+                break;
+            case CharactersType.PurpleNoRedGuy:
+                tempCharacterSprite = spriteReference.PurpleNoRedGuy;
+                break;
+            case CharactersType.OldGuy:
+                tempCharacterSprite = spriteReference.OldGuy;
+                break;
+            case CharactersType.PenthouseGuy:
+                tempCharacterSprite = spriteReference.PenthouseGuy;
+                break;
+            case CharactersType.TwoHouseGuy:
+                tempCharacterSprite = spriteReference.TwoHouseGuy;
+                break;
+            case CharactersType.ThreeHouseLGuy:
+                tempCharacterSprite = spriteReference.ThreeHouseLGuy;
+                break;
+            case CharactersType.FourHouseGuy:
+                tempCharacterSprite = spriteReference.FourHouseGuy;
+                break;
+            case CharactersType.Ghost:
+                tempCharacterSprite = spriteReference.Ghost;
+                break;
+            case CharactersType.FamilyTwoGuys:
+                tempCharacterSprite = spriteReference.FamilyTwoGuys;
+                break;
+            case CharactersType.Animal:
+                tempCharacterSprite = spriteReference.Animal;
+                break;
+            case CharactersType.GuyWithAnimal:
+                tempCharacterSprite = spriteReference.GuyWithAnimal;
+                break;
+            case CharactersType.GuyNeedParking:
+                tempCharacterSprite = spriteReference.GuyNeedParking;
+                break;
+            case CharactersType.GuyNeedGarden:
+                tempCharacterSprite = spriteReference.GuyNeedGarden;
+                break;
+            case CharactersType.Baby:
+                tempCharacterSprite = spriteReference.Baby;
+                break;
+            case CharactersType.GhostCatcher:
+                tempCharacterSprite = spriteReference.GhostCatcher;
+                break;
+            case CharactersType.Gangster:
+                tempCharacterSprite = spriteReference.Gangster;
+                break;
+            case CharactersType.Wizard:
+                tempCharacterSprite = spriteReference.Wizard;
+                break;
+            default:
+                tempCharacterSprite = spriteReference.Empty;
+                break;
+        }
+
+        return tempCharacterSprite;
+    }
+
+    #endregion
 
 }

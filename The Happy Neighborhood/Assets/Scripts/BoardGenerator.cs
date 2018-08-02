@@ -163,6 +163,7 @@ public class BoardGenerator : MonoBehaviour
     #region generateGridCells()
     void generateGridCells()
     {
+        int CurrentCellIndex = 0;
         for (int i = 0; i < BoardCellsInRow; i++)
         {
             for (int j = 0; j < BoardCellsInRow; j++)
@@ -176,10 +177,12 @@ public class BoardGenerator : MonoBehaviour
                 cellRectTransform.anchoredPosition = new Vector3(firstCellPosition + (cellSizeWithGridLineOffset / 2) + (j * cellSizeWithGridLineOffset),
                                                                   firstCellPosition + (cellSizeWithGridLineOffset / 2) + (i * cellSizeWithGridLineOffset),
                                                                   0);
+                BoardCellsArray[i, j].GetComponent<CellIndex>().cellIndex = CurrentCellIndex;
 
                 // Initializing HouseCells Array With Empty Tiles 
                 HouseCellsArray[i, j] = HouseCellsType.EmptyTile;
-                //print("i: "+i+" -- j: "+j);
+
+                CurrentCellIndex++;
             }
         }
 
