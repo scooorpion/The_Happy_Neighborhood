@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
+using UnityEngine.UI;
+
+
 
 public class PlayerConnection : NetworkBehaviour     
 {
@@ -29,6 +32,7 @@ public class PlayerConnection : NetworkBehaviour
     private bool IsReadyForUpdateCellsOnScreen = false;
     private bool IsReadyForUpdateHouseCardsOnScreen = false;
     private bool IsReadyForUpdateCharacterCardsOnScreen = false;
+    public static bool IsGameTurnSet = false;
 
 
     private PlayerConnection enemyConnection;
@@ -55,6 +59,10 @@ public class PlayerConnection : NetworkBehaviour
     public static List<HouseCellsType> HousesDeckList_Server = new List<HouseCellsType>();
     public static List<CharactersType> CharactersDeckList_Server = new List<CharactersType>();
 
+    static bool IsNoFirstRandomTurn = true;
+
+
+    Text serverText;
 
     #endregion
 
@@ -63,6 +71,8 @@ public class PlayerConnection : NetworkBehaviour
 
     void Start()
     {
+
+        serverText = GameObject.FindGameObjectWithTag("ServerText").GetComponent<Text>();
 
         if (!isLocalPlayer)
         {
@@ -128,6 +138,24 @@ public class PlayerConnection : NetworkBehaviour
             gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
             IsReadyForUpdateHouseCardsOnScreen = false;
         }
+
+
+        if (IsGameTurnSet)
+        {
+            if (ServerTurn == MyTurnID)
+            {
+                gameManagerscript.EnableDecks();
+                CmdAskServerToUpdateItsTurnVariable();
+                IsGameTurnSet = false;
+            }
+            else if (ServerTurn != MyTurnID)
+            {
+                gameManagerscript.DisableDecks();
+                IsGameTurnSet = false;
+            }
+
+        }
+
     }
 
     #region CreateEnemyMap(float waitTime)
@@ -143,6 +171,12 @@ public class PlayerConnection : NetworkBehaviour
         gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
     }
     #endregion
+
+    IEnumerator RequestForFirstTurnSet(float t)
+    {
+        yield return new WaitForSeconds(t);
+        CmdAskToSetPlayerNextTurn(true);
+    }
 
     #region OnStartLocalPlayer()
     public override void OnStartLocalPlayer()
@@ -168,7 +202,8 @@ public class PlayerConnection : NetworkBehaviour
                     gameManagerscript.ShowWaitingAnimation();
                     break;
                 case 2:
-                    // Start the game
+                    // Start the game:
+
                     GetEnemyScript();
                     setEnemyName();
                     gameManagerscript.ShowGameLoading();
@@ -179,8 +214,10 @@ public class PlayerConnection : NetworkBehaviour
                     CmdAskToFillEmptyCharInGameDeck();
                     CmdAskToFillEmptyHouseInGameDeck();
 
-
                     CmdAskToCreateHouseTilesArray(MyTurnID);
+
+                    StartCoroutine(RequestForFirstTurnSet(0.5f));
+
                     IsGameStarted = true;
                     break;
                 default:
@@ -545,6 +582,54 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
+    [Command]
+    void CmdAskToSetPlayerNextTurn(bool IsItForFirstTime)
+    {
+        int nextTurn = 0;
+
+
+        if (!IsItForFirstTime)
+        {
+            if(ServerTurn == 1)
+            {
+                nextTurn = 2;
+            }
+            else if(ServerTurn == 2)
+            {
+                nextTurn = 1;
+            }
+
+            RpcTellTurn(nextTurn);
+
+        }
+        else if (IsItForFirstTime)
+        {
+            if(IsNoFirstRandomTurn)
+            {
+                ServerTurn = UnityEngine.Random.Range(1, 3);
+                IsNoFirstRandomTurn = false;
+                serverText.text += "...Server: Random First = ["+ServerTurn+"]..";
+                print("Server: Random First");
+                nextTurn = ServerTurn;
+                RpcTellTurn(nextTurn);
+            }
+
+        }
+
+    }
+
+    [Command]
+    void CmdAskServerToUpdateItsTurnVariable()
+    {
+        if (ServerTurn == 1)
+        {
+            ServerTurn = 2;
+        }
+        else if (ServerTurn == 2)
+        {
+            ServerTurn = 1;
+        }
+    }
 
     #endregion
 
@@ -606,6 +691,16 @@ public class PlayerConnection : NetworkBehaviour
 
     #endregion
 
+    [ClientRpc]
+    void RpcTellTurn(int NextTurn)
+    {
+        ServerTurn = NextTurn;
+        IsGameTurnSet = true;
+
+        print("[RPC] Next Turn Is: " + NextTurn);
+    }
+
+
     #endregion
 
 
@@ -618,5 +713,5 @@ public class PlayerConnection : NetworkBehaviour
     // 3- Place back button in waiting room and room is full panel
 
 
-    // ==> To Continiue : Update Deck in UI based on the recieved deck
+    // ==> To Continiue : the player who has the turn can select card and put on map
 }

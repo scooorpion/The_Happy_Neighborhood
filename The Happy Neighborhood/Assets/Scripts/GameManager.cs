@@ -83,6 +83,7 @@ public class GameManager : MonoBehaviour
         
     }
 
+
     #region Initialazation(bool ToReset = false)
     /// <summary>
     /// Initialazation values for starting the game
@@ -185,7 +186,39 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    public void DisableDecks()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if(HouseDeckManager.HousesCardsDeckPickable[i])
+            {
+                HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<Button>().interactable = false;
+                print("Disabling Houses....");
 
+            }
+
+            if (CharDeckManager.CharacterCardsDeckPickable[i])
+            {
+                CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Button>().interactable = false;
+                print("Disabling Chars....");
+
+            }
+        }
+    }
+
+    public void EnableDecks()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (HouseDeckManager.HousesCardsDeckPickable[i])
+                HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<Button>().interactable = true;
+
+            if (CharDeckManager.CharacterCardsDeckPickable[i])
+                CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Button>().interactable = true;
+        }
+        print("Enabling....");
+
+    }
 
 
     // New Functions: 
@@ -225,7 +258,6 @@ public class GameManager : MonoBehaviour
 
             imageTempComponent.sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
             HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<HouseType>().houseCellsType = HouseCellsArray[i];
-            HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<Button>().interactable = true;
 
         }
     }
@@ -244,7 +276,6 @@ public class GameManager : MonoBehaviour
 
             imageTempComponent.sprite = SpriteBasedOnCharacterCellType(CharactersType[i]);
             CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<CharType>().charactersType = CharactersType[i];
-            CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Button>().interactable = true;
 
         }
     }
