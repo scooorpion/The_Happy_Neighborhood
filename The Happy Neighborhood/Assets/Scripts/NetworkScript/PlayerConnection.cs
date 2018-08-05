@@ -68,7 +68,7 @@ public class PlayerConnection : NetworkBehaviour
 
 
 
-
+    #region Start()
     void Start()
     {
 
@@ -90,30 +90,31 @@ public class PlayerConnection : NetworkBehaviour
 
         CmdAskToSetUserName(UserName);
 
-
     }
+    #endregion
 
 
     void Update()
     {
-
+        #region Check If it is our script or other player
         if (!isLocalPlayer)
         {
             return;
         }
+        #endregion
 
-        // Wait untill MyTurnId is set by RPC to 1 or 2
+        #region Wait untill MyTurnId is set by RPC to 1 or 2
         if (MyTurnID == 0)
         {
             return;
         }
-
-
-        gameManagerscript.SetMyName(UserName);
+        #endregion
 
         ShowAnimationBasedOnActiveConnectionNumbers();
 
-        if(IsReadyForUpdateCellsOnScreen)
+        #region Simiulating the cell arrays of mine and my enemy board on screen based on flag: IsReadyForUpdateCellsOnScreen
+
+        if (IsReadyForUpdateCellsOnScreen)
         {
             // Simiulating my cell array
             gameManagerscript.UpdateHouseTileMap(MyHouseCells);
@@ -126,19 +127,29 @@ public class PlayerConnection : NetworkBehaviour
             IsReadyForUpdateCellsOnScreen = false;
 
         }
+        #endregion
 
-        if(IsReadyForUpdateCharacterCardsOnScreen)
+        #region Simiulating the character decks on screen based on flag: IsReadyForUpdateCharacterCardsOnScreen
+
+        if (IsReadyForUpdateCharacterCardsOnScreen)
         {
             gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
             IsReadyForUpdateCharacterCardsOnScreen = false;
         }
 
-        if(IsReadyForUpdateHouseCardsOnScreen)
+        #endregion
+
+        #region Simiulating the house decks on screen based on flag: IsReadyForUpdateHouseCardsOnScreen
+
+        if (IsReadyForUpdateHouseCardsOnScreen)
         {
             gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
             IsReadyForUpdateHouseCardsOnScreen = false;
         }
 
+        #endregion
+
+        #region Enabling or disabling decks to select based on if it is my turn or not
 
         if (IsGameTurnSet)
         {
@@ -156,34 +167,9 @@ public class PlayerConnection : NetworkBehaviour
 
         }
 
-    }
+        #endregion
 
-    #region CreateEnemyMap(float waitTime)
-    /// <summary>
-    /// Courotine for creating enemy map and show the name after a delay to prevent server problem
-    /// </summary>
-    /// <param name="waitTime"></param>
-    /// <returns></returns>
-    IEnumerator CreateEnemyMap(float waitTime)
-    {
-        yield return new WaitForSeconds(waitTime);
-        gameManagerscript.SetEnemyName(EnemyName);
-        gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
     }
-    #endregion
-
-    IEnumerator RequestForFirstTurnSet(float t)
-    {
-        yield return new WaitForSeconds(t);
-        CmdAskToSetPlayerNextTurn(true);
-    }
-
-    #region OnStartLocalPlayer()
-    public override void OnStartLocalPlayer()
-    {
-        gameObject.tag = "MyConnection";
-    }
-    #endregion
 
     #region ShowAnimationBasedOnActiveConnectionNumbers()
     /// <summary>
@@ -197,31 +183,14 @@ public class PlayerConnection : NetworkBehaviour
             {
                 case 0:
                     break;
-                case 1:
-                    // Wait for other player to connecte
+                case 1:     // Wait for other player to connecte
                     gameManagerscript.ShowWaitingAnimation();
                     break;
-                case 2:
-                    // Start the game:
-
-                    GetEnemyScript();
-                    setEnemyName();
-                    gameManagerscript.ShowGameLoading();
-                    gameManagerscript.SetDiactiveUIBeginingWaitingPanel();
-
-                    CmdAskToCreateDeckLists(MyTurnID);
-
-                    CmdAskToFillEmptyCharInGameDeck();
-                    CmdAskToFillEmptyHouseInGameDeck();
-
-                    CmdAskToCreateHouseTilesArray(MyTurnID);
-
-                    StartCoroutine(RequestForFirstTurnSet(0.5f));
-
+                case 2:      // Start the game:
+                    FirstTimeStartTheGameSetting();
                     IsGameStarted = true;
                     break;
-                default:
-                    // Display an error that server is full and a back button 
+                default:        // Display an error that server is full and a back button 
                     gameManagerscript.ShowRoomIsFull();
                     break;
             }
@@ -257,6 +226,71 @@ public class PlayerConnection : NetworkBehaviour
     void setEnemyName()
     {
         EnemyName = enemyConnection.UserName;
+    }
+
+    #endregion
+
+
+    #region CreateEnemyMap(float waitTime) [Coroutine]
+    /// <summary>
+    /// Courotine for creating enemy map and show the name after a delay to prevent server problem
+    /// </summary>
+    /// <param name="waitTime"></param>
+    /// <returns></returns>
+    IEnumerator CreateEnemyMap(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        gameManagerscript.SetEnemyName(EnemyName);
+        gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
+    }
+    #endregion
+
+    #region RequestForFirstTurnSet(float waitTime) [Coroutine]
+    /// <summary>
+    /// Coroutine for seting player turn after a delay in order to decks will be generated by server
+    /// </summary>
+    /// <param name="waitTime"></param>
+    /// <returns></returns>
+    IEnumerator RequestForFirstTurnSet(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        CmdAskToSetPlayerNextTurn(true);
+    }
+    #endregion
+
+    #region OnStartLocalPlayer()
+    public override void OnStartLocalPlayer()
+    {
+        gameObject.tag = "MyConnection";
+    }
+    #endregion
+
+    #region FirstTimeStartTheGameSetting()
+    /// <summary>
+    /// The Setting for Starting The Game For The First Time
+    /// </summary>
+    void FirstTimeStartTheGameSetting()
+    {
+        GetEnemyScript();
+
+        setEnemyName();
+
+        gameManagerscript.SetMyName(UserName);
+
+        gameManagerscript.ShowGameLoading();
+
+        gameManagerscript.SetDiactiveUIBeginingWaitingPanel();
+
+        CmdAskToCreateDeckLists(MyTurnID);
+
+        CmdAskToFillEmptyCharInGameDeck();
+
+        CmdAskToFillEmptyHouseInGameDeck();
+
+        CmdAskToCreateHouseTilesArray(MyTurnID);
+
+        StartCoroutine(RequestForFirstTurnSet(0.5f));
+
     }
 
     #endregion
@@ -311,7 +345,6 @@ public class PlayerConnection : NetworkBehaviour
             print("Player Turn is Invalid: "+ServerTurn);
         }
 
-        print("Server ==> PlayerTurn: " + ServerTurn);
         MyTurnID = ServerTurn;
     }
     #endregion
@@ -582,6 +615,11 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
+    #region CmdAskToSetPlayerNextTurn(bool IsItForFirstTime)
+    /// <summary>
+    /// Command Server to set next game turn
+    /// </summary>
+    /// <param name="IsItForFirstTime">If it is the first time for setting turn</param>
     [Command]
     void CmdAskToSetPlayerNextTurn(bool IsItForFirstTime)
     {
@@ -600,7 +638,6 @@ public class PlayerConnection : NetworkBehaviour
             }
 
             RpcTellTurn(nextTurn);
-
         }
         else if (IsItForFirstTime)
         {
@@ -608,16 +645,17 @@ public class PlayerConnection : NetworkBehaviour
             {
                 ServerTurn = UnityEngine.Random.Range(1, 3);
                 IsNoFirstRandomTurn = false;
-                serverText.text += "...Server: Random First = ["+ServerTurn+"]..";
-                print("Server: Random First");
                 nextTurn = ServerTurn;
                 RpcTellTurn(nextTurn);
             }
-
         }
-
     }
+    #endregion
 
+    #region  CmdAskServerToUpdateItsTurnVariable()
+    /// <summary>
+    /// Command server to upldate game player turn, (it is called by the player who has the turn, now)
+    /// </summary>
     [Command]
     void CmdAskServerToUpdateItsTurnVariable()
     {
@@ -630,6 +668,7 @@ public class PlayerConnection : NetworkBehaviour
             ServerTurn = 1;
         }
     }
+    #endregion
 
     #endregion
 
@@ -691,14 +730,18 @@ public class PlayerConnection : NetworkBehaviour
 
     #endregion
 
+    #region RpcTellTurn(int NextTurn)
+    /// <summary>
+    /// Tell Clients About server decision on whos turn is it now
+    /// </summary>
+    /// <param name="NextTurn"></param>
     [ClientRpc]
     void RpcTellTurn(int NextTurn)
     {
         ServerTurn = NextTurn;
         IsGameTurnSet = true;
-
-        print("[RPC] Next Turn Is: " + NextTurn);
     }
+    #endregion
 
 
     #endregion

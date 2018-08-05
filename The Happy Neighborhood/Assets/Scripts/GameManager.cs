@@ -191,18 +191,11 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             if(HouseDeckManager.HousesCardsDeckPickable[i])
-            {
                 HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<Button>().interactable = false;
-                print("Disabling Houses....");
 
-            }
 
             if (CharDeckManager.CharacterCardsDeckPickable[i])
-            {
                 CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Button>().interactable = false;
-                print("Disabling Chars....");
-
-            }
         }
     }
 
@@ -216,7 +209,6 @@ public class GameManager : MonoBehaviour
             if (CharDeckManager.CharacterCardsDeckPickable[i])
                 CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Button>().interactable = true;
         }
-        print("Enabling....");
 
     }
 
