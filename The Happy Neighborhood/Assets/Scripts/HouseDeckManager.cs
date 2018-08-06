@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CardType { NoSelection, CharacterCard, HouseCard }
+
 public class HouseDeckManager : MonoBehaviour
 {
-
 
     public GameObject EmptyCardPrefab;
     public GameObject[] ParentHouseSlots = new GameObject[4];  // 4 ui panel that house tiles cards go inside them

@@ -5,5 +5,4 @@ using UnityEngine;
 public class CharType : MonoBehaviour
 {
     public CharactersType charactersType;
-
 }

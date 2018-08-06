@@ -44,6 +44,10 @@ public class PlayerConnection : NetworkBehaviour
     static HouseCellsType[] HouseCardsInGameDeck = new HouseCellsType[4];
     static CharactersType[] CharacterCardsInGameDeck = new CharactersType[4];
 
+    public CardType CardTypeSelected;
+    public HouseCellsType HouseCardSelected;
+    public CharactersType CharacterdCardSelected;
+
 
     // Server-Side Arrays
 
@@ -66,8 +70,6 @@ public class PlayerConnection : NetworkBehaviour
 
     #endregion
 
-
-
     #region Start()
     void Start()
     {
@@ -89,6 +91,8 @@ public class PlayerConnection : NetworkBehaviour
         UserName = PlayerPrefs.GetString(MenuManager.UserNamePlayerPrefs);
 
         CmdAskToSetUserName(UserName);
+
+        SetCardSelectedToNull();
 
     }
     #endregion
@@ -156,7 +160,7 @@ public class PlayerConnection : NetworkBehaviour
             if (ServerTurn == MyTurnID)
             {
                 gameManagerscript.EnableDecks();
-                CmdAskServerToUpdateItsTurnVariable();
+                CmdAskToUpdateItsTurnVariable();
                 IsGameTurnSet = false;
             }
             else if (ServerTurn != MyTurnID)
@@ -295,6 +299,22 @@ public class PlayerConnection : NetworkBehaviour
 
     #endregion
 
+    #region SetCardSelectedToNull()
+    /// <summary>
+    /// To reset card selection to null this function must be called
+    /// </summary>
+    public void SetCardSelectedToNull()
+    {
+        CardTypeSelected = CardType.NoSelection;
+        HouseCardSelected = HouseCellsType.EmptyTile;
+        CharacterdCardSelected = CharactersType.Empty;
+    }
+    #endregion
+
+   public void CommandToCheckSelectedCell(int cellNumber)
+    {
+        CmdAskToCheckSelectedCell(cellNumber, CardTypeSelected, HouseCardSelected, CharacterdCardSelected, MyTurnID);
+    }
 
     // --------------------- Network section ---------------------
 
@@ -652,12 +672,12 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-    #region  CmdAskServerToUpdateItsTurnVariable()
+    #region  CmdAskToUpdateItsTurnVariable()
     /// <summary>
     /// Command server to upldate game player turn, (it is called by the player who has the turn, now)
     /// </summary>
     [Command]
-    void CmdAskServerToUpdateItsTurnVariable()
+    void CmdAskToUpdateItsTurnVariable()
     {
         if (ServerTurn == 1)
         {
@@ -669,6 +689,23 @@ public class PlayerConnection : NetworkBehaviour
         }
     }
     #endregion
+
+
+    [Command]
+    void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID)
+    {
+        if(PlayerID == 1)
+        {
+            print("Player 1 Select a " + cardType + " Which is a " + houseCellsType + " Or a " + charactersType + " To Place in Slot: " + cellNumber
+                + "Right now the house slot is : " + HouseCells_P1_Server[cellNumber] + " and the character slot is: " + CharCells_P1_Server[cellNumber]);
+        }
+        else if(PlayerID == 2)
+        {
+            print("Player 2 Select a " + cardType + " Which is a " + houseCellsType + " Or a " + charactersType + " To Place in Slot: " + cellNumber
+                +"Right now the house slot is : "+ HouseCells_P2_Server[cellNumber] +" and the character slot is: "+CharCells_P2_Server[cellNumber] );
+
+        }
+    }
 
     #endregion
 
@@ -757,4 +794,5 @@ public class PlayerConnection : NetworkBehaviour
 
 
     // ==> To Continiue : the player who has the turn can select card and put on map
+    // Working On "CmdAskToCheckSelectedCell" which is called from CommandToCheckSelectedCell to check the cell
 }

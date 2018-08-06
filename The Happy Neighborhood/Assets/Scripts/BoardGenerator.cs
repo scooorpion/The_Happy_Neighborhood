@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine;
 using System;
 
+public enum BoardType { MyBoard, EnemyBoard }
+
 public class BoardGenerator : MonoBehaviour
 {
     #region Fileds
@@ -53,6 +55,7 @@ public class BoardGenerator : MonoBehaviour
 
     }
 
+    public BoardType boardType;
     public GameObject[] NoConstructionPrefab;
     public GameObject GridLinePrefab;
     public GameObject GridCellPrefab;
@@ -178,6 +181,7 @@ public class BoardGenerator : MonoBehaviour
                                                                   firstCellPosition + (cellSizeWithGridLineOffset / 2) + (i * cellSizeWithGridLineOffset),
                                                                   0);
                 BoardCellsArray[i, j].GetComponent<CellIndex>().cellIndex = CurrentCellIndex;
+                BoardCellsArray[i, j].GetComponent<CellIndex>().CellType = boardType;
 
                 // Initializing HouseCells Array With Empty Tiles 
                 HouseCellsArray[i, j] = HouseCellsType.EmptyTile;

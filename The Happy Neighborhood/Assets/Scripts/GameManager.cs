@@ -225,6 +225,11 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < HouseCellsArray.Length; i++)
             {
                 myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
+
+                if (HouseCellsArray[i] == HouseCellsType.BannedTile)
+                {
+                    myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
+                }
             }
         }
         else if (!IsMyBoard)
@@ -232,6 +237,7 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < HouseCellsArray.Length; i++)
             {
                 myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
+                myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
             }
 
         }
