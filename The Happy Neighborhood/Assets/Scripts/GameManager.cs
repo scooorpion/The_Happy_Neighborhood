@@ -254,6 +254,7 @@ public class GameManager : MonoBehaviour
             tempColor.a = 1;
             imageTempComponent.color = tempColor;
 
+            // Error : IndexOutOfRange
             imageTempComponent.sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
             HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<HouseType>().houseCellsType = HouseCellsArray[i];
 
@@ -271,9 +272,9 @@ public class GameManager : MonoBehaviour
             tempColor.a = 1;
             imageTempComponent.color = tempColor;
 
-
             imageTempComponent.sprite = SpriteBasedOnCharacterCellType(CharactersType[i]);
             CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<CharType>().charactersType = CharactersType[i];
+
 
         }
     }

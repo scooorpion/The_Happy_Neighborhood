@@ -694,7 +694,156 @@ public class PlayerConnection : NetworkBehaviour
     [Command]
     void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID)
     {
+        #region Check For Wrong Input and Cheat
+
+        #region Cheat Detection
+        // ServerTurn has next turn which is 1 or 2 and is opposit the player id who choose. sum of these two number is always 3 1+2 or 2+1
+        if (ServerTurn+PlayerID != 3)
+        {
+            print("Cheat");
+            RpcTellCharacterCells(CharCells_P1_Server);
+            RpcTellHouseCells(HouseCells_P1_Server);
+            return;
+        }
+        #endregion
+
+        #region Wrong Input Detect And Reset Cells To Previous State And RPC It
+        if (PlayerID == 1)
+        {
+            if (HouseCells_P1_Server[cellNumber] == HouseCellsType.BannedTile)
+            {
+                print("Error: Select baned house");
+                RpcTellCharacterCells(CharCells_P1_Server);
+                RpcTellHouseCells(HouseCells_P1_Server);
+                return;
+            }
+
+            if (CharCells_P1_Server[cellNumber] != CharactersType.Empty)
+            {
+                print("Error: Select House tile with a character and wants to put card on it");
+                RpcTellCharacterCells(CharCells_P1_Server);
+                RpcTellHouseCells(HouseCells_P1_Server);
+                return;
+            }
+
+            if (HouseCells_P1_Server[cellNumber] != HouseCellsType.EmptyTile && houseCellsType != HouseCellsType.EmptyTile)
+            {
+                print("Error: Select filled House tile and want to put another house card on it");
+                RpcTellCharacterCells(CharCells_P1_Server);
+                RpcTellHouseCells(HouseCells_P1_Server);
+                return;
+            }
+
+            if (HouseCells_P1_Server[cellNumber] == HouseCellsType.EmptyTile && charactersType != CharactersType.Empty)
+            {
+                print("Error: Select Empty House tile and want to put character card on it");
+                RpcTellCharacterCells(CharCells_P1_Server);
+                RpcTellHouseCells(HouseCells_P1_Server);
+                return;
+            }
+        }
+        else if (PlayerID == 2)
+        {
+            if (HouseCells_P2_Server[cellNumber] == HouseCellsType.BannedTile)
+            {
+                print("Error: Select baned house");
+                RpcTellCharacterCells(CharCells_P2_Server);
+                RpcTellHouseCells(HouseCells_P2_Server);
+                return;
+            }
+
+            if (CharCells_P2_Server[cellNumber] != CharactersType.Empty)
+            {
+                print("Error: Select House tile with a character and wants to put card on it");
+                RpcTellCharacterCells(CharCells_P2_Server);
+                RpcTellHouseCells(HouseCells_P2_Server);
+                return;
+            }
+
+            if (HouseCells_P2_Server[cellNumber] != HouseCellsType.EmptyTile && houseCellsType != HouseCellsType.EmptyTile)
+            {
+                print("Error: Select filled House tile and want to put another house card on it");
+                RpcTellCharacterCells(CharCells_P2_Server);
+                RpcTellHouseCells(HouseCells_P2_Server);
+                return;
+            }
+
+            if (HouseCells_P2_Server[cellNumber] == HouseCellsType.EmptyTile && charactersType != CharactersType.Empty)
+            {
+                print("Error: Select Empty House tile and want to put character card on it");
+                RpcTellCharacterCells(CharCells_P2_Server);
+                RpcTellHouseCells(HouseCells_P2_Server);
+                return;
+            }
+        }
+        #endregion
+
+        #endregion
+
+        // ToDo: Check if this action can be done based on game logic
+        // ...
+        // ...
+        // In This State We Assume That The Action Is valid :
+
         if(PlayerID == 1)
+        {
+            if(charactersType != CharactersType.Empty && houseCellsType == HouseCellsType.EmptyTile)
+            {
+                CharCells_P1_Server[cellNumber] = charactersType;
+                CharacterCardsDeckInGame_Server.Remove(charactersType);
+
+
+                RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
+                RpcTellCharacterCells(CharCells_P1_Server);
+            }
+            else if(houseCellsType != HouseCellsType.EmptyTile && charactersType == CharactersType.Empty)
+            {
+                HouseCells_P1_Server[cellNumber] = houseCellsType;
+                HouseCardsDeckInGame_Server.Remove(houseCellsType);
+
+                RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
+                RpcTellHouseCells(HouseCells_P1_Server);
+            }
+            else
+            {
+                print("Empty Card Selected");
+                return;
+            }
+            RpcTellTurn(ServerTurn);
+        }
+        else if (PlayerID == 2)
+        {
+            if (charactersType != CharactersType.Empty && houseCellsType == HouseCellsType.EmptyTile)
+            {
+                CharCells_P2_Server[cellNumber] = charactersType;
+                CharacterCardsDeckInGame_Server.Remove(charactersType);
+
+
+                RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
+                RpcTellCharacterCells(CharCells_P2_Server);
+            }
+            else if (houseCellsType != HouseCellsType.EmptyTile && charactersType == CharactersType.Empty)
+            {
+                HouseCells_P2_Server[cellNumber] = houseCellsType;
+                HouseCardsDeckInGame_Server.Remove(houseCellsType);
+
+                RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
+                RpcTellHouseCells(HouseCells_P2_Server);
+            }
+            else
+            {
+                print("Empty Card Selected");
+                return;
+            }
+            RpcTellTurn(ServerTurn);
+
+        }
+
+        // Here..........
+
+        /*
+
+        if (PlayerID == 1)
         {
             print("Player 1 Select a " + cardType + " Which is a " + houseCellsType + " Or a " + charactersType + " To Place in Slot: " + cellNumber
                 + "Right now the house slot is : " + HouseCells_P1_Server[cellNumber] + " and the character slot is: " + CharCells_P1_Server[cellNumber]);
@@ -705,6 +854,8 @@ public class PlayerConnection : NetworkBehaviour
                 +"Right now the house slot is : "+ HouseCells_P2_Server[cellNumber] +" and the character slot is: "+CharCells_P2_Server[cellNumber] );
 
         }
+
+        */
     }
 
     #endregion
@@ -737,6 +888,22 @@ public class PlayerConnection : NetworkBehaviour
         IsReadyForUpdateCellsOnScreen = true;      
     }
     #endregion
+
+    #region RpcTellCharacterCells(CharactersType[] charactersCellType)
+    /// <summary>
+    /// Tell Clients about Character Cells Array
+    /// </summary>
+    /// <param name="charactersCellType"></param>
+    [ClientRpc]
+    public void RpcTellCharacterCells(CharactersType[] charactersCellType)
+    {
+        MyCharCells = charactersCellType;
+
+        IsReadyForUpdateCellsOnScreen = true;
+    }
+    #endregion
+
+
 
     #region RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
     /// <summary>
