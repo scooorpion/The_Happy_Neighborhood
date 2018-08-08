@@ -29,7 +29,8 @@ public class PlayerConnection : NetworkBehaviour
     private GameManager gameManagerscript;
     private bool IsGameStarted = false;
 
-    private bool IsReadyForUpdateCellsOnScreen = false;
+    private bool IsReadyForUpdateHouseCellsOnScreen = false;
+    private bool IsReadyForUpdateCharacterCellsOnScreen = false;
     private bool IsReadyForUpdateHouseCardsOnScreen = false;
     private bool IsReadyForUpdateCharacterCardsOnScreen = false;
     public static bool IsGameTurnSet = false;
@@ -116,22 +117,41 @@ public class PlayerConnection : NetworkBehaviour
 
         ShowAnimationBasedOnActiveConnectionNumbers();
 
-        #region Simiulating the cell arrays of mine and my enemy board on screen based on flag: IsReadyForUpdateCellsOnScreen
+        #region Simiulating the HOUSE cell arrays of mine and my enemy board on screen based on flag: IsReadyForUpdateCellsOnScreen
 
-        if (IsReadyForUpdateCellsOnScreen)
+        if (IsReadyForUpdateHouseCellsOnScreen)
         {
             // Simiulating my cell array
             gameManagerscript.UpdateHouseTileMap(MyHouseCells);
 
             // Simiulating my enemy cell array
-            StartCoroutine(CreateEnemyMap(0.5f));
+            StartCoroutine(CreateAndUpdateEnemyHouseTiles(0.5f));
 
 
             // Set Flag For Update Screen to flase
-            IsReadyForUpdateCellsOnScreen = false;
+            IsReadyForUpdateHouseCellsOnScreen = false;
 
         }
         #endregion
+
+        #region Simiulating the CHARACTER cell arrays of mine and my enemy board on screen based on flag: IsReadyForUpdateCellsOnScreen
+
+        if (IsReadyForUpdateCharacterCellsOnScreen)
+        {
+            // Simiulating my cell array
+            gameManagerscript.UpdateCharacterTileMap(MyCharCells,MyHouseCells);
+
+            // Simiulating my enemy cell array
+            StartCoroutine(CreateAndUpdateEnemyCharacterTiles(0.5f));
+
+
+            // Set Flag For Update Screen to flase
+            IsReadyForUpdateCharacterCellsOnScreen = false;
+
+        }
+        #endregion
+
+
 
         #region Simiulating the character decks on screen based on flag: IsReadyForUpdateCharacterCardsOnScreen
 
@@ -163,10 +183,12 @@ public class PlayerConnection : NetworkBehaviour
 
                 gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
                 gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
-                StartCoroutine(CreateEnemyMap(0.5f));
+                StartCoroutine(CreateAndUpdateEnemyHouseTiles(0.5f));
+                StartCoroutine(CreateAndUpdateEnemyCharacterTiles(0.5f));
 
                 #endregion
 
+                gameManagerscript.HighlightPlayerNameWhoHasTheTurn(true);
                 gameManagerscript.EnableDecks();
                 CmdAskToUpdateItsTurnVariable();
 
@@ -174,6 +196,7 @@ public class PlayerConnection : NetworkBehaviour
             }
             else if (ServerTurn != MyTurnID)
             {
+                gameManagerscript.HighlightPlayerNameWhoHasTheTurn(false);
                 gameManagerscript.DisableDecks();
                 IsGameTurnSet = false;
             }
@@ -244,19 +267,34 @@ public class PlayerConnection : NetworkBehaviour
     #endregion
 
 
-    #region CreateEnemyMap(float waitTime) [Coroutine]
+    #region CreateAndUpdateEnemyHouseTiles(float waitTime) [Coroutine]
     /// <summary>
     /// Courotine for creating enemy map and show the name after a delay to prevent server problem
     /// </summary>
     /// <param name="waitTime"></param>
     /// <returns></returns>
-    IEnumerator CreateEnemyMap(float waitTime)
+    IEnumerator CreateAndUpdateEnemyHouseTiles(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         gameManagerscript.SetEnemyName(EnemyName);
         gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
     }
     #endregion
+
+    #region CreateAndUpdateEnemyCharacterTiles(float waitTime) [Coroutine]
+    /// <summary>
+    /// Courotine for creating enemy map and show the name after a delay to prevent server problem
+    /// </summary>
+    /// <param name="waitTime"></param>
+    /// <returns></returns>
+    IEnumerator CreateAndUpdateEnemyCharacterTiles(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        gameManagerscript.UpdateCharacterTileMap(enemyConnection.MyCharCells, enemyConnection.MyHouseCells, false);
+    }
+    #endregion
+
+
 
     #region RequestForFirstTurnSet(float waitTime) [Coroutine]
     /// <summary>
@@ -730,7 +768,15 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-
+    #region CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID)
+    /// <summary>
+    /// Command Server To Validate the player`s selection on map
+    /// </summary>
+    /// <param name="cellNumber"></param>
+    /// <param name="cardType"></param>
+    /// <param name="houseCellsType"></param>
+    /// <param name="charactersType"></param>
+    /// <param name="PlayerID"></param>
     [Command]
     void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID)
     {
@@ -835,6 +881,9 @@ public class PlayerConnection : NetworkBehaviour
                 CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
 
 
+                print("Character: " + CharCells_P1_Server[cellNumber]);
+                print("House: " + HouseCells_P1_Server[cellNumber]);
+
                 RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
                 RpcTellCharacterCells(CharCells_P1_Server);
             }
@@ -871,6 +920,9 @@ public class PlayerConnection : NetworkBehaviour
                 CharCells_P2_Server[cellNumber] = charactersType;
                 CharacterCardsDeckInGame_Server.Remove(charactersType);
                 CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
+
+                print("Character: " + CharCells_P1_Server[cellNumber]);
+                print("House: " + HouseCells_P1_Server[cellNumber]);
 
 
                 RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
@@ -910,6 +962,7 @@ public class PlayerConnection : NetworkBehaviour
 
         // Here..........
     }
+    #endregion
 
     #endregion
 
@@ -938,7 +991,7 @@ public class PlayerConnection : NetworkBehaviour
     {
         MyHouseCells = cellhouseArray;
 
-        IsReadyForUpdateCellsOnScreen = true;      
+        IsReadyForUpdateHouseCellsOnScreen = true;      
     }
     #endregion
 
@@ -952,7 +1005,7 @@ public class PlayerConnection : NetworkBehaviour
     {
         MyCharCells = charactersCellType;
 
-        IsReadyForUpdateCellsOnScreen = true;
+        IsReadyForUpdateCharacterCellsOnScreen = true;
     }
     #endregion
 
@@ -1012,7 +1065,7 @@ public class PlayerConnection : NetworkBehaviour
     // 2- When Stop or disconnection button on HUD network manager pressed, gameManagerscript.Initialazation(true) should be called
     // 3- Place back button in waiting room and room is full panel
 
+    // ==> To Continiue First : Working On the struct: "CharacterHouseReference" and all the types based on template example
+    // ==> To Continiue : Working on SpriteBasedOnCharacterCellInHouseType
 
-    // ==> To Continiue : the player who has the turn can select card and put on map
-    // Working On "CmdAskToCheckSelectedCell" which is called from CommandToCheckSelectedCell to check the cell
 }

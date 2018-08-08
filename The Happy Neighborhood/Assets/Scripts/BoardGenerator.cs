@@ -61,6 +61,7 @@ public class BoardGenerator : MonoBehaviour
     public GameObject GridCellPrefab;
     public GameObject BoardBackground;
     public Text UserNameTextBox;
+    public GameObject TurnPanel;
 
     public float BoardSizeInPixle = 700f;
     public byte BoardCellsInRow = 7;

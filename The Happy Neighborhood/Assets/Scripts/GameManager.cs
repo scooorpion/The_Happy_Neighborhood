@@ -72,6 +72,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public SpriteReference spriteReference;
 
+    [SerializeField]
+    public CharacterHouseReference CharacterHouse;
 
     private
 
@@ -80,7 +82,6 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         Initialazation();
-        
     }
 
 
@@ -104,6 +105,9 @@ public class GameManager : MonoBehaviour
         EnemyBoard.SetActive(false);
         myBoardGenerator = MyBoard.GetComponent<BoardGenerator>();
         myEnemyBoardGenerator = EnemyBoard.GetComponent<BoardGenerator>();
+        myBoardGenerator.TurnPanel.SetActive(false);
+        myEnemyBoardGenerator.TurnPanel.SetActive(false);
+
 
     }
     #endregion
@@ -172,6 +176,7 @@ public class GameManager : MonoBehaviour
     public void SetMyName(string MyName)
     {
         myBoardGenerator.UserNameTextBox.text = MyName;
+        myBoardGenerator.UserNameTextBox.fontStyle = FontStyle.Bold;
     }
     #endregion
 
@@ -183,6 +188,8 @@ public class GameManager : MonoBehaviour
     public void SetEnemyName(string EnemyName)
     {
         myEnemyBoardGenerator.UserNameTextBox.text = EnemyName;
+        myEnemyBoardGenerator.UserNameTextBox.fontStyle = FontStyle.Normal;
+
     }
     #endregion
 
@@ -212,6 +219,24 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void HighlightPlayerNameWhoHasTheTurn(bool IsItMyTurn)
+    {
+        if(IsItMyTurn)
+        {
+            myBoardGenerator.UserNameTextBox.color = Color.white;
+            myEnemyBoardGenerator.UserNameTextBox.color = Color.gray;
+            myBoardGenerator.TurnPanel.SetActive(true);
+            myEnemyBoardGenerator.TurnPanel.SetActive(false);
+        }
+        else
+        {
+            myBoardGenerator.UserNameTextBox.color = Color.gray;
+            myEnemyBoardGenerator.UserNameTextBox.color = Color.white;
+            myBoardGenerator.TurnPanel.SetActive(false);
+            myEnemyBoardGenerator.TurnPanel.SetActive(true);
+
+        }
+    }
 
     // New Functions: 
 
@@ -242,6 +267,37 @@ public class GameManager : MonoBehaviour
 
         }
     }
+
+    public void UpdateCharacterTileMap(CharactersType[] CharacterCellsArray, HouseCellsType[] HouseCellsArray, bool IsMyBoard = true)
+    {
+        if (IsMyBoard)
+        {
+            for (int i = 0; i < CharacterCellsArray.Length; i++)
+            {
+                if(CharacterCellsArray[i]!= CharactersType.Empty)
+                {
+                    myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite =
+                        SpriteBasedOnCharacterCellInHouseType(CharacterCellsArray[i], HouseCellsArray[i]);
+                }
+            }
+        }
+        else if (!IsMyBoard)
+        {
+            for (int i = 0; i < CharacterCellsArray.Length; i++)
+            {
+                if (CharacterCellsArray[i] != CharactersType.Empty)
+                {
+                    myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = 
+                        SpriteBasedOnCharacterCellInHouseType(CharacterCellsArray[i], HouseCellsArray[i]);
+
+                    myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
+                }
+            }
+
+        }
+
+    }
+
 
     public void UpdateHouseDeck(HouseCellsType[] HouseCellsArray)
     {
@@ -450,6 +506,29 @@ public class GameManager : MonoBehaviour
         }
 
         return tempCharacterSprite;
+    }
+
+    #endregion
+
+
+    #region Sprite SpriteBasedOnCharacterCellInHouseType(CharactersType CharactersType)
+    /// <summary>
+    /// Return a Sprite based on the enum character cell type
+    /// </summary>
+    /// <param name="CharactersType"></param>
+    /// <returns></returns>
+    public Sprite SpriteBasedOnCharacterCellInHouseType(CharactersType CharactersType, HouseCellsType houseCellsType)
+    {
+        Sprite tempCharacterSprite;
+
+        if(CharactersType == CharactersType.Wizard)
+        {
+            tempCharacterSprite = CharacterHouse.wizard.ShowHouse(houseCellsType);
+        }
+
+        return CharacterHouse.wizard.ShowHouse(houseCellsType);
+
+        //return tempCharacterSprite;
     }
 
     #endregion

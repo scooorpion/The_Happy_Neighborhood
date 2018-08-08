@@ -88,5 +88,5 @@ public struct SpriteReference
     public Sprite Gangster;
     [SerializeField]
     public Sprite Wizard;
-    
+
 }
