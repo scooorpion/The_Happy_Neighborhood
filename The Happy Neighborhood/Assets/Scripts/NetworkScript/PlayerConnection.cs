@@ -159,8 +159,17 @@ public class PlayerConnection : NetworkBehaviour
         {
             if (ServerTurn == MyTurnID)
             {
+                #region When its your turn, First update card deck and your enemy map
+
+                gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
+                gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
+                StartCoroutine(CreateEnemyMap(0.5f));
+
+                #endregion
+
                 gameManagerscript.EnableDecks();
                 CmdAskToUpdateItsTurnVariable();
+
                 IsGameTurnSet = false;
             }
             else if (ServerTurn != MyTurnID)
@@ -289,7 +298,7 @@ public class PlayerConnection : NetworkBehaviour
 
         CmdAskToFillEmptyCharInGameDeck();
 
-        CmdAskToFillEmptyHouseInGameDeck();
+        CmdAskToFillEmptyHouseInGameDeck(true);
 
         CmdAskToCreateHouseTilesArray(MyTurnID);
 
@@ -593,45 +602,76 @@ public class PlayerConnection : NetworkBehaviour
     /// Command Server To Fill each empty House slot in In-Game Deck Slot which has 4 slot and broadcast the list
     /// </summary>
     [Command]
-    void CmdAskToFillEmptyHouseInGameDeck()
+    void CmdAskToFillEmptyHouseInGameDeck(bool IsFirstTimeCreateion)
     {
+        
 
-        if(HousesDeckList_Server.Count < 4)
+        if (HousesDeckList_Server.Count < 4)
         {
             print("There is less than 4 Cards");
             return;
         }
 
-
-        while (HouseCardsDeckInGame_Server.Count < 4)
+        if (IsFirstTimeCreateion)
         {
-            HouseCellsType HouseTemp;
-            int RandomIndex;
-            bool RepeatedCard;
-
-            // Check not to have a repetetive cell 
-            do
+            while (HouseCardsDeckInGame_Server.Count < 4)
             {
-                RepeatedCard = false;
+                HouseCellsType HouseTemp;
+                int RandomIndex;
+                bool RepeatedCard;
 
-                RandomIndex = UnityEngine.Random.Range(0, HousesDeckList_Server.Count);
-
-                HouseTemp = HousesDeckList_Server[RandomIndex];
-
-                if(HouseCardsDeckInGame_Server.Contains(HouseTemp))
+                // Check not to have a repetetive cell 
+                do
                 {
-                    RepeatedCard = true;
-                }
+                    RepeatedCard = false;
 
-            } while (RepeatedCard);
+                    RandomIndex = UnityEngine.Random.Range(0, HousesDeckList_Server.Count);
+
+                    HouseTemp = HousesDeckList_Server[RandomIndex];
+
+                    if (HouseCardsDeckInGame_Server.Contains(HouseTemp))
+                    {
+                        RepeatedCard = true;
+                    }
+
+                } while (RepeatedCard);
 
 
-            HouseCardsDeckInGame_Server.Add(HouseTemp);
-            HousesDeckList_Server.RemoveAt(RandomIndex);
+                HouseCardsDeckInGame_Server.Add(HouseTemp);
+                HousesDeckList_Server.RemoveAt(RandomIndex);
+            }
+        }
+        else if (!IsFirstTimeCreateion)
+        {
+            while (HouseCardsDeckInGame_Server.Contains(HouseCellsType.EmptyTile))
+            {
+                HouseCellsType HouseTemp;
+                int RandomIndex;
+                bool RepeatedCard;
+
+                // Check not to have a repetetive cell 
+                do
+                {
+                    RepeatedCard = false;
+
+                    RandomIndex = UnityEngine.Random.Range(0, HousesDeckList_Server.Count);
+
+                    HouseTemp = HousesDeckList_Server[RandomIndex];
+
+                    if (HouseCardsDeckInGame_Server.Contains(HouseTemp))
+                    {
+                        RepeatedCard = true;
+                    }
+
+                } while (RepeatedCard);
+
+                HouseCardsDeckInGame_Server.Remove(HouseCellsType.EmptyTile);
+                HouseCardsDeckInGame_Server.Add(HouseTemp);
+                HousesDeckList_Server.RemoveAt(RandomIndex);
+            }
         }
 
         RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
-
     }
     #endregion
 
@@ -791,6 +831,7 @@ public class PlayerConnection : NetworkBehaviour
             {
                 CharCells_P1_Server[cellNumber] = charactersType;
                 CharacterCardsDeckInGame_Server.Remove(charactersType);
+                CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
 
 
                 RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
@@ -800,9 +841,12 @@ public class PlayerConnection : NetworkBehaviour
             {
                 HouseCells_P1_Server[cellNumber] = houseCellsType;
                 HouseCardsDeckInGame_Server.Remove(houseCellsType);
+                HouseCardsDeckInGame_Server.Add(HouseCellsType.EmptyTile);
 
                 RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
                 RpcTellHouseCells(HouseCells_P1_Server);
+                CmdAskToFillEmptyHouseInGameDeck(false);
+
             }
             else
             {
@@ -817,6 +861,7 @@ public class PlayerConnection : NetworkBehaviour
             {
                 CharCells_P2_Server[cellNumber] = charactersType;
                 CharacterCardsDeckInGame_Server.Remove(charactersType);
+                CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
 
 
                 RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
@@ -826,6 +871,7 @@ public class PlayerConnection : NetworkBehaviour
             {
                 HouseCells_P2_Server[cellNumber] = houseCellsType;
                 HouseCardsDeckInGame_Server.Remove(houseCellsType);
+                HouseCardsDeckInGame_Server.Add(HouseCellsType.EmptyTile);
 
                 RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
                 RpcTellHouseCells(HouseCells_P2_Server);
@@ -836,6 +882,9 @@ public class PlayerConnection : NetworkBehaviour
                 return;
             }
             RpcTellTurn(ServerTurn);
+            CmdAskToFillEmptyCharInGameDeck();
+            CmdAskToFillEmptyHouseInGameDeck(false);
+
 
         }
 
