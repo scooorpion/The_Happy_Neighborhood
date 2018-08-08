@@ -827,7 +827,8 @@ public class PlayerConnection : NetworkBehaviour
 
         if(PlayerID == 1)
         {
-            if(charactersType != CharactersType.Empty && houseCellsType == HouseCellsType.EmptyTile)
+            #region if Player 1 Select a Character Card
+            if (charactersType != CharactersType.Empty && houseCellsType == HouseCellsType.EmptyTile)
             {
                 CharCells_P1_Server[cellNumber] = charactersType;
                 CharacterCardsDeckInGame_Server.Remove(charactersType);
@@ -837,7 +838,10 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
                 RpcTellCharacterCells(CharCells_P1_Server);
             }
-            else if(houseCellsType != HouseCellsType.EmptyTile && charactersType == CharactersType.Empty)
+            #endregion
+
+            #region else if Player 1 Select a House Card
+            else if (houseCellsType != HouseCellsType.EmptyTile && charactersType == CharactersType.Empty)
             {
                 HouseCells_P1_Server[cellNumber] = houseCellsType;
                 HouseCardsDeckInGame_Server.Remove(houseCellsType);
@@ -846,17 +850,22 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
                 RpcTellHouseCells(HouseCells_P1_Server);
                 CmdAskToFillEmptyHouseInGameDeck(false);
-
             }
+            #endregion
+
+            #region else if Player 1 Select an empty Card
             else
             {
                 print("Empty Card Selected");
                 return;
             }
-            RpcTellTurn(ServerTurn);
+
+            #endregion
         }
         else if (PlayerID == 2)
         {
+            #region if Player 2 Select a Character Card
+
             if (charactersType != CharactersType.Empty && houseCellsType == HouseCellsType.EmptyTile)
             {
                 CharCells_P2_Server[cellNumber] = charactersType;
@@ -867,6 +876,11 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
                 RpcTellCharacterCells(CharCells_P2_Server);
             }
+
+            #endregion
+
+            #region else if Player 2 Select a House Card
+
             else if (houseCellsType != HouseCellsType.EmptyTile && charactersType == CharactersType.Empty)
             {
                 HouseCells_P2_Server[cellNumber] = houseCellsType;
@@ -876,35 +890,25 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
                 RpcTellHouseCells(HouseCells_P2_Server);
             }
+
+            #endregion
+
+            #region else if Player 2 Select an empty Card
+
             else
             {
                 print("Empty Card Selected");
                 return;
             }
-            RpcTellTurn(ServerTurn);
-            CmdAskToFillEmptyCharInGameDeck();
-            CmdAskToFillEmptyHouseInGameDeck(false);
-
-
+            #endregion
         }
+
+        RpcTellTurn(ServerTurn);
+        CmdAskToFillEmptyCharInGameDeck();
+        CmdAskToFillEmptyHouseInGameDeck(false);
+
 
         // Here..........
-
-        /*
-
-        if (PlayerID == 1)
-        {
-            print("Player 1 Select a " + cardType + " Which is a " + houseCellsType + " Or a " + charactersType + " To Place in Slot: " + cellNumber
-                + "Right now the house slot is : " + HouseCells_P1_Server[cellNumber] + " and the character slot is: " + CharCells_P1_Server[cellNumber]);
-        }
-        else if(PlayerID == 2)
-        {
-            print("Player 2 Select a " + cardType + " Which is a " + houseCellsType + " Or a " + charactersType + " To Place in Slot: " + cellNumber
-                +"Right now the house slot is : "+ HouseCells_P2_Server[cellNumber] +" and the character slot is: "+CharCells_P2_Server[cellNumber] );
-
-        }
-
-        */
     }
 
     #endregion
