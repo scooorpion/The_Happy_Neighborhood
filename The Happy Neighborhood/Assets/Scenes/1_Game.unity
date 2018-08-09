@@ -626,9 +626,9 @@ RectTransform:
   - {fileID: 2138120584}
   - {fileID: 464639164}
   - {fileID: 2139478983}
-  - {fileID: 1084834786}
   - {fileID: 2116606701}
   - {fileID: 1473088643}
+  - {fileID: 1084834786}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1271,6 +1271,12 @@ MonoBehaviour:
     GhostCatcher: {fileID: 21300010, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Gangster: {fileID: 21300038, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Wizard: {fileID: 21300048, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+  CharacterHouse:
+    wizard:
+      OldBlueTile: {fileID: 21300034, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+      OldRedTile: {fileID: 21300026, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+      OldPurpleTile: {fileID: 21300036, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+      OldYellowTile: {fileID: 21300046, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
 --- !u!1 &775621089
 GameObject:
   m_ObjectHideFlags: 0
@@ -1458,7 +1464,7 @@ Prefab:
     - target: {fileID: 224789797254286784, guid: 51d72dcd9052d67418738419a8443f2a,
         type: 2}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 224789797254286784, guid: 51d72dcd9052d67418738419a8443f2a,
         type: 2}
@@ -1524,6 +1530,16 @@ Prefab:
       propertyPath: TurnPanel
       value: 
       objectReference: {fileID: 1203221959}
+    - target: {fileID: 0}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114545263409740214, guid: 51d72dcd9052d67418738419a8443f2a,
+        type: 2}
+      propertyPath: GridCellPrefab
+      value: 
+      objectReference: {fileID: 1216675670676470, guid: 0d90824bd46ec2e4ab34727f031ef264,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 51d72dcd9052d67418738419a8443f2a, type: 2}
   m_IsPrefabParent: 0
@@ -2029,7 +2045,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 456893620}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2310,7 +2326,7 @@ Prefab:
     - target: {fileID: 224789797254286784, guid: 51d72dcd9052d67418738419a8443f2a,
         type: 2}
       propertyPath: m_RootOrder
-      value: 7
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 224789797254286784, guid: 51d72dcd9052d67418738419a8443f2a,
         type: 2}
@@ -2376,6 +2392,12 @@ Prefab:
       propertyPath: TurnPanel
       value: 
       objectReference: {fileID: 1144291647}
+    - target: {fileID: 114545263409740214, guid: 51d72dcd9052d67418738419a8443f2a,
+        type: 2}
+      propertyPath: GridCellPrefab
+      value: 
+      objectReference: {fileID: 1216675670676470, guid: 0d90824bd46ec2e4ab34727f031ef264,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 51d72dcd9052d67418738419a8443f2a, type: 2}
   m_IsPrefabParent: 0

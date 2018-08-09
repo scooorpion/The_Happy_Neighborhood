@@ -334,7 +334,7 @@ public class PlayerConnection : NetworkBehaviour
 
         CmdAskToCreateDeckLists(MyTurnID);
 
-        CmdAskToFillEmptyCharInGameDeck();
+        CmdAskToFillEmptyCharInGameDeck(true);
 
         CmdAskToFillEmptyHouseInGameDeck(true);
 
@@ -594,41 +594,73 @@ public class PlayerConnection : NetworkBehaviour
     /// Command Server To Fill each empty character slot in In-Game Deck Slot which has 4 slot and broadcast the list
     /// </summary>
     [Command]
-    void CmdAskToFillEmptyCharInGameDeck()
+    void CmdAskToFillEmptyCharInGameDeck(bool IsFirstTimeCreateion)
     {
+
+
         if (CharactersDeckList_Server.Count < 4)
         {
             print("There is less than 4 Cards");
             return;
         }
 
-
-
-        while (CharacterCardsDeckInGame_Server.Count < 4)
+        if (IsFirstTimeCreateion)
         {
-            CharactersType CharTempDeck;
-            int RandomIndex;
-            bool RepeatedCard;
-
-            // Check not to have a repetetive cell 
-            do
+            while (CharacterCardsDeckInGame_Server.Count < 4)
             {
-                RepeatedCard = false;
+                CharactersType CharacterTemp;
+                int RandomIndex;
+                bool RepeatedCard;
 
-                RandomIndex = UnityEngine.Random.Range(0, CharactersDeckList_Server.Count);
-
-                CharTempDeck = CharactersDeckList_Server[RandomIndex];
-
-                if (CharacterCardsDeckInGame_Server.Contains(CharTempDeck))
+                // Check not to have a repetetive cell 
+                do
                 {
-                    RepeatedCard = true;
-                }
+                    RepeatedCard = false;
 
-            } while (RepeatedCard);
+                    RandomIndex = UnityEngine.Random.Range(0, CharactersDeckList_Server.Count);
+
+                    CharacterTemp = CharactersDeckList_Server[RandomIndex];
+
+                    if (CharacterCardsDeckInGame_Server.Contains(CharacterTemp))
+                    {
+                        RepeatedCard = true;
+                    }
+
+                } while (RepeatedCard);
 
 
-            CharacterCardsDeckInGame_Server.Add(CharTempDeck);
-            CharactersDeckList_Server.RemoveAt(RandomIndex);
+                CharacterCardsDeckInGame_Server.Add(CharacterTemp);
+                CharactersDeckList_Server.RemoveAt(RandomIndex);
+            }
+        }
+        else if (!IsFirstTimeCreateion)
+        {
+            while (CharacterCardsDeckInGame_Server.Contains(CharactersType.Empty))
+            {
+                CharactersType CharacterTemp;
+                int RandomIndex;
+                bool RepeatedCard;
+
+                // Check not to have a repetetive cell 
+                do
+                {
+                    RepeatedCard = false;
+
+                    RandomIndex = UnityEngine.Random.Range(0, CharactersDeckList_Server.Count);
+
+                    CharacterTemp = CharactersDeckList_Server[RandomIndex];
+
+                    if (CharacterCardsDeckInGame_Server.Contains(CharacterTemp))
+                    {
+                        RepeatedCard = true;
+                    }
+
+                } while (RepeatedCard);
+
+                CharacterCardsDeckInGame_Server.Remove(CharactersType.Empty);
+                CharacterCardsDeckInGame_Server.Add(CharacterTemp);
+                CharactersDeckList_Server.RemoveAt(RandomIndex);
+            }
         }
 
         RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
@@ -956,7 +988,7 @@ public class PlayerConnection : NetworkBehaviour
         }
 
         RpcTellTurn(ServerTurn);
-        CmdAskToFillEmptyCharInGameDeck();
+        CmdAskToFillEmptyCharInGameDeck(false);
         CmdAskToFillEmptyHouseInGameDeck(false);
 
 

@@ -177,6 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddaba627478e8894485e9945545acf26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boardType: 0
   NoConstructionPrefab:
   - {fileID: 1651655180755464, guid: b0cea3e7ed8cc834fb399ff88dfbd7ba, type: 2}
   - {fileID: 1651655180755464, guid: b844b554050609840a71e7fb0f7e9b1e, type: 2}
@@ -187,6 +188,7 @@ MonoBehaviour:
     type: 2}
   BoardBackground: {fileID: 1294855597322406}
   UserNameTextBox: {fileID: 114486066517408672}
+  TurnPanel: {fileID: 0}
   BoardSizeInPixle: 630
   BoardCellsInRow: 7
   GridLineWidth: 5

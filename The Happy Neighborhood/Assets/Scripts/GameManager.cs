@@ -72,9 +72,6 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public SpriteReference spriteReference;
 
-    [SerializeField]
-    public CharacterHouseReference CharacterHouse;
-
     private
 
 
@@ -249,7 +246,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < HouseCellsArray.Length; i++)
             {
-                myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
+                myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
 
                 if (HouseCellsArray[i] == HouseCellsType.BannedTile)
                 {
@@ -261,7 +258,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < HouseCellsArray.Length; i++)
             {
-                myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
+                myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
                 myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
             }
 
@@ -276,8 +273,16 @@ public class GameManager : MonoBehaviour
             {
                 if(CharacterCellsArray[i]!= CharactersType.Empty)
                 {
-                    myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite =
-                        SpriteBasedOnCharacterCellInHouseType(CharacterCellsArray[i], HouseCellsArray[i]);
+                    Image CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.GetChild(0).GetComponent<Image>();
+                    Color tempColor;
+
+                    CharacterPlaceHolderImageComponenet.sprite = SpriteBasedOnCharacterCellType(CharacterCellsArray[i]);
+
+                    tempColor = CharacterPlaceHolderImageComponenet.color;
+                    tempColor.a = 1;
+                    CharacterPlaceHolderImageComponenet.color = tempColor;
+
+                    print("ChangeChar");
                 }
             }
         }
@@ -287,10 +292,20 @@ public class GameManager : MonoBehaviour
             {
                 if (CharacterCellsArray[i] != CharactersType.Empty)
                 {
-                    myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().overrideSprite = 
-                        SpriteBasedOnCharacterCellInHouseType(CharacterCellsArray[i], HouseCellsArray[i]);
+                    Image CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.GetChild(0).GetComponent<Image>();
+                    Color tempColor;
+
+                    CharacterPlaceHolderImageComponenet.sprite = SpriteBasedOnCharacterCellType(CharacterCellsArray[i]);
+
+                    //tempColor = CharacterPlaceHolderImageComponenet.color;
+                    //tempColor.a = 1;
+                    CharacterPlaceHolderImageComponenet.color = CharacterPlaceHolderImageComponenet.color = new Color(0.68f, 0.68f, 0.68f, 1);
+                    
 
                     myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
+
+                    print("ChangeChar");
+
                 }
             }
 
@@ -506,29 +521,6 @@ public class GameManager : MonoBehaviour
         }
 
         return tempCharacterSprite;
-    }
-
-    #endregion
-
-
-    #region Sprite SpriteBasedOnCharacterCellInHouseType(CharactersType CharactersType)
-    /// <summary>
-    /// Return a Sprite based on the enum character cell type
-    /// </summary>
-    /// <param name="CharactersType"></param>
-    /// <returns></returns>
-    public Sprite SpriteBasedOnCharacterCellInHouseType(CharactersType CharactersType, HouseCellsType houseCellsType)
-    {
-        Sprite tempCharacterSprite;
-
-        if(CharactersType == CharactersType.Wizard)
-        {
-            tempCharacterSprite = CharacterHouse.wizard.ShowHouse(houseCellsType);
-        }
-
-        return CharacterHouse.wizard.ShowHouse(houseCellsType);
-
-        //return tempCharacterSprite;
     }
 
     #endregion
