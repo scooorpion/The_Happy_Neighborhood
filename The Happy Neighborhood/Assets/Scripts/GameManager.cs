@@ -63,6 +63,7 @@ public class GameManager : MonoBehaviour
     public GameObject CharacterDeck;
     public GameObject HouseDeck;
 
+
     public GameObject MyBoard;
     public GameObject EnemyBoard;
 
@@ -72,11 +73,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public SpriteReference spriteReference;
 
-    private
-
-
-
-    void Awake()
+    private void Awake()
     {
         Initialazation();
     }
@@ -194,7 +191,7 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            if(HouseDeckManager.HousesCardsDeckPickable[i])
+            if (HouseDeckManager.HousesCardsDeckPickable[i])
                 HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<Button>().interactable = false;
 
 
@@ -218,7 +215,7 @@ public class GameManager : MonoBehaviour
 
     public void HighlightPlayerNameWhoHasTheTurn(bool IsItMyTurn)
     {
-        if(IsItMyTurn)
+        if (IsItMyTurn)
         {
             myBoardGenerator.UserNameTextBox.color = Color.white;
             myEnemyBoardGenerator.UserNameTextBox.color = Color.gray;
@@ -271,7 +268,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < CharacterCellsArray.Length; i++)
             {
-                if(CharacterCellsArray[i]!= CharactersType.Empty)
+                if (CharacterCellsArray[i] != CharactersType.Empty)
                 {
                     Image CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.GetChild(0).GetComponent<Image>();
                     Color tempColor;
@@ -281,8 +278,6 @@ public class GameManager : MonoBehaviour
                     tempColor = CharacterPlaceHolderImageComponenet.color;
                     tempColor.a = 1;
                     CharacterPlaceHolderImageComponenet.color = tempColor;
-
-                    print("ChangeChar");
                 }
             }
         }
@@ -293,18 +288,13 @@ public class GameManager : MonoBehaviour
                 if (CharacterCellsArray[i] != CharactersType.Empty)
                 {
                     Image CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.GetChild(0).GetComponent<Image>();
-                    Color tempColor;
 
                     CharacterPlaceHolderImageComponenet.sprite = SpriteBasedOnCharacterCellType(CharacterCellsArray[i]);
 
-                    //tempColor = CharacterPlaceHolderImageComponenet.color;
-                    //tempColor.a = 1;
                     CharacterPlaceHolderImageComponenet.color = CharacterPlaceHolderImageComponenet.color = new Color(0.68f, 0.68f, 0.68f, 1);
-                    
+
 
                     myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
-
-                    print("ChangeChar");
 
                 }
             }

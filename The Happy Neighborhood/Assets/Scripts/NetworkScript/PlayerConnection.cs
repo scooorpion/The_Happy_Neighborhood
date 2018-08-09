@@ -492,12 +492,26 @@ public class PlayerConnection : NetworkBehaviour
 
             int EnumCharacterLenght = Enum.GetNames(typeof(CharactersType)).Length;
 
+            CharactersType[] RemovedCharavter = new CharactersType[]
+            {
+                CharactersType.Ghost,
+                CharactersType.Empty,
+                CharactersType.TripleGuys,
+                CharactersType.Animal,
+                CharactersType.GhostCatcher,
+                CharactersType.GuyNeedGarden,
+                CharactersType.GuyNeedParking,
+                CharactersType.GuyWithAnimal,
+                CharactersType.Baby,
+                CharactersType.Gangster
+            };
+
             for (int i = 0; i < EnumCharacterLenght; i++)
             {
                 CharactersType CharacterTemp = (CharactersType)i;
 
                 // These Character shouldnt be added to deck based on game design
-                if(CharacterTemp == CharactersType.Ghost || CharacterTemp == CharactersType.Empty || CharacterTemp == CharactersType.TripleGuys)
+                if( Array.IndexOf(RemovedCharavter,CharacterTemp) >= 0 )
                 {
                     continue;
                 }
@@ -558,13 +572,13 @@ public class PlayerConnection : NetworkBehaviour
                         CardRatioNumber = 8;
                         break;
                     case HouseCellsType.Parking:
-                        CardRatioNumber = 8;
+                        CardRatioNumber = 0;
                         break;
                     case HouseCellsType.Terrace:
-                        CardRatioNumber = 10;
+                        CardRatioNumber = 0;
                         break;
                     case HouseCellsType.Garden:
-                        CardRatioNumber = 8;
+                        CardRatioNumber = 0;
                         break;
                     default:
                         CardRatioNumber = 0;
@@ -586,8 +600,6 @@ public class PlayerConnection : NetworkBehaviour
 
     }
     #endregion
-
-
 
     #region CmdAskToFillEmptyCharInGameDeck()
     /// <summary>
