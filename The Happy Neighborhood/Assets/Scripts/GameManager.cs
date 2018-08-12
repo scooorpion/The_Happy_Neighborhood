@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     public GameObject GameLoadingPanel;
     public GameObject CharacterDeck;
     public GameObject HouseDeck;
-
+    public GameObject NetworkHudBtns;
 
     public GameObject MyBoard;
     public GameObject EnemyBoard;
@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
         myEnemyBoardGenerator = EnemyBoard.GetComponent<BoardGenerator>();
         myBoardGenerator.TurnPanel.SetActive(false);
         myEnemyBoardGenerator.TurnPanel.SetActive(false);
-
+        NetworkHudBtns.SetActive(true);
 
     }
     #endregion
@@ -341,6 +341,11 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void HideconnectionHUDPanel()
+    {
+        NetworkHudBtns.SetActive(false);
+    }
+
     #region Sprite SpriteBasedOnHouseCellType(HouseCellsType HouseCellType)
     /// <summary>
     /// Return a Sprite based on the enum house cell type
@@ -515,4 +520,167 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+
+    // ------------- Checking Index Functions -------------------
+
+    #region TileIndex_Button(int SelectedIndex): Return The index of below house of entered index
+    /// <summary>
+    /// Return The index of below house of entered index
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static int TileIndex_Button(int SelectedIndex)
+    {
+        if (SelectedIndex < 7)
+        {
+            print("TileIndex_Button[Error]: In The Floor: "+ SelectedIndex);
+            return -1;
+        }
+
+        return (SelectedIndex-7);
+
+    }
+    #endregion
+
+    #region IsRoofTileAllowed(int SelectedIndex): Return true if entered index is in or higher than level 5
+    /// <summary>
+    /// Return true if entered index is in or higher than level 5
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static bool IsRoofTileAllowed(int SelectedIndex)
+    {
+        if(SelectedIndex > 34)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    #endregion
+
+    #region ThreeTileBelowSelectedIndex(int SelectedIndex): Return the index of three house below the entered index
+    /// <summary>
+    /// Return the index of three house below the entered index
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static int ThreeTileBelowSelectedIndex(int SelectedIndex)
+    {
+        int tempIndex = -1;
+
+        if (SelectedIndex > 20)
+        {
+            tempIndex = (SelectedIndex % 3);
+        }
+        else
+        {
+            print("The Row is below 3");
+        }
+
+        return tempIndex;
+    }
+    #endregion
+
+    #region TileIndex_Around (int SelectedIndex) : Return Array of valid indexes around entered index
+    /// <summary>
+    /// Return Array of valid indexes around entered index
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static int[] TileIndex_Around (int SelectedIndex)
+    {
+        bool IsInLeftEdge = false;
+        bool IsInRightEdge = false;
+        bool IsInBottomEdge = false;
+        bool IsInTopEdge = false;
+
+        List<int> AroundIndex = new List<int>();
+
+        #region Check for Left edge
+        for (int i = 1; i < 7; i++)
+        {
+            if(SelectedIndex % (7*i) == 0)
+            {
+                IsInLeftEdge = true;
+                break;
+            }
+        }
+        #endregion
+
+        #region Check for Right edge
+        for (int i = 1; i < 7; i++)
+        {
+            if (SelectedIndex % ((7 * i)-1) == 0)
+            {
+                IsInRightEdge = true;
+                break;
+            }
+        }
+        #endregion
+
+        #region Check For Bottom Edge
+        if (SelectedIndex < 7)
+        {
+            IsInBottomEdge = true;
+        }
+        #endregion
+
+        #region Check For Top Edge
+        if (SelectedIndex > 40)
+        {
+            IsInTopEdge = true;
+        }
+        #endregion
+
+
+
+        if ( !IsInLeftEdge )
+        {
+            AroundIndex.Add(SelectedIndex - 1);
+        }
+
+        if( !IsInRightEdge )
+        {
+            AroundIndex.Add(SelectedIndex + 1);
+        }
+
+        if( !IsInBottomEdge )
+        {
+            AroundIndex.Add(SelectedIndex - 7);
+        }
+
+        if (!IsInTopEdge)
+        {
+            AroundIndex.Add(SelectedIndex + 7);
+        }
+
+        if(!IsInTopEdge && !IsInRightEdge)
+        {
+            AroundIndex.Add((SelectedIndex + 7) + 1);
+        }
+
+        if(!IsInTopEdge && !IsInLeftEdge)
+        {
+            AroundIndex.Add((SelectedIndex + 7) - 1);
+        }
+
+        if (!IsInBottomEdge && !IsInRightEdge)
+        {
+
+            AroundIndex.Add((SelectedIndex - 7) + 1);
+        }
+
+        if(!IsInBottomEdge && !IsInLeftEdge)
+        {
+            AroundIndex.Add((SelectedIndex - 7) - 1);
+        }
+
+
+        return AroundIndex.ToArray();
+    }
+
+    #endregion
 }

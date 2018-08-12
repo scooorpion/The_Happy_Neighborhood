@@ -167,94 +167,82 @@ public class CharType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         switch (charactersType)
         {
             case CharactersType.NoramlGuy:
-                ValidHouses = "Each house";
+                ValidHouses = "All of the tiles";
                 CharacterNames = "Noraml Guy";
-                characterScore = 5;
-                break;
-
-            case CharactersType.DoubleGuys:
-                ValidHouses = "Two houses";
-                CharacterNames = "Double Guys";
-                characterScore = 5;
-                break;
-
-            case CharactersType.TripleGuys:
-                ValidHouses = "Three houses";
-                CharacterNames = "Triple Guys";
-                characterScore = 5;
+                characterScore = 10;
                 break;
 
             case CharactersType.RedGuy:
-                ValidHouses = "Red houses";
+                ValidHouses = "Red tiles";
                 CharacterNames = "Red Guy";
-                characterScore = 5;
+                characterScore = 15;
                 break;
 
             case CharactersType.RedNoBlueGuy:
-                ValidHouses = "Red houses, Not in neighborhood of blue houses";
+                ValidHouses = "Red tiles, But not adjacent to blue tiles";
                 CharacterNames = "Red No Blue Guy";
-                characterScore = 5;
+                characterScore = 25;
                 break;
 
             case CharactersType.BlueGuy:
-                ValidHouses = "Blue houses";
+                ValidHouses = "Blue tiles";
                 CharacterNames = "Blue Guy";
-                characterScore = 5;
+                characterScore = 15;
                 break;
 
             case CharactersType.BlueNoYellow:
-                ValidHouses = "Blue houses, Not in neighborhood of yellow houses";
+                ValidHouses = "Blue tiles, But not adjacent to yellow tiles";
                 CharacterNames = "Blue No Yellow";
-                characterScore = 5;
+                characterScore = 25;
                 break;
 
             case CharactersType.PurpuleGuy:
-                ValidHouses = "Purpule houses";
+                ValidHouses = "Purpule tiles";
                 CharacterNames = "Purpule Guy";
-                characterScore = 5;
+                characterScore = 15;
                 break;
 
             case CharactersType.PurpleNoRedGuy:
-                ValidHouses = "Purpule houses, Not in neighborhood of red houses";
+                ValidHouses = "Purple tiles, But not adjacent to red tiles";
                 CharacterNames = "Purple No Red Guy";
-                characterScore = 5;
+                characterScore = 25;
                 break;
 
             case CharactersType.OldGuy:
-                ValidHouses = "Each old house";
+                ValidHouses = "First floor tiles, no tile on top";
                 CharacterNames = "Old Guy";
-                characterScore = 5;
+                characterScore = 20;
                 break;
 
             case CharactersType.PenthouseGuy:
-                ValidHouses = "Penthouse";
+                ValidHouses = "Roof tiles";
                 CharacterNames = "Penthouse Guy";
-                characterScore = 5;
+                characterScore = 50;
                 break;
 
             case CharactersType.TwoHouseGuy:
-                ValidHouses = "Two houses, near each other and the same color";
+                ValidHouses = "Two tiles, adjacent & the same color";
                 CharacterNames = "Two House Guy";
-                characterScore = 5;
+                characterScore = 20;
                 break;
 
             case CharactersType.ThreeHouseLGuy:
-                ValidHouses = "Three houses, near each other and the same color";
+                ValidHouses = "Three tiles, adjacent & the same color";
                 CharacterNames = "Three House L Guy";
-                characterScore = 5;
+                characterScore = 30;
                 break;
 
             case CharactersType.FourHouseGuy:
-                ValidHouses = "Four houses, near each other and the same color";
+                ValidHouses = "Four tiles, adjacent & the same color";
                 CharacterNames = "Four House Guy";
-                characterScore = 5;
+                characterScore = 40;
                 break;
 
 
             case CharactersType.Wizard:
-                ValidHouses = "Each old house";
+                ValidHouses = "Damaged tiles";
                 CharacterNames = "Wizard";
-                characterScore = 5;
+                characterScore = 0;
                 break;
 
             default:
@@ -270,10 +258,7 @@ public class CharType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-       if(CharacterNames == "")
-        {
-            ShowCharacterInfo();
-        }
+        ShowCharacterInfo();
         deckManager.ShowCharacterInfo(CharacterNames, ValidHouses, characterScore);
     }
 

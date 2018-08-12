@@ -52,17 +52,30 @@ public class PlayerConnection : NetworkBehaviour
 
     // Server-Side Arrays
 
-    static HouseCellsType[] HouseCells_P1_Server = new HouseCellsType[49];
-    static HouseCellsType[] HouseCells_P2_Server = new HouseCellsType[49];
+    //static HouseCellsType[] HouseCells_P1_Server = new HouseCellsType[49];
+    //static HouseCellsType[] HouseCells_P2_Server = new HouseCellsType[49];
 
-    static CharactersType[] CharCells_P1_Server = new CharactersType[49];
-    static CharactersType[] CharCells_P2_Server = new CharactersType[49];
+    //static CharactersType[] CharCells_P1_Server = new CharactersType[49];
+    //static CharactersType[] CharCells_P2_Server = new CharactersType[49];
 
-    static public List<HouseCellsType> HouseCardsDeckInGame_Server = new List<HouseCellsType>();
-    static public List<CharactersType> CharacterCardsDeckInGame_Server = new List<CharactersType>();
+    //static public List<HouseCellsType> HouseCardsDeckInGame_Server = new List<HouseCellsType>();
+    //static public List<CharactersType> CharacterCardsDeckInGame_Server = new List<CharactersType>();
 
-    public static List<HouseCellsType> HousesDeckList_Server = new List<HouseCellsType>();
-    public static List<CharactersType> CharactersDeckList_Server = new List<CharactersType>();
+    //public static List<HouseCellsType> HousesDeckList_Server = new List<HouseCellsType>();
+    //public static List<CharactersType> CharactersDeckList_Server = new List<CharactersType>();
+
+    static HouseCellsType[] HouseCells_P1_Server ;
+    static HouseCellsType[] HouseCells_P2_Server ;
+
+    static CharactersType[] CharCells_P1_Server ;
+    static CharactersType[] CharCells_P2_Server ;
+
+    static public List<HouseCellsType> HouseCardsDeckInGame_Server ;
+    static public List<CharactersType> CharacterCardsDeckInGame_Server ;
+
+    public static List<HouseCellsType> HousesDeckList_Server ;
+    public static List<CharactersType> CharactersDeckList_Server ;
+
 
     static bool IsNoFirstRandomTurn = true;
 
@@ -88,12 +101,16 @@ public class PlayerConnection : NetworkBehaviour
 
         CmdAskToSetPlayerTurn();
 
+        CmdResetServerData(MyTurnID);
+
         //First change the name locally then on the server
         UserName = PlayerPrefs.GetString(MenuManager.UserNamePlayerPrefs);
 
         CmdAskToSetUserName(UserName);
 
         SetCardSelectedToNull();
+
+        serverText.text = UnityEngine.Random.Range(1, 1000).ToString();
 
     }
     #endregion
@@ -177,6 +194,8 @@ public class PlayerConnection : NetworkBehaviour
 
         if (IsGameTurnSet)
         {
+            print("IsGameTurnSet = True");
+
             if (ServerTurn == MyTurnID)
             {
                 #region When its your turn, First update card deck and your enemy map
@@ -193,12 +212,18 @@ public class PlayerConnection : NetworkBehaviour
                 CmdAskToUpdateItsTurnVariable();
 
                 IsGameTurnSet = false;
+
+                print("My Turn");
+
             }
             else if (ServerTurn != MyTurnID)
             {
                 gameManagerscript.HighlightPlayerNameWhoHasTheTurn(false);
                 gameManagerscript.DisableDecks();
                 IsGameTurnSet = false;
+
+                print("My Enemy Turn");
+
             }
 
         }
@@ -326,6 +351,8 @@ public class PlayerConnection : NetworkBehaviour
 
         setEnemyName();
 
+        gameManagerscript.HideconnectionHUDPanel();
+
         gameManagerscript.SetMyName(UserName);
 
         gameManagerscript.ShowGameLoading();
@@ -358,10 +385,16 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-   public void CommandToCheckSelectedCell(int cellNumber)
+    #region CommandToCheckSelectedCell(int cellNumber)
+    /// <summary>
+    /// When a place is selected on the map this function check it on the server
+    /// </summary>
+    /// <param name="cellNumber"></param>
+    public void CommandToCheckSelectedCell(int cellNumber)
     {
         CmdAskToCheckSelectedCell(cellNumber, CardTypeSelected, HouseCardSelected, CharacterdCardSelected, MyTurnID);
     }
+    #endregion
 
     // --------------------- Network section ---------------------
 
@@ -410,6 +443,7 @@ public class PlayerConnection : NetworkBehaviour
         else
         {
             print("Player Turn is Invalid: "+ServerTurn);
+            ServerTurn = 1;
         }
 
         MyTurnID = ServerTurn;
@@ -503,7 +537,13 @@ public class PlayerConnection : NetworkBehaviour
                 CharactersType.GuyNeedParking,
                 CharactersType.GuyWithAnimal,
                 CharactersType.Baby,
-                CharactersType.Gangster
+                CharactersType.Gangster,
+                CharactersType.DoubleGuys,
+                CharactersType.TwoHouseGuy,
+                CharactersType.FourHouseGuy,
+                CharactersType.FamilyTwoGuys,
+                CharactersType.ThreeHouseLGuy
+                
             };
 
             for (int i = 0; i < EnumCharacterLenght; i++)
@@ -767,7 +807,6 @@ public class PlayerConnection : NetworkBehaviour
     {
         int nextTurn = 0;
 
-
         if (!IsItForFirstTime)
         {
             if(ServerTurn == 1)
@@ -791,6 +830,8 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellTurn(nextTurn);
             }
         }
+        print("ServerTurn: " + ServerTurn);
+        print("Server: NextTurn = " + nextTurn);
     }
     #endregion
 
@@ -912,11 +953,13 @@ public class PlayerConnection : NetworkBehaviour
 
         // ToDo: Check if this action can be done based on game logic
         // ...
+        print("Cell Player1 Below Is: " + HouseCells_P1_Server[GameManager.TileIndex_Button(cellNumber)]);
         // ...
         // In This State We Assume That The Action Is valid :
 
-        if(PlayerID == 1)
+        if (PlayerID == 1)
         {
+
             #region if Player 1 Select a Character Card
             if (charactersType != CharactersType.Empty && houseCellsType == HouseCellsType.EmptyTile)
             {
@@ -1008,6 +1051,38 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
+    #region CmdResetServerData(int playerTurn)
+    /// <summary>
+    /// Reset All Data after reseting game
+    /// </summary>
+    /// <param name="playerTurn">in order not to be called two time use a player id</param>
+    [Command]
+    public void CmdResetServerData(int playerTurn)
+    {
+        if(playerTurn == 1)
+        {
+
+            HouseCells_P1_Server = new HouseCellsType[49];
+            HouseCells_P2_Server = new HouseCellsType[49];
+
+            CharCells_P1_Server = new CharactersType[49];
+            CharCells_P2_Server = new CharactersType[49];
+
+            HouseCardsDeckInGame_Server = new List<HouseCellsType>();
+            CharacterCardsDeckInGame_Server = new List<CharactersType>();
+
+            HousesDeckList_Server = new List<HouseCellsType>();
+            CharactersDeckList_Server = new List<CharactersType>();
+
+            IsNoFirstRandomTurn = true;
+            //MyTurnID = 0;
+            //UserName = "";
+
+
+        }
+    }
+    #endregion
+
     #endregion
 
 
@@ -1035,7 +1110,7 @@ public class PlayerConnection : NetworkBehaviour
     {
         MyHouseCells = cellhouseArray;
 
-        IsReadyForUpdateHouseCellsOnScreen = true;      
+        IsReadyForUpdateHouseCellsOnScreen = true;
     }
     #endregion
 
@@ -1079,7 +1154,6 @@ public class PlayerConnection : NetworkBehaviour
     {
         HouseCardsInGameDeck = houseCardsDeckInGame_Server;
         IsReadyForUpdateHouseCardsOnScreen = true;
-
     }
 
     #endregion
@@ -1109,7 +1183,7 @@ public class PlayerConnection : NetworkBehaviour
     // 2- When Stop or disconnection button on HUD network manager pressed, gameManagerscript.Initialazation(true) should be called
     // 3- Place back button in waiting room and room is full panel
 
-    // ==> To Continiue First : Working On the struct: "CharacterHouseReference" and all the types based on template example
-    // ==> To Continiue : Working on SpriteBasedOnCharacterCellInHouseType
+    // ==> To Continiue First : Line 956 ... working on game logic
+
 
 }

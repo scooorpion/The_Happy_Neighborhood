@@ -10,6 +10,7 @@ TagManager:
   - PlayerConnection
   - MyConnection
   - ServerText
+  - Network
   layers:
   - Default
   - TransparentFX
