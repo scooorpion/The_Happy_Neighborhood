@@ -6,11 +6,12 @@ using UnityEngine;
 public class CardSelecting : MonoBehaviour
 {
     PlayerConnection myConnection;
-    
+    SoundManager soundManager;
 
     private void Start()
     {
         myConnection = GameObject.FindGameObjectWithTag("MyConnection").GetComponent<PlayerConnection>();
+        soundManager = FindObjectOfType<SoundManager>();
     }
 
     public void SelectCard()
@@ -18,6 +19,7 @@ public class CardSelecting : MonoBehaviour
         CharType charType;
         HouseType houseType;
 
+        soundManager.SFX_SelectingCardPlay();
         if (charType = GetComponent<CharType>())
         {
             myConnection.CharacterdCardSelected = charType.charactersType;
@@ -35,6 +37,7 @@ public class CardSelecting : MonoBehaviour
             GetComponent<Image>().color = new Color(0.725f, 1f, 0.725f);
 
         }
+
     }
 
     void ResetAllButtonToNormalColor()

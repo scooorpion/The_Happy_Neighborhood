@@ -33,8 +33,8 @@ public class CharDeckManager : MonoBehaviour
 
     public void ShowCharacterInfo(string CharName, string CharValidHouse, int CharScore)
     {
-        print("CharName: " + CharName);
-        print("CharValidHouse: " + CharValidHouse);
+        //print("CharName: " + CharName);
+        //print("CharValidHouse: " + CharValidHouse);
 
 
         CharacterNameInfo.text = CharName;

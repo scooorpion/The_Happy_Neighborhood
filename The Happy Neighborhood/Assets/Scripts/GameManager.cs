@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviour
     public Animator UIAnimator;
     public GameObject WaitingPanel;
     public GameObject ServerFullPanel;
+    public GameObject ErrorMessagePanel;
     public GameObject GameLoadingPanel;
     public GameObject CharacterDeck;
     public GameObject HouseDeck;
@@ -67,8 +68,15 @@ public class GameManager : MonoBehaviour
     public GameObject MyBoard;
     public GameObject EnemyBoard;
 
+    public Sprite[] ErrorMessageSprites;
+
     private BoardGenerator myBoardGenerator;
     private BoardGenerator myEnemyBoardGenerator;
+    private SoundManager soundManager;
+
+    private static int[] LeftEdge = new int[] { 0, 7, 14, 21, 28, 35, 42 };
+    private static int[] RightEdge = new int[] { 6, 13, 20, 27, 34, 41, 48 };
+
 
     [SerializeField]
     public SpriteReference spriteReference;
@@ -78,6 +86,13 @@ public class GameManager : MonoBehaviour
         Initialazation();
     }
 
+    private void Update()
+    {
+        if(Input.GetMouseButtonDown(0))
+        {
+            HideErrorPanel();
+        }
+    }
 
     #region Initialazation(bool ToReset = false)
     /// <summary>
@@ -101,7 +116,9 @@ public class GameManager : MonoBehaviour
         myEnemyBoardGenerator = EnemyBoard.GetComponent<BoardGenerator>();
         myBoardGenerator.TurnPanel.SetActive(false);
         myEnemyBoardGenerator.TurnPanel.SetActive(false);
+        ErrorMessagePanel.SetActive(false);
         NetworkHudBtns.SetActive(true);
+        soundManager = FindObjectOfType<SoundManager>();
 
     }
     #endregion
@@ -218,21 +235,45 @@ public class GameManager : MonoBehaviour
         if (IsItMyTurn)
         {
             myBoardGenerator.UserNameTextBox.color = Color.white;
+            myBoardGenerator.scoreText.color = Color.white;
+            myBoardGenerator.ScoreLable.color = Color.white;
+
             myEnemyBoardGenerator.UserNameTextBox.color = Color.gray;
+            myEnemyBoardGenerator.scoreText.color = Color.gray;
+            myEnemyBoardGenerator.ScoreLable.color = Color.gray;
+
             myBoardGenerator.TurnPanel.SetActive(true);
             myEnemyBoardGenerator.TurnPanel.SetActive(false);
         }
         else
         {
             myBoardGenerator.UserNameTextBox.color = Color.gray;
+            myBoardGenerator.scoreText.color = Color.gray;
+            myBoardGenerator.ScoreLable.color = Color.gray;
+
             myEnemyBoardGenerator.UserNameTextBox.color = Color.white;
+            myEnemyBoardGenerator.scoreText.color = Color.white;
+            myEnemyBoardGenerator.ScoreLable.color = Color.white;
+
             myBoardGenerator.TurnPanel.SetActive(false);
             myEnemyBoardGenerator.TurnPanel.SetActive(true);
 
         }
     }
 
-    // New Functions: 
+    public void UpdatePlayersScore(int Score, bool IsItMyTurn)
+    {
+        if (IsItMyTurn)
+        {
+            myBoardGenerator.scoreText.text = Score.ToString();
+        }
+        else
+        {
+            myEnemyBoardGenerator.scoreText.text = Score.ToString();
+        }
+    }
+
+        // New Functions: 
 
 
 
@@ -523,17 +564,16 @@ public class GameManager : MonoBehaviour
 
     // ------------- Checking Index Functions -------------------
 
-    #region TileIndex_Button(int SelectedIndex): Return The index of below house of entered index
+    #region TileIndex_Below(int SelectedIndex): Return The index of below house of entered index
     /// <summary>
     /// Return The index of below house of entered index
     /// </summary>
     /// <param name="SelectedIndex"></param>
     /// <returns></returns>
-    public static int TileIndex_Button(int SelectedIndex)
+    public static int TileIndex_Below(int SelectedIndex)
     {
         if (SelectedIndex < 7)
         {
-            print("TileIndex_Button[Error]: In The Floor: "+ SelectedIndex);
             return -1;
         }
 
@@ -550,7 +590,26 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     public static bool IsRoofTileAllowed(int SelectedIndex)
     {
-        if(SelectedIndex > 34)
+        if(SelectedIndex > 27)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    #endregion
+
+    #region IsTileInFirstRow(int SelectedIndex): Return true if entered index is in the first row
+    /// <summary>
+    /// Return true if entered index is in the first row
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static bool IsTileInFirstRow(int SelectedIndex)
+    {
+        if (SelectedIndex < 7)
         {
             return true;
         }
@@ -573,14 +632,34 @@ public class GameManager : MonoBehaviour
 
         if (SelectedIndex > 20)
         {
-            tempIndex = (SelectedIndex % 3);
+            tempIndex = (SelectedIndex - (3*7));
+        }
+
+        return tempIndex;
+    }
+    #endregion
+
+    #region TwooTileBelowSelectedIndex(int SelectedIndex): Return the array of two house below the entered index
+    /// <summary>
+    /// Return the array of two house below the entered index
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static int[] TwooTileBelowSelectedIndex(int SelectedIndex)
+    {
+        List<int> twoTileBelow = new List<int>();
+
+        if (SelectedIndex > 20)
+        {
+            twoTileBelow.Add(SelectedIndex - (1*7));
+            twoTileBelow.Add(SelectedIndex - (2 * 7));
         }
         else
         {
             print("The Row is below 3");
         }
 
-        return tempIndex;
+        return twoTileBelow.ToArray();
     }
     #endregion
 
@@ -600,9 +679,9 @@ public class GameManager : MonoBehaviour
         List<int> AroundIndex = new List<int>();
 
         #region Check for Left edge
-        for (int i = 1; i < 7; i++)
+        for (int i = 0; i < 7; i++)
         {
-            if(SelectedIndex % (7*i) == 0)
+            if(SelectedIndex == LeftEdge[i])
             {
                 IsInLeftEdge = true;
                 break;
@@ -611,9 +690,9 @@ public class GameManager : MonoBehaviour
         #endregion
 
         #region Check for Right edge
-        for (int i = 1; i < 7; i++)
+        for (int i = 0; i < 7; i++)
         {
-            if (SelectedIndex % ((7 * i)-1) == 0)
+            if (SelectedIndex == RightEdge[i])
             {
                 IsInRightEdge = true;
                 break;
@@ -683,4 +762,88 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
+    #region TileIndex_InTheRow (int SelectedIndex) : Return Array of indexes in the selected row
+    /// <summary>
+    /// Return Array of indexes in the selected row
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static int[] TileIndex_InTheRow(int SelectedIndex)
+    {
+        List<int> RowIndex = new List<int>();
+
+        int Row = SelectedIndex / 7;
+
+        for (int i = (Row*7); i < ((Row+1)*7); i++)
+        {
+            if (i == SelectedIndex)
+                continue;
+
+            RowIndex.Add(i);
+        }
+
+        return RowIndex.ToArray();
+    }
+    #endregion
+
+    #region TileIndex_Sides(int SelectedIndex): Return Array of indexes in two sides of index and remove the index which is in the edge
+    /// <summary>
+    /// Return Array of indexes in two sides of index and remove the index which is in the edge
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static int[] TileIndex_Sides(int SelectedIndex)
+    {
+        List<int> SidesIndex = new List<int>();
+
+
+        bool InLeftEdge = false;
+        bool InRightEdge = false;
+
+        for (int i = 0; i < 7; i++)
+        {
+            if(SelectedIndex == LeftEdge[i])
+            {
+                InLeftEdge = true;
+            }
+            else if(SelectedIndex == RightEdge[i])
+            {
+                InRightEdge = true;
+            }
+        }
+
+        if( !InLeftEdge )
+        {
+            SidesIndex.Add(SelectedIndex - 1);
+        }
+
+        if (!InRightEdge)
+        {
+            SidesIndex.Add(SelectedIndex + 1);
+        }
+
+
+
+        return SidesIndex.ToArray();
+    }
+    #endregion
+
+    // ------------------ Show Wrong Selection Function ---------------
+
+    public void ShowWrongSelection()
+    {
+        //print("Wrong Selection [Error: "+UnityEngine.Random.Range(0,100)+" ]");
+        int RandomIndex = UnityEngine.Random.Range(0, ErrorMessageSprites.Length);
+        print("RandomIndex: " + RandomIndex);
+        Sprite RandomErrorSprite = ErrorMessageSprites[RandomIndex];
+        ErrorMessagePanel.GetComponent<Image>().sprite = RandomErrorSprite;
+        ErrorMessagePanel.SetActive(true);
+        soundManager.SFX_WrongACtionPlay();
+    }
+
+    public void HideErrorPanel()
+    {
+        ErrorMessagePanel.SetActive(false);
+    }
 }

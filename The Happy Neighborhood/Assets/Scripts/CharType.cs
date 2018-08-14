@@ -21,63 +21,65 @@ public class CharType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         ShowCharacterInfo();
     }
 
-    public int CalculateCharacterScore(CharactersType Character)
+    public static int CalculateCharacterScore(CharactersType Character)
     {
         int tempScore = 0;
 
         switch (Character)
         {
-            case CharactersType.Empty:
-                tempScore = 0;
-                break;
             case CharactersType.NoramlGuy:
-                tempScore = 5;
-                break;
-            case CharactersType.DoubleGuys:
                 tempScore = 10;
                 break;
-            case CharactersType.TripleGuys:
-                tempScore = 15;
-                break;
+
             case CharactersType.RedGuy:
-                tempScore = 5;
+                tempScore = 15;
                 break;
+
             case CharactersType.RedNoBlueGuy:
-                tempScore = 5;
+                tempScore = 25;
                 break;
+
             case CharactersType.BlueGuy:
-                tempScore = 5;
+                tempScore = 15;
                 break;
+
             case CharactersType.BlueNoYellow:
-                tempScore = 5;
+                tempScore = 25;
                 break;
+
             case CharactersType.PurpuleGuy:
-                tempScore = 5;
+                tempScore = 15;
                 break;
+
             case CharactersType.PurpleNoRedGuy:
-                tempScore = 5;
+                tempScore = 25;
                 break;
+
             case CharactersType.OldGuy:
-                tempScore = 5;
-                break;
-            case CharactersType.PenthouseGuy:
-                tempScore = 15;
-                break;
-            case CharactersType.TwoHouseGuy:
-                tempScore = 10;
-                break;
-            case CharactersType.ThreeHouseLGuy:
-                tempScore = 15;
-                break;
-            case CharactersType.FourHouseGuy:
                 tempScore = 20;
                 break;
-            case CharactersType.Ghost:
-                tempScore = -5;
+
+            case CharactersType.PenthouseGuy:
+                tempScore = 50;
                 break;
+
+            case CharactersType.TwoHouseGuy:
+                tempScore = 20;
+                break;
+
+            case CharactersType.ThreeHouseLGuy:
+                tempScore = 30;
+                break;
+
+            case CharactersType.FourHouseGuy:
+                tempScore = 40;
+                break;
+
+
             case CharactersType.Wizard:
                 tempScore = 0;
                 break;
+
             default:
                 tempScore = 0;
                 break;
@@ -87,80 +89,6 @@ public class CharType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         return tempScore;
     }
 
-    public string CalculateValidHouseFoCharacter(CharactersType Character)
-    {
-        string tempStringText = "";
-
-        switch (Character)
-        {
-            case CharactersType.NoramlGuy:
-                tempStringText = "Each house";
-                break;
-
-            case CharactersType.DoubleGuys:
-                tempStringText = "Two houses";
-                break;
-
-            case CharactersType.TripleGuys:
-                tempStringText = "Three houses";
-                break;
-
-            case CharactersType.RedGuy:
-                tempStringText = "Red houses";
-                break;
-
-            case CharactersType.RedNoBlueGuy:
-                tempStringText = "Red houses, Not in neighborhood of blue houses";
-                break;
-
-            case CharactersType.BlueGuy:
-                tempStringText = "Blue houses";
-                break;
-
-            case CharactersType.BlueNoYellow:
-                tempStringText = "Blue houses, Not in neighborhood of yellow houses";
-                break;
-
-            case CharactersType.PurpuleGuy:
-                tempStringText = "Purpule houses";
-                break;
-
-            case CharactersType.PurpleNoRedGuy:
-                tempStringText = "Purpule houses, Not in neighborhood of red houses";
-                break;
-
-            case CharactersType.OldGuy:
-                tempStringText = "Each old house";
-                break;
-
-            case CharactersType.PenthouseGuy:
-                tempStringText = "Penthouse";
-                break;
-
-            case CharactersType.TwoHouseGuy:
-                tempStringText = "Two houses, near each other and the same color";
-                break;
-
-            case CharactersType.ThreeHouseLGuy:
-                tempStringText = "Three houses, near each other and the same color";
-                break;
-
-            case CharactersType.FourHouseGuy:
-                tempStringText = "Four houses, near each other and the same color";
-                break;
-
-
-            case CharactersType.Wizard:
-                tempStringText = "Each old house";
-                break;
-
-            default:
-                tempStringText = "";
-                break;
-        }
-
-        return tempStringText;
-    }
 
     public void ShowCharacterInfo()
     {
@@ -248,7 +176,7 @@ public class CharType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             default:
                 ValidHouses = "";
                 CharacterNames = "";
-                characterScore = 5;
+                characterScore = 0;
                 break;
         }
 
