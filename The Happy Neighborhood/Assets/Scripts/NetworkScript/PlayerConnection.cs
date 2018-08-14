@@ -43,6 +43,17 @@ public class PlayerConnection : NetworkBehaviour
     private bool IsCharacterPlacementDone = false;
 
 
+    public static string WinnerName;
+    public static int WinnerID;
+    public static int WinnerScore;
+    public static int WinnerPpoint;
+    public static int WinnerNpoint;
+    public static string LoserName;
+    public static int LoserID;
+    public static int LoserScore;
+    public static int LoserPpoint;
+    public static int LoserNpoint;
+
 
     private PlayerConnection enemyConnection;
     private SoundManager soundManager;
@@ -71,6 +82,8 @@ public class PlayerConnection : NetworkBehaviour
 
     static int Score_P1_Server;
     static int Score_P2_Server;
+
+    static bool IsGameFinished = false;
 
     static CharactersType[] CharCells_P1_Server ;
     static CharactersType[] CharCells_P2_Server ;
@@ -135,148 +148,163 @@ public class PlayerConnection : NetworkBehaviour
         }
         #endregion
 
-        #region Wait untill MyTurnId is set by RPC to 1 or 2
-        if (MyTurnID == 0)
+        if(IsGameFinished)
         {
-            return;
-        }
-        #endregion
-
-        ShowAnimationBasedOnActiveConnectionNumbers();
-
-        #region Simiulating the HOUSE cell arrays of mine and my enemy board on screen based on flag: IsReadyForUpdateCellsOnScreen
-
-        if (IsReadyForUpdateHouseCellsOnScreen)
-        {
-            if (IsOldHousePlacementDone)
+            if(WinnerID == MyTurnID)
             {
-                soundManager.SFX_OldHousePlacementPlay();
-                IsOldHousePlacementDone = false;
+                WinnerName = UserName;
+                LoserName = EnemyName;
             }
-            else if (IsHousePlacementDone)
+            else
             {
-                soundManager.SFX_HousePlacementPlay();
-                IsHousePlacementDone = false;
+                WinnerName = EnemyName;
+                LoserName = UserName;
             }
 
-
-            // Simiulating my cell array
-            gameManagerscript.UpdateHouseTileMap(MyHouseCells);
-
-            // Simiulating my enemy cell array
-            StartCoroutine(CreateAndUpdateEnemyHouseTiles(0.5f));
-
-
-            // Set Flag For Update Screen to flase
-            IsReadyForUpdateHouseCellsOnScreen = false;
-
+            gameManagerscript.FinishGame(WinnerName, WinnerScore.ToString(), WinnerPpoint.ToString(), WinnerNpoint.ToString(), LoserName, LoserScore.ToString(), LoserPpoint.ToString(), LoserNpoint.ToString());
+            IsGameFinished = false;
         }
-        #endregion
-
-        #region Simiulating the CHARACTER cell arrays of mine and my enemy board on screen based on flag: IsReadyForUpdateCellsOnScreen
-
-        if (IsReadyForUpdateCharacterCellsOnScreen)
+        else
         {
-            if(IsCharacterPlacementDone)
+            #region Wait untill MyTurnId is set by RPC to 1 or 2
+            if (MyTurnID == 0)
             {
-                soundManager.SFX_CharactersPlacementPlay();
-                IsCharacterPlacementDone = false;
+                return;
             }
+            #endregion
 
-            // Simiulating my cell array
-            gameManagerscript.UpdateCharacterTileMap(MyCharCells,MyHouseCells);
+            ShowAnimationBasedOnActiveConnectionNumbers();
 
-            // Simiulating my enemy cell array
-            StartCoroutine(CreateAndUpdateEnemyCharacterTiles(0.5f));
+            #region Simiulating the HOUSE cell arrays of mine and my enemy board on screen based on flag: IsReadyForUpdateCellsOnScreen
 
-
-            // Set Flag For Update Screen to flase
-            IsReadyForUpdateCharacterCellsOnScreen = false;
-
-        }
-        #endregion
-
-        if(IsErrorMustShown)
-        {
-            if (ErrorForPlayerID == MyTurnID)
+            if (IsReadyForUpdateHouseCellsOnScreen)
             {
-                gameManagerscript.ShowWrongSelection();
-                IsErrorMustShown = false;
-            }
-        }
+                if (IsOldHousePlacementDone)
+                {
+                    soundManager.SFX_OldHousePlacementPlay();
+                    IsOldHousePlacementDone = false;
+                }
+                else if (IsHousePlacementDone)
+                {
+                    soundManager.SFX_HousePlacementPlay();
+                    IsHousePlacementDone = false;
+                }
 
-        if(IsScoreChanged)
-        {
-            print("MyTurnID: " + MyTurnID);
-            print("ScoreForPlayerID: " + ScoreForPlayerID);
 
-            if(ScoreForPlayerID == MyTurnID)
-            {
-                gameManagerscript.UpdatePlayersScore(Score, true);
-                print("Update Score For me");
-            }
-            else 
-            {
-                gameManagerscript.UpdatePlayersScore(Score, false);
-                print("Update Score For my enemy");
+                // Simiulating my cell array
+                gameManagerscript.UpdateHouseTileMap(MyHouseCells);
 
-            }
-
-            IsScoreChanged = false;
-        }
-
-        #region Simiulating the character decks on screen based on flag: IsReadyForUpdateCharacterCardsOnScreen
-
-        if (IsReadyForUpdateCharacterCardsOnScreen)
-        {
-            gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
-            IsReadyForUpdateCharacterCardsOnScreen = false;
-        }
-
-        #endregion
-
-        #region Simiulating the house decks on screen based on flag: IsReadyForUpdateHouseCardsOnScreen
-
-        if (IsReadyForUpdateHouseCardsOnScreen)
-        {
-            gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
-            IsReadyForUpdateHouseCardsOnScreen = false;
-        }
-
-        #endregion
-
-        #region Enabling or disabling decks to select based on if it is my turn or not
-
-        if (IsGameTurnSet)
-        {
-            if (ServerTurn == MyTurnID)
-            {
-                #region When its your turn, First update card deck and your enemy map
-
-                gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
-                gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
+                // Simiulating my enemy cell array
                 StartCoroutine(CreateAndUpdateEnemyHouseTiles(0.5f));
+
+
+                // Set Flag For Update Screen to flase
+                IsReadyForUpdateHouseCellsOnScreen = false;
+
+            }
+            #endregion
+
+            #region Simiulating the CHARACTER cell arrays of mine and my enemy board on screen based on flag: IsReadyForUpdateCellsOnScreen
+
+            if (IsReadyForUpdateCharacterCellsOnScreen)
+            {
+                if (IsCharacterPlacementDone)
+                {
+                    soundManager.SFX_CharactersPlacementPlay();
+                    IsCharacterPlacementDone = false;
+                }
+
+                // Simiulating my cell array
+                gameManagerscript.UpdateCharacterTileMap(MyCharCells, MyHouseCells);
+
+                // Simiulating my enemy cell array
                 StartCoroutine(CreateAndUpdateEnemyCharacterTiles(0.5f));
 
-                #endregion
 
-                gameManagerscript.HighlightPlayerNameWhoHasTheTurn(true);
-                gameManagerscript.EnableDecks();
-                CmdAskToUpdateItsTurnVariable();
-
-                IsGameTurnSet = false;
+                // Set Flag For Update Screen to flase
+                IsReadyForUpdateCharacterCellsOnScreen = false;
 
             }
-            else if (ServerTurn != MyTurnID)
+            #endregion
+
+            if (IsErrorMustShown)
             {
-                gameManagerscript.HighlightPlayerNameWhoHasTheTurn(false);
-                gameManagerscript.DisableDecks();
-                IsGameTurnSet = false;
+                if (ErrorForPlayerID == MyTurnID)
+                {
+                    gameManagerscript.ShowWrongSelection();
+                    IsErrorMustShown = false;
+                }
             }
+
+            if (IsScoreChanged)
+            {
+                if (ScoreForPlayerID == MyTurnID)
+                {
+                    gameManagerscript.UpdatePlayersScore(Score, true);
+                }
+                else
+                {
+                    gameManagerscript.UpdatePlayersScore(Score, false);
+                }
+
+                IsScoreChanged = false;
+            }
+
+            #region Simiulating the character decks on screen based on flag: IsReadyForUpdateCharacterCardsOnScreen
+
+            if (IsReadyForUpdateCharacterCardsOnScreen)
+            {
+                gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
+                IsReadyForUpdateCharacterCardsOnScreen = false;
+            }
+
+            #endregion
+
+            #region Simiulating the house decks on screen based on flag: IsReadyForUpdateHouseCardsOnScreen
+
+            if (IsReadyForUpdateHouseCardsOnScreen)
+            {
+                gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
+                IsReadyForUpdateHouseCardsOnScreen = false;
+            }
+
+            #endregion
+
+            #region Enabling or disabling decks to select based on if it is my turn or not
+
+            if (IsGameTurnSet)
+            {
+                if (ServerTurn == MyTurnID)
+                {
+                    #region When its your turn, First update card deck and your enemy map
+
+                    gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
+                    gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
+                    StartCoroutine(CreateAndUpdateEnemyHouseTiles(0.5f));
+                    StartCoroutine(CreateAndUpdateEnemyCharacterTiles(0.5f));
+
+                    #endregion
+
+                    gameManagerscript.HighlightPlayerNameWhoHasTheTurn(true);
+                    gameManagerscript.EnableDecks();
+                    CmdAskToUpdateItsTurnVariable();
+
+                    IsGameTurnSet = false;
+
+                }
+                else if (ServerTurn != MyTurnID)
+                {
+                    gameManagerscript.HighlightPlayerNameWhoHasTheTurn(false);
+                    gameManagerscript.DisableDecks();
+                    IsGameTurnSet = false;
+                }
+
+            }
+
+            #endregion
 
         }
 
-        #endregion
 
     }
 
@@ -1124,6 +1152,13 @@ public class PlayerConnection : NetworkBehaviour
                     if (GameManager.IsTileInFirstRow(cellNumber) == false)
                         IsErorFound = true;
 
+                    if(GameManager.TileIndex_Above(cellNumber) != -1)
+                    {
+                        print("tempHouseCells[GameManager.TileIndex_Above(cellNumber)]: " + tempHouseCells[GameManager.TileIndex_Above(cellNumber)]);
+                        if(tempHouseCells[GameManager.TileIndex_Above(cellNumber)] != HouseCellsType.EmptyTile && tempHouseCells[GameManager.TileIndex_Above(cellNumber)] != HouseCellsType.BannedTile)
+                            IsErorFound = true;
+                    }
+
                     break;
                 case CharactersType.PenthouseGuy:
 
@@ -1210,11 +1245,15 @@ public class PlayerConnection : NetworkBehaviour
             #endregion
 
 
-            #region Check: If there is old guy in three house below and there isnt baned house between them, Then this is an unvalid one
+            #region Check: If there is old House in three house below and there isnt baned house between them, Then this is an unvalid one
             if (GameManager.ThreeTileBelowSelectedIndex(cellNumber) != -1)
             {
-                if (tempCharacterCells[GameManager.ThreeTileBelowSelectedIndex(cellNumber)] == CharactersType.OldGuy)
+                HouseCellsType ThreeHouseBelow = tempHouseCells[GameManager.ThreeTileBelowSelectedIndex(cellNumber)];
+                if (ThreeHouseBelow == HouseCellsType.OldBlueTile || ThreeHouseBelow == HouseCellsType.OldPurpleTile || 
+                    ThreeHouseBelow == HouseCellsType.OldRedTile || ThreeHouseBelow == HouseCellsType.OldYellowTile )
                 {
+                    print("Three tile below index is: " + GameManager.ThreeTileBelowSelectedIndex(cellNumber));
+
                     int[] twoIndexBelow = GameManager.TwooTileBelowSelectedIndex(cellNumber);
                     bool IsThereBanedHouseBelow = false;
                     for (int i = 0; i < twoIndexBelow.Length; i++)
@@ -1385,10 +1424,10 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellCharacterCells(CharCells_P1_Server,true);
 
                 print("CharactersInHouse_P1_Server: " + CharactersInHouse_P1_Server);
-                if (CharactersInHouse_P2_Server == 20)
+                if (CharactersInHouse_P1_Server == 5)
                 {
-                    // Finish the game by Player 2
-                    // Call RPC and tell every clients about it
+                    // Finish the game 
+                    IsGameFinished = true;
                 }
 
             }
@@ -1444,11 +1483,10 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellCharacterCells(CharCells_P2_Server,true);
 
                 print("CharactersInHouse_P2_Server: " + CharactersInHouse_P2_Server);
-                if (CharactersInHouse_P2_Server == 20)
+                if (CharactersInHouse_P2_Server == 5)
                 {
-                    // Finish the game by Player 2
-                    // Call RPC and tell every clients about it
-
+                    // Finish the game 
+                    IsGameFinished = true;
                 }
             }
 
@@ -1488,9 +1526,30 @@ public class PlayerConnection : NetworkBehaviour
             #endregion
         }
 
-        RpcTellTurn(ServerTurn);
-        CmdAskToFillEmptyCharInGameDeck(false);
-        CmdAskToFillEmptyHouseInGameDeck(false);
+        if(IsGameFinished)
+        {
+            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server, CharactersInHouse_P1_Server);
+            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server, CharactersInHouse_P2_Server);
+            int score_P1 = Score_P1_Server + negativeScore_P1;
+            int score_P2 = Score_P2_Server + negativeScore_P2;
+
+            if (score_P1 > score_P2)
+            {
+                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
+            }
+            else
+            {
+                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
+            }
+
+        }
+        else if(!IsGameFinished)
+        {
+            RpcTellTurn(ServerTurn);
+            CmdAskToFillEmptyCharInGameDeck(false);
+            CmdAskToFillEmptyHouseInGameDeck(false);
+
+        }
 
     }
     #endregion
@@ -1661,6 +1720,22 @@ public class PlayerConnection : NetworkBehaviour
         IsErrorMustShown = true;
     }
     #endregion
+
+    [ClientRpc]
+    public void RpcTellGameFinished(int WinnerID_S, int WinnerScor_S, int WinnerPScore_S, int WinnerNScore_S, int LoserID_S, int LoserScor_S, int LoserPScore_S, int LoserNScore_S)
+    {
+        WinnerID = WinnerID_S;
+        WinnerScore = WinnerScor_S;
+        WinnerPpoint = WinnerPScore_S;
+        WinnerNpoint = WinnerNScore_S;
+        LoserID = LoserID_S;
+        LoserScore = LoserScor_S;
+        LoserPpoint = LoserPScore_S;
+        LoserNpoint = LoserNScore_S;
+
+
+        IsGameFinished = true;
+    }
 
     #endregion
 

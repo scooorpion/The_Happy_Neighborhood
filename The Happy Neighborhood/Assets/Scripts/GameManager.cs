@@ -65,6 +65,18 @@ public class GameManager : MonoBehaviour
     public GameObject HouseDeck;
     public GameObject NetworkHudBtns;
 
+    public GameObject FinishedPanel;
+
+    public GameObject WinnerName;
+    public GameObject WinnerScore;
+    public GameObject WinnerPpoint;
+    public GameObject WinnerNpoint;
+    public GameObject LoserName;
+    public GameObject LoserScore;
+    public GameObject LoserPpoint;
+    public GameObject LoserNpoint;
+
+
     public GameObject MyBoard;
     public GameObject EnemyBoard;
 
@@ -118,8 +130,8 @@ public class GameManager : MonoBehaviour
         myEnemyBoardGenerator.TurnPanel.SetActive(false);
         ErrorMessagePanel.SetActive(false);
         NetworkHudBtns.SetActive(true);
+        FinishedPanel.SetActive(false);
         soundManager = FindObjectOfType<SoundManager>();
-
     }
     #endregion
 
@@ -620,6 +632,24 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    #region TileIndex_Above (int SelectedIndex): Return The index of above house of entered index
+    /// <summary>
+    /// Return The index of above house of entered index
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static int TileIndex_Above (int SelectedIndex)
+    {
+        if (SelectedIndex > 41)
+        {
+            return -1;
+        }
+
+        return (SelectedIndex + 7);
+
+    }
+    #endregion
+
     #region ThreeTileBelowSelectedIndex(int SelectedIndex): Return the index of three house below the entered index
     /// <summary>
     /// Return the index of three house below the entered index
@@ -833,9 +863,7 @@ public class GameManager : MonoBehaviour
 
     public void ShowWrongSelection()
     {
-        //print("Wrong Selection [Error: "+UnityEngine.Random.Range(0,100)+" ]");
         int RandomIndex = UnityEngine.Random.Range(0, ErrorMessageSprites.Length);
-        print("RandomIndex: " + RandomIndex);
         Sprite RandomErrorSprite = ErrorMessageSprites[RandomIndex];
         ErrorMessagePanel.GetComponent<Image>().sprite = RandomErrorSprite;
         ErrorMessagePanel.SetActive(true);
@@ -845,5 +873,55 @@ public class GameManager : MonoBehaviour
     public void HideErrorPanel()
     {
         ErrorMessagePanel.SetActive(false);
+    }
+
+    public static int CalculateNegativeScore(CharactersType[] characters, HouseCellsType[] houseCells, int PlacedCharacter)
+    {
+        int tempNegativeScore = 0;
+        int allPlacedHouses = 0;
+        int emptyHouses = 0;
+
+        for (int i = 0; i < characters.Length; i++)
+        {
+            if(characters[i] == CharactersType.Ghost)
+            {
+                tempNegativeScore -= 10;
+                print("Ghost --");
+            }
+        }
+
+        for (int i = 0; i < houseCells.Length; i++)
+        {
+            if(houseCells[i] != HouseCellsType.EmptyTile && houseCells[i] != HouseCellsType.BannedTile)
+            {
+                allPlacedHouses++;
+            }
+        }
+
+        emptyHouses = allPlacedHouses - PlacedCharacter;
+
+        print("Empty houses: " + emptyHouses);
+
+        tempNegativeScore -= (emptyHouses*5);
+
+        print("tempNegativeScore: " + tempNegativeScore);
+
+        return tempNegativeScore;
+    }
+
+    public void FinishGame(string winnerName,string winnerScore,string winnerPpoint,string winnerNpoint, string loserName, string loserScore, string loserPpoint, string loserNpoint)
+    {
+        soundManager.SFX_EndOfGamePlay();
+
+        WinnerName.GetComponent<Text>().text = winnerName;
+        WinnerScore.GetComponent<Text>().text = winnerScore;
+        WinnerPpoint.GetComponent<Text>().text = winnerPpoint;
+        WinnerNpoint.GetComponent<Text>().text = winnerNpoint;
+        LoserName.GetComponent<Text>().text = loserName;
+        LoserScore.GetComponent<Text>().text = loserScore;
+        LoserPpoint.GetComponent<Text>().text = loserPpoint;
+        LoserNpoint.GetComponent<Text>().text = loserNpoint;
+
+        FinishedPanel.SetActive(true);
     }
 }
