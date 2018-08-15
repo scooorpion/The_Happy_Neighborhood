@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-
-
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -37,6 +36,7 @@ public class PlayerConnection : NetworkBehaviour
     private int ErrorForPlayerID = 0;
     private static bool IsScoreChanged = false;
     private static int ScoreForPlayerID = 0;
+    private static int ThePlayerIDWhoLeft = 0;
     public static bool IsGameTurnSet = false;
     private bool IsOldHousePlacementDone = false;
     private bool IsHousePlacementDone = false;
@@ -53,6 +53,8 @@ public class PlayerConnection : NetworkBehaviour
     public static int LoserScore;
     public static int LoserPpoint;
     public static int LoserNpoint;
+
+    public static bool IsOnePlayerLeftTheGame = false;
 
 
     private PlayerConnection enemyConnection;
@@ -106,12 +108,15 @@ public class PlayerConnection : NetworkBehaviour
     void Start()
     {
 
-        //serverText = GameObject.FindGameObjectWithTag("ServerText").GetComponent<Text>();
+        serverText = GameObject.FindGameObjectWithTag("ServerText").GetComponent<Text>();
 
         if (!isLocalPlayer)
         {
             return;
         }
+        print("1- MyTurnID: " + MyTurnID);
+        CmdShowServerTurn();
+        print("----");
 
         soundManager = FindObjectOfType<SoundManager>();
 
@@ -120,7 +125,7 @@ public class PlayerConnection : NetworkBehaviour
         gameManagerscript = FindObjectOfType<GameManager>();
 
         CmdAskToTellActiveConnection();
-
+       
         CmdAskToSetPlayerTurn();
 
         CmdResetServerData(MyTurnID);
@@ -133,6 +138,8 @@ public class PlayerConnection : NetworkBehaviour
         SetCardSelectedToNull();
 
         //serverText.text = UnityEngine.Random.Range(1, 1000).ToString();
+        print("2- MyTurnID: " + MyTurnID);
+        CmdShowServerTurn();
 
     }
     #endregion
@@ -148,7 +155,44 @@ public class PlayerConnection : NetworkBehaviour
         }
         #endregion
 
-        if(IsGameFinished)
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            CmdTestInput();
+        }
+
+        if (IsOnePlayerLeftTheGame)
+        {
+
+            if (ThePlayerIDWhoLeft == MyTurnID)
+            {
+                serverText.text = "My Turn for exit=Before";
+                CmdResetServerRandomTurn();
+
+                SceneManager.LoadScene(0);
+
+                IsOnePlayerLeftTheGame = false;
+
+                serverText.text = "My Turn for exit = after";
+
+                print("My Exit");
+            }
+            else
+            {
+
+                gameManagerscript.LoseConnection(EnemyName);
+
+                soundManager.SFX_WrongACtionPlay();
+
+                IsOnePlayerLeftTheGame = false;
+
+                print("Enemy Exit");
+
+            }
+
+
+        }
+
+        else if (IsGameFinished)
         {
             if(WinnerID == MyTurnID)
             {
@@ -256,6 +300,8 @@ public class PlayerConnection : NetworkBehaviour
             {
                 gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
                 IsReadyForUpdateCharacterCardsOnScreen = false;
+
+                print("Simiulating the character decks ");
             }
 
             #endregion
@@ -266,6 +312,9 @@ public class PlayerConnection : NetworkBehaviour
             {
                 gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
                 IsReadyForUpdateHouseCardsOnScreen = false;
+
+                print("Simiulating the house decks ");
+
             }
 
             #endregion
@@ -274,6 +323,9 @@ public class PlayerConnection : NetworkBehaviour
 
             if (IsGameTurnSet)
             {
+
+                print("IsGameTurnSet: " + IsGameTurnSet);
+
                 if (ServerTurn == MyTurnID)
                 {
                     #region When its your turn, First update card deck and your enemy map
@@ -478,6 +530,35 @@ public class PlayerConnection : NetworkBehaviour
 
 
     #region COMMANDS
+
+    [Command]
+    void CmdTestInput()
+    {
+        print("Server ==>");
+        RpcTest();
+    }
+
+
+    [ClientRpc]
+    void RpcTest()
+    {
+        print("RPC ==>");
+
+        IsReadyForUpdateHouseCellsOnScreen = true;
+        IsReadyForUpdateCharacterCellsOnScreen = true;
+        IsReadyForUpdateHouseCardsOnScreen = true;
+        IsReadyForUpdateCharacterCardsOnScreen = true;
+
+}
+
+[Command]
+    public void CmdOnePlayerLeft(int playerID)
+    {
+        //IsOnePlayerLeftTheGame = true;
+
+        RpcTellOneLeft(playerID);
+        print("Server: OnePlayerLeft");
+    }
 
     #region CmdAskToTellActiveConnection()
     /// <summary>
@@ -745,6 +826,8 @@ public class PlayerConnection : NetworkBehaviour
 
         if (IsFirstTimeCreateion)
         {
+            print("Server: First Time Deck Fill");
+            print("Server: CharacterCardsDeckInGame_Server.Count: " + CharacterCardsDeckInGame_Server.Count);
             while (CharacterCardsDeckInGame_Server.Count < 4)
             {
                 CharactersType CharacterTemp;
@@ -774,6 +857,8 @@ public class PlayerConnection : NetworkBehaviour
         }
         else if (!IsFirstTimeCreateion)
         {
+            print("Server: Not First Time Deck Fill");
+
             while (CharacterCardsDeckInGame_Server.Contains(CharactersType.Empty))
             {
                 CharactersType CharacterTemp;
@@ -802,6 +887,7 @@ public class PlayerConnection : NetworkBehaviour
             }
         }
 
+        print("Server: callRpc");
         RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
     }
     #endregion
@@ -892,6 +978,9 @@ public class PlayerConnection : NetworkBehaviour
     [Command]
     void CmdAskToSetPlayerNextTurn(bool IsItForFirstTime)
     {
+
+        print("Server: CmdAskToSetPlayerNextTurn ==> first time: "+ IsItForFirstTime);
+
         int nextTurn = 0;
 
         if (!IsItForFirstTime)
@@ -915,8 +1004,17 @@ public class PlayerConnection : NetworkBehaviour
                 IsNoFirstRandomTurn = false;
                 nextTurn = ServerTurn;
                 RpcTellTurn(nextTurn);
+
+                print("First time + Random Is Seting");
+
+            }
+            else
+            {
+                print("First time + Random is Setted Before");
             }
         }
+
+        print("Server ==> Next turn: " + nextTurn);
     }
     #endregion
 
@@ -1554,6 +1652,20 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
+    [Command]
+    public void CmdShowServerTurn()
+    {
+        print(ServerTurn);
+    }
+
+    [Command]
+    public void CmdResetServerRandomTurn()
+    {
+        print("Server: Reset Turn: 0");
+        IsNoFirstRandomTurn = true;
+    }
+
+
     #region CmdResetServerData(int playerTurn)
     /// <summary>
     /// Reset All Data after reseting game
@@ -1562,8 +1674,10 @@ public class PlayerConnection : NetworkBehaviour
     [Command]
     public void CmdResetServerData(int playerTurn)
     {
+        print("ResetData");
         if(playerTurn == 1)
         {
+            print("ResetData [ID = 1]");
 
             HouseCells_P1_Server = new HouseCellsType[49];
             HouseCells_P2_Server = new HouseCellsType[49];
@@ -1584,6 +1698,7 @@ public class PlayerConnection : NetworkBehaviour
             CharactersDeckList_Server = new List<CharactersType>();
 
             IsNoFirstRandomTurn = true;
+
             //MyTurnID = 0;
             //UserName = "";
 
@@ -1703,6 +1818,7 @@ public class PlayerConnection : NetworkBehaviour
     [ClientRpc]
     void RpcTellTurn(int NextTurn)
     {
+        print("RPC: Next Turn Activated");
         ServerTurn = NextTurn;
         IsGameTurnSet = true;
     }
@@ -1737,9 +1853,21 @@ public class PlayerConnection : NetworkBehaviour
         IsGameFinished = true;
     }
 
+    [ClientRpc]
+    void RpcTellOneLeft(int playerID)
+    {
+        print("RPC: RpcTellOneLeft");
+        ThePlayerIDWhoLeft = playerID;
+        IsOnePlayerLeftTheGame = true;
+    }
+
     #endregion
 
-
+    private void OnDisconnectedFromServer(NetworkDisconnection info)
+    {
+        //IsOnePlayerLeftTheGame = true;
+        //print("Disconnected: " + info);
+    }
 
 
 

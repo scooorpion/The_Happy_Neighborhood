@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 #region CharactersType Enum
@@ -61,10 +62,12 @@ public class GameManager : MonoBehaviour
     public GameObject ServerFullPanel;
     public GameObject ErrorMessagePanel;
     public GameObject GameLoadingPanel;
+    public GameObject ConnectionLostPanel;
     public GameObject CharacterDeck;
     public GameObject HouseDeck;
     public GameObject NetworkHudBtns;
 
+    public Text ConnctionLostPlayer;
     public GameObject FinishedPanel;
 
     public GameObject WinnerName;
@@ -85,6 +88,7 @@ public class GameManager : MonoBehaviour
     private BoardGenerator myBoardGenerator;
     private BoardGenerator myEnemyBoardGenerator;
     private SoundManager soundManager;
+    private NetworkButtonManager networkButtonManager;
 
     private static int[] LeftEdge = new int[] { 0, 7, 14, 21, 28, 35, 42 };
     private static int[] RightEdge = new int[] { 6, 13, 20, 27, 34, 41, 48 };
@@ -119,6 +123,7 @@ public class GameManager : MonoBehaviour
             UIAnimator.SetBool("waiting", false);
             UIAnimator.SetBool("loadGame", false);
         }
+        ConnectionLostPanel.SetActive(false);
         SetDiactiveUIBeginingWaitingPanel();
         CharacterDeck.SetActive(false);
         HouseDeck.SetActive(false);
@@ -126,6 +131,7 @@ public class GameManager : MonoBehaviour
         EnemyBoard.SetActive(false);
         myBoardGenerator = MyBoard.GetComponent<BoardGenerator>();
         myEnemyBoardGenerator = EnemyBoard.GetComponent<BoardGenerator>();
+        networkButtonManager = GameObject.FindObjectOfType<NetworkButtonManager>();
         myBoardGenerator.TurnPanel.SetActive(false);
         myEnemyBoardGenerator.TurnPanel.SetActive(false);
         ErrorMessagePanel.SetActive(false);
@@ -923,5 +929,26 @@ public class GameManager : MonoBehaviour
         LoserNpoint.GetComponent<Text>().text = loserNpoint;
 
         FinishedPanel.SetActive(true);
+    }
+
+    public void LoseConnection(string Name)
+    {
+        StartCoroutine(OtherConnectionLost(Name, 2));
+
+    }
+
+    public IEnumerator OtherConnectionLost(string PlayerLost, float waitTime)
+    {
+        networkButtonManager.Disconnection();
+
+        ConnctionLostPlayer.text = PlayerLost;
+        ConnectionLostPanel.SetActive(true);
+
+        yield return new WaitForSeconds(waitTime);
+
+        ConnectionLostPanel.SetActive(false);
+        SceneManager.LoadScene(0);
+
+
     }
 }

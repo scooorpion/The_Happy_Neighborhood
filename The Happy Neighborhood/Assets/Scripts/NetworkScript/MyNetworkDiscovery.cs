@@ -24,6 +24,7 @@ public class MyNetworkDiscovery : NetworkDiscovery
         base.Initialize();
         base.StartAsClient();
         StartCoroutine(CleanupExpiredEntries());
+        print("Finish Listening");
     }
 
 
@@ -32,7 +33,7 @@ public class MyNetworkDiscovery : NetworkDiscovery
     /// </summary>
     public void StartBroadcast()
     {
-        StopBroadcast();
+        //StopBroadcast();
         base.Initialize();
         base.StartAsServer();
     }

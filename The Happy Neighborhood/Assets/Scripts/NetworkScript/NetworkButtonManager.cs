@@ -6,39 +6,64 @@ using UnityEngine.SceneManagement;
 
 public class NetworkButtonManager : MonoBehaviour {
 
-    NetworkManager manager;
+    NetworkManager networkManager;
     MyNetworkDiscovery networkDiscovery;
     //public GameObject MyConnection;
 
     private void Start()
     {
-        manager = GameObject.FindObjectOfType<NetworkManager>();
+        networkManager = GameObject.FindObjectOfType<NetworkManager>();
         networkDiscovery = GameObject.FindObjectOfType<MyNetworkDiscovery>();
     }
 
     public void CreateRoom()
     {
-        manager.StartHost();
+        //NetworkServer.Reset();
+        //Disconnection();
+        networkManager.StopHost();
+        
+        networkManager.StartHost();
         networkDiscovery.StartBroadcast();
     }
 
+
     public void FindRoom()
     {
-        networkDiscovery.StartListening();
+        //NetworkServer.Reset();
 
+        networkDiscovery.StartListening();
+        networkManager.StartClient();
     }
+
+
 
     public void Exit()
     {
-        //GameObject.FindObjectOfType<GameManager>().Initialazation(true);
-        //GameObject.FindGameObjectWithTag("MyConnection").GetComponent<PlayerConnection>().CmdResetServerData();
+        print("Exiiit");
+        GameObject myConnection;
 
-        SceneManager.LoadScene(0);
+        if (myConnection = GameObject.FindGameObjectWithTag("MyConnection"))
+        {
+            PlayerConnection myConnectionScript = myConnection.GetComponent<PlayerConnection>();
+
+            myConnectionScript.CmdOnePlayerLeft(myConnectionScript.MyTurnID);
+        }
+
+        //GameObject myConnection = GameObject.FindGameObjectWithTag("MyConnection");
+
+        //PlayerConnection myConnectionScript = myConnection.GetComponent<PlayerConnection>();
+
+        //myConnectionScript.CmdOnePlayerLeft(myConnectionScript.MyTurnID);
+
+
+    }
+
+    public void Disconnection()
+    {
+        
         networkDiscovery.StopBroadcast();
-        manager.StopHost();
-        manager.StopClient();
-
-        // Here ............
+        networkManager.StopHost();
+        networkManager.StopClient();
     }
 
 }
