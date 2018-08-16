@@ -100,16 +100,12 @@ public class PlayerConnection : NetworkBehaviour
     static bool IsNoFirstRandomTurn = true;
 
 
-    Text serverText;
     public bool ShowConnectionLostPanel = false;
     #endregion
 
     #region Start()
     void Start()
     {
-        //serverText = GameObject.FindGameObjectWithTag("ServerText").GetComponent<Text>();
-
-
 
         if (!isLocalPlayer)
         {
@@ -156,45 +152,45 @@ public class PlayerConnection : NetworkBehaviour
         #endregion
 
 
-        if(ShowConnectionLostPanel)
-        {
-            //gameManagerscript.LoseConnection(EnemyName);
+        //if(ShowConnectionLostPanel)
+        //{
+        //    //gameManagerscript.LoseConnection(EnemyName);
 
-            soundManager.SFX_WrongACtionPlay();
+        //    soundManager.SFX_WrongACtionPlay();
 
-            ShowConnectionLostPanel = false;
-        }
+        //    ShowConnectionLostPanel = false;
+        //}
 
-        if (IsOnePlayerLeftTheGame)
-        {
-
-
-            if (ThePlayerIDWhoLeft == MyTurnID)
-            {
-                //CmdResetServerRandomTurn();
-
-                SceneManager.LoadScene(0);
-
-                IsOnePlayerLeftTheGame = false;
-
-                print("My Exit");
-            }
-            else
-            {
-                // When Enemy Left The Game
-
-                soundManager.SFX_WrongACtionPlay();
-
-                IsOnePlayerLeftTheGame = false;
-
-                print("Enemy Exit");
-
-            }
+        //if (IsOnePlayerLeftTheGame)
+        //{
 
 
-        }
+        //    if (ThePlayerIDWhoLeft == MyTurnID)
+        //    {
+        //        //CmdResetServerRandomTurn();
 
-        else if (IsGameFinished)
+        //        SceneManager.LoadScene(0);
+
+        //        IsOnePlayerLeftTheGame = false;
+
+        //        print("My Exit");
+        //    }
+        //    else
+        //    {
+        //        // When Enemy Left The Game
+
+        //        soundManager.SFX_WrongACtionPlay();
+
+        //        IsOnePlayerLeftTheGame = false;
+
+        //        print("Enemy Exit");
+
+        //    }
+
+
+        //}
+
+        if (IsGameFinished)
         {
             if(WinnerID == MyTurnID)
             {
@@ -538,15 +534,15 @@ public class PlayerConnection : NetworkBehaviour
     #region COMMANDS
 
 
-    [Command]
-    public void CmdOnePlayerLeft(int playerID)
-    {
-        //IsOnePlayerLeftTheGame = true;
+    //[Command]
+    //public void CmdOnePlayerLeft(int playerID)
+    //{
+    //    //IsOnePlayerLeftTheGame = true;
 
-        RpcTellOneLeft(playerID);
+    //    RpcTellOneLeft(playerID);
 
-        print("Server: OnePlayerLeft");
-    }
+    //    print("Server: OnePlayerLeft");
+    //}
 
     #region CmdAskToTellActiveConnection()
     /// <summary>
@@ -1641,12 +1637,12 @@ public class PlayerConnection : NetworkBehaviour
     #endregion
 
 
-    [Command]
-    public void CmdResetServerRandomTurn()
-    {
-        print("Server: Reset Turn: 0");
+    //[Command]
+    //public void CmdResetServerRandomTurn()
+    //{
+    //    print("Server: Reset Turn: 0");
         
-    }
+    //}
 
 
     #region CmdResetServerData(int playerTurn)
@@ -1843,11 +1839,6 @@ public class PlayerConnection : NetworkBehaviour
 
     #endregion
 
-    private void OnDisconnectedFromServer(NetworkDisconnection info)
-    {
-        //IsOnePlayerLeftTheGame = true;
-        //print("Disconnected: " + info);
-    }
 
 
 
