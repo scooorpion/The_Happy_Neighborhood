@@ -101,22 +101,27 @@ public class PlayerConnection : NetworkBehaviour
 
 
     Text serverText;
-
+    public bool ShowConnectionLostPanel = false;
     #endregion
 
     #region Start()
     void Start()
     {
+        //serverText = GameObject.FindGameObjectWithTag("ServerText").GetComponent<Text>();
 
-        serverText = GameObject.FindGameObjectWithTag("ServerText").GetComponent<Text>();
+
 
         if (!isLocalPlayer)
         {
             return;
         }
-        print("1- MyTurnID: " + MyTurnID);
-        CmdShowServerTurn();
-        print("----");
+
+        if (isServer)
+        {
+            CmdResetServerData();
+            print("Run On Server");
+        }
+
 
         soundManager = FindObjectOfType<SoundManager>();
 
@@ -128,7 +133,6 @@ public class PlayerConnection : NetworkBehaviour
        
         CmdAskToSetPlayerTurn();
 
-        CmdResetServerData(MyTurnID);
 
         //First change the name locally then on the server
         UserName = PlayerPrefs.GetString(MenuManager.UserNamePlayerPrefs);
@@ -137,14 +141,10 @@ public class PlayerConnection : NetworkBehaviour
 
         SetCardSelectedToNull();
 
-        //serverText.text = UnityEngine.Random.Range(1, 1000).ToString();
-        print("2- MyTurnID: " + MyTurnID);
-        CmdShowServerTurn();
-
     }
     #endregion
 
-
+    
     void Update()
     {
 
@@ -155,30 +155,33 @@ public class PlayerConnection : NetworkBehaviour
         }
         #endregion
 
-        if(Input.GetKeyDown(KeyCode.A))
+
+        if(ShowConnectionLostPanel)
         {
-            CmdTestInput();
+            gameManagerscript.LoseConnection(EnemyName);
+
+            soundManager.SFX_WrongACtionPlay();
+
+            ShowConnectionLostPanel = false;
         }
 
         if (IsOnePlayerLeftTheGame)
         {
 
+
             if (ThePlayerIDWhoLeft == MyTurnID)
             {
-                serverText.text = "My Turn for exit=Before";
-                CmdResetServerRandomTurn();
+                //CmdResetServerRandomTurn();
 
                 SceneManager.LoadScene(0);
 
                 IsOnePlayerLeftTheGame = false;
 
-                serverText.text = "My Turn for exit = after";
-
                 print("My Exit");
             }
             else
             {
-
+                // When Enemy Left The Game
                 gameManagerscript.LoseConnection(EnemyName);
 
                 soundManager.SFX_WrongACtionPlay();
@@ -475,6 +478,8 @@ public class PlayerConnection : NetworkBehaviour
     /// </summary>
     void FirstTimeStartTheGameSetting()
     {
+        FindObjectOfType<MyNetworkDiscovery>().StopBroadcast();
+
         soundManager.SoundTrackPlay();
 
         GetEnemyScript();
@@ -531,32 +536,14 @@ public class PlayerConnection : NetworkBehaviour
 
     #region COMMANDS
 
+
     [Command]
-    void CmdTestInput()
-    {
-        print("Server ==>");
-        RpcTest();
-    }
-
-
-    [ClientRpc]
-    void RpcTest()
-    {
-        print("RPC ==>");
-
-        IsReadyForUpdateHouseCellsOnScreen = true;
-        IsReadyForUpdateCharacterCellsOnScreen = true;
-        IsReadyForUpdateHouseCardsOnScreen = true;
-        IsReadyForUpdateCharacterCardsOnScreen = true;
-
-}
-
-[Command]
     public void CmdOnePlayerLeft(int playerID)
     {
         //IsOnePlayerLeftTheGame = true;
 
         RpcTellOneLeft(playerID);
+
         print("Server: OnePlayerLeft");
     }
 
@@ -1061,7 +1048,7 @@ public class PlayerConnection : NetworkBehaviour
         // ServerTurn has next turn which is 1 or 2 and is opposit the player id who choose. sum of these two number is always 3 1+2 or 2+1
         if (ServerTurn+PlayerID != 3)
         {
-            print("Cheat");
+            print("Cheat--ServerTurn: "+ ServerTurn+ " *** PlayerID: "+PlayerID);
             RpcTellCharacterCells(CharCells_P1_Server,false);
             RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile, false);
             return;
@@ -1652,17 +1639,12 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-    [Command]
-    public void CmdShowServerTurn()
-    {
-        print(ServerTurn);
-    }
 
     [Command]
     public void CmdResetServerRandomTurn()
     {
         print("Server: Reset Turn: 0");
-        IsNoFirstRandomTurn = true;
+        
     }
 
 
@@ -1672,38 +1654,34 @@ public class PlayerConnection : NetworkBehaviour
     /// </summary>
     /// <param name="playerTurn">in order not to be called two time use a player id</param>
     [Command]
-    public void CmdResetServerData(int playerTurn)
+    public void CmdResetServerData()
     {
-        print("ResetData");
-        if(playerTurn == 1)
-        {
-            print("ResetData [ID = 1]");
+        print("ResetData [Server]");
 
-            HouseCells_P1_Server = new HouseCellsType[49];
-            HouseCells_P2_Server = new HouseCellsType[49];
+        HouseCells_P1_Server = new HouseCellsType[49];
+        HouseCells_P2_Server = new HouseCellsType[49];
 
-            CharCells_P1_Server = new CharactersType[49];
-            CharCells_P2_Server = new CharactersType[49];
+        CharCells_P1_Server = new CharactersType[49];
+        CharCells_P2_Server = new CharactersType[49];
 
-            HouseCardsDeckInGame_Server = new List<HouseCellsType>();
-            CharacterCardsDeckInGame_Server = new List<CharactersType>();
+        HouseCardsDeckInGame_Server = new List<HouseCellsType>();
+        CharacterCardsDeckInGame_Server = new List<CharactersType>();
 
-            CharactersInHouse_P1_Server = 0;
-            CharactersInHouse_P2_Server = 0;
+        CharactersInHouse_P1_Server = 0;
+        CharactersInHouse_P2_Server = 0;
 
-            Score_P1_Server = 0;
-            Score_P2_Server = 0;
+        Score_P1_Server = 0;
+        Score_P2_Server = 0;
 
-            HousesDeckList_Server = new List<HouseCellsType>();
-            CharactersDeckList_Server = new List<CharactersType>();
+        HousesDeckList_Server = new List<HouseCellsType>();
+        CharactersDeckList_Server = new List<CharactersType>();
 
-            IsNoFirstRandomTurn = true;
+        IsNoFirstRandomTurn = true;
 
-            //MyTurnID = 0;
-            //UserName = "";
+        IsNoFirstRandomTurn = true;
+        ServerTurn = 0;
 
 
-        }
     }
     #endregion
 
@@ -1856,7 +1834,8 @@ public class PlayerConnection : NetworkBehaviour
     [ClientRpc]
     void RpcTellOneLeft(int playerID)
     {
-        print("RPC: RpcTellOneLeft");
+        print("RPC: One Left");
+
         ThePlayerIDWhoLeft = playerID;
         IsOnePlayerLeftTheGame = true;
     }

@@ -939,7 +939,10 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator OtherConnectionLost(string PlayerLost, float waitTime)
     {
-        networkButtonManager.Disconnection();
+        print("Enum...");
+
+        //networkButtonManager.Disconnection();
+
 
         ConnctionLostPlayer.text = PlayerLost;
         ConnectionLostPanel.SetActive(true);

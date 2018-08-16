@@ -24,4 +24,5 @@ public class HUDNetworkManagerCostumized : MonoBehaviour
     }
 
 
+
 }

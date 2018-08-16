@@ -23,8 +23,7 @@ public class MyNetworkDiscovery : NetworkDiscovery
     {
         base.Initialize();
         base.StartAsClient();
-        StartCoroutine(CleanupExpiredEntries());
-        print("Finish Listening");
+        //StartCoroutine(CleanupExpiredEntries());
     }
 
 
@@ -70,7 +69,9 @@ public class MyNetworkDiscovery : NetworkDiscovery
     public override void OnReceivedBroadcast(string fromAddress, string data)
     {
         base.OnReceivedBroadcast(fromAddress, data);
+        HUDnetManager.JoinRoom(fromAddress);
 
+        return;
         LanConnectionInfo info = new LanConnectionInfo(fromAddress, data);
 
         if( lanAdresses.ContainsKey(info) == false )
