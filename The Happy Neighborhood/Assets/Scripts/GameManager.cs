@@ -94,6 +94,8 @@ public class GameManager : MonoBehaviour
     private static int[] RightEdge = new int[] { 6, 13, 20, 27, 34, 41, 48 };
 
 
+    public static string enemyName;
+
     [SerializeField]
     public SpriteReference spriteReference;
 
@@ -931,25 +933,25 @@ public class GameManager : MonoBehaviour
         FinishedPanel.SetActive(true);
     }
 
-    public void LoseConnection(string Name)
-    {
-        StartCoroutine(OtherConnectionLost(Name, 2));
+    //public void LoseConnection(string Name)
+    //{
+    //    StartCoroutine(OtherConnectionLost(Name, 2));
+    //}
 
-    }
-
-    public IEnumerator OtherConnectionLost(string PlayerLost, float waitTime)
+    public IEnumerator OtherConnectionLost(float waitTime)
     {
-        print("Enum...");
 
         //networkButtonManager.Disconnection();
 
-
-        ConnctionLostPlayer.text = PlayerLost;
+        // Displaying ConnectioLost Panel
+        ConnctionLostPlayer.text = enemyName;
         ConnectionLostPanel.SetActive(true);
 
         yield return new WaitForSeconds(waitTime);
 
+        // Load MainMenue Scene
         ConnectionLostPanel.SetActive(false);
+        
         SceneManager.LoadScene(0);
 
 

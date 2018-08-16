@@ -158,7 +158,7 @@ public class PlayerConnection : NetworkBehaviour
 
         if(ShowConnectionLostPanel)
         {
-            gameManagerscript.LoseConnection(EnemyName);
+            //gameManagerscript.LoseConnection(EnemyName);
 
             soundManager.SFX_WrongACtionPlay();
 
@@ -182,7 +182,6 @@ public class PlayerConnection : NetworkBehaviour
             else
             {
                 // When Enemy Left The Game
-                gameManagerscript.LoseConnection(EnemyName);
 
                 soundManager.SFX_WrongACtionPlay();
 
@@ -485,6 +484,8 @@ public class PlayerConnection : NetworkBehaviour
         GetEnemyScript();
 
         setEnemyName();
+
+        GameManager.enemyName = EnemyName;
 
         gameManagerscript.HideconnectionHUDPanel();
 

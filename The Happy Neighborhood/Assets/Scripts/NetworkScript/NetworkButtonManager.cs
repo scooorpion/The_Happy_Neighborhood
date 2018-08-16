@@ -19,7 +19,7 @@ public class NetworkButtonManager : MonoBehaviour {
 
     public void CreateRoom()
     {
-        networkManager.StopHost();
+        //networkManager.StopHost();
 
         networkManager.StartHost();
         networkDiscovery.StartBroadcast();
@@ -35,6 +35,11 @@ public class NetworkButtonManager : MonoBehaviour {
 
     public void Exit()
     {
+
+        networkManager.StopHost();
+        SceneManager.LoadScene(0);
+        return;
+
         PlayerConnection myConnectionScript = GameObject.FindGameObjectWithTag("MyConnection").GetComponent<PlayerConnection>();
 
         myConnectionScript.CmdOnePlayerLeft(myConnectionScript.MyTurnID);
