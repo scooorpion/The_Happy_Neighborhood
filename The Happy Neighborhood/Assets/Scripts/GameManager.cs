@@ -122,7 +122,10 @@ public class GameManager : MonoBehaviour
         if (ToReset)
         {
             UIAnimator.SetBool("serverFull", false);
-            UIAnimator.SetBool("waiting", false);
+
+            UIAnimator.SetBool("Find_Waiting", false);
+            UIAnimator.SetBool("Create_waiting", false);
+
             UIAnimator.SetBool("loadGame", false);
         }
         ConnectionLostPanel.SetActive(false);
@@ -161,9 +164,11 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ShowGameLoading()
     {
-        GameLoadingPanel.SetActive(true);
+       // GameLoadingPanel.SetActive(true);
         UIAnimator.SetBool("loadGame", true);
         StartGame();
+        print("Loadiiing....");
+
     }
     #endregion
 
@@ -173,8 +178,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ShowWaitingAnimation()
     {
-        WaitingPanel.SetActive(true);
-        UIAnimator.SetBool("waiting", true);
+        //WaitingPanel.SetActive(true);
+        //UIAnimator.SetBool("waiting", true);
+        print("Loadiiing");
+
     }
     #endregion
 
@@ -254,26 +261,26 @@ public class GameManager : MonoBehaviour
     {
         if (IsItMyTurn)
         {
-            myBoardGenerator.UserNameTextBox.color = Color.white;
-            myBoardGenerator.scoreText.color = Color.white;
-            myBoardGenerator.ScoreLable.color = Color.white;
+            //myBoardGenerator.UserNameTextBox.color = Color.black;
+            //myBoardGenerator.scoreText.color = Color.black;
+            //myBoardGenerator.ScoreLable.color = Color.black;
 
-            myEnemyBoardGenerator.UserNameTextBox.color = Color.gray;
-            myEnemyBoardGenerator.scoreText.color = Color.gray;
-            myEnemyBoardGenerator.ScoreLable.color = Color.gray;
+            //myEnemyBoardGenerator.UserNameTextBox.color = Color.gray;
+            //myEnemyBoardGenerator.scoreText.color = Color.gray;
+            //myEnemyBoardGenerator.ScoreLable.color = Color.gray;
 
             myBoardGenerator.TurnPanel.SetActive(true);
             myEnemyBoardGenerator.TurnPanel.SetActive(false);
         }
         else
         {
-            myBoardGenerator.UserNameTextBox.color = Color.gray;
-            myBoardGenerator.scoreText.color = Color.gray;
-            myBoardGenerator.ScoreLable.color = Color.gray;
+            //myBoardGenerator.UserNameTextBox.color = Color.gray;
+            //myBoardGenerator.scoreText.color = Color.gray;
+            //myBoardGenerator.ScoreLable.color = Color.gray;
 
-            myEnemyBoardGenerator.UserNameTextBox.color = Color.white;
-            myEnemyBoardGenerator.scoreText.color = Color.white;
-            myEnemyBoardGenerator.ScoreLable.color = Color.white;
+            //myEnemyBoardGenerator.UserNameTextBox.color = Color.black;
+            //myEnemyBoardGenerator.scoreText.color = Color.black;
+            //myEnemyBoardGenerator.ScoreLable.color = Color.black;
 
             myBoardGenerator.TurnPanel.SetActive(false);
             myEnemyBoardGenerator.TurnPanel.SetActive(true);
@@ -306,10 +313,17 @@ public class GameManager : MonoBehaviour
             {
                 myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
 
+
                 if (HouseCellsArray[i] == HouseCellsType.BannedTile)
                 {
                     myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
                 }
+
+                if (HouseCellsArray[i] != HouseCellsType.EmptyTile)
+                {
+                    myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                }
+
             }
         }
         else if (!IsMyBoard)
@@ -318,6 +332,12 @@ public class GameManager : MonoBehaviour
             {
                 myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
                 myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
+
+                if (HouseCellsArray[i] != HouseCellsType.EmptyTile)
+                {
+                    myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                }
+
             }
 
         }

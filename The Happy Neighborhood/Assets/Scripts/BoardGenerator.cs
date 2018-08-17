@@ -132,8 +132,11 @@ public class BoardGenerator : MonoBehaviour
         #endregion
 
         #region Calculating first grid position to generate
-        firstGridPosition = gridLinesDistnace - (BoardSizeInPixle / 2);
+        //firstGridPosition = gridLinesDistnace - (BoardSizeInPixle / 2);
+
+        firstGridPosition =  -(BoardSizeInPixle / 2);
         firstGridPosition = Mathf.Round(firstGridPosition * 100f) / 100f;
+
         #endregion
 
         #region Calculating first cell position to generate
@@ -142,7 +145,7 @@ public class BoardGenerator : MonoBehaviour
 
 
         #region Generating Vertical Lines
-        for (int i = 0; i < (BoardCellsInRow - 1); i++)
+        for (int i = 0; i < (BoardCellsInRow+1); i++)
         {
             RectTransform gridRectTransform;
             tempGridRow = Instantiate<GameObject>(GridLinePrefab);          // Generating Vertical Lines
@@ -154,7 +157,7 @@ public class BoardGenerator : MonoBehaviour
         #endregion
 
         #region Generating Horizontal Lines
-        for (int i = 0; i < (BoardCellsInRow - 1); i++)
+        for (int i = 0; i < (BoardCellsInRow +1); i++)
         {
             RectTransform gridRectTransform;
             tempGridRow = Instantiate<GameObject>(GridLinePrefab);          // Generating Horizontal Lines

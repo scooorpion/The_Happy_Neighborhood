@@ -13,11 +13,12 @@ public class MenuButtonManager : MonoBehaviour
     public Text NameEditWarningText;
 
     private MenuManager menuManager;
-
+    private SoundManager soundManager;
 
     private void Start()
     {
         menuManager = GetComponent<MenuManager>();
+        soundManager = FindObjectOfType<SoundManager>();
     }
 
     #region StartGame()
@@ -26,7 +27,9 @@ public class MenuButtonManager : MonoBehaviour
     /// </summary>
     public void StartGame()
     {
-        SceneManager.LoadScene(1);
+        soundManager.SFX_MenuButtonPlay();
+        StopAllCoroutines();
+        StartCoroutine(DelayLoadScene(1, 0.4f));
     }
     #endregion
 
@@ -36,6 +39,9 @@ public class MenuButtonManager : MonoBehaviour
     /// </summary>
     public void SaveNameBtn()
     {
+        soundManager.SFX_MenuButtonPlay();
+
+
         string UserName = "";
 
         UserName = NameSaveInput.text.Trim();
@@ -48,6 +54,7 @@ public class MenuButtonManager : MonoBehaviour
         else
         {
             NameSaveWarningText.text = "WARNING: This field can't be empty";
+            soundManager.SFX_ErrorPlay();
         }
     }
     #endregion
@@ -58,6 +65,7 @@ public class MenuButtonManager : MonoBehaviour
     /// </summary>
     public void ShowOptionPanelBtn()
     {
+        soundManager.SFX_MenuButtonPlay();
         menuManager.MainMenuPanel.SetActive(false);
         menuManager.OptionPanel.SetActive(true);
         NameEditInput.text = PlayerPrefs.GetString(MenuManager.UserNamePlayerPrefs);
@@ -78,13 +86,35 @@ public class MenuButtonManager : MonoBehaviour
     }
     #endregion
 
+
+    public void ShowTutorial()
+    {
+        soundManager.SFX_MenuButtonPlay();
+        menuManager.OptionPanel.SetActive(false);
+        menuManager.TutorialPanel.SetActive(true);
+    }
+
+    public void OKToHideTutorial()
+    {
+        soundManager.SFX_MenuButtonPlay();
+        menuManager.OptionPanel.SetActive(false);
+        menuManager.PopupPanelForName.SetActive(false);
+        menuManager.TutorialPanel.SetActive(false);
+
+        menuManager.MainMenuPanel.SetActive(true);
+
+    }
+
+
     #region ExitGameBtn()
     /// <summary>
     /// Exit the game
     /// </summary>
     public void ExitGameBtn()
     {
-        Application.Quit();
+        soundManager.SFX_ErrorPlay();
+        StopAllCoroutines();
+        StartCoroutine(DelayExit(0.4f));
     }
     #endregion
 
@@ -100,15 +130,45 @@ public class MenuButtonManager : MonoBehaviour
 
         if (UserName != "")
         {
+            soundManager.SFX_MenuButtonPlay();
             PlayerPrefs.SetString(MenuManager.UserNamePlayerPrefs, UserName);
             return true;
         }
         else
         {
+            soundManager.SFX_ErrorPlay();
             NameEditWarningText.text = "WARNING: Wrong Input!";
             return false;
         }
     }
     #endregion
 
+
+
+    #region DelayLoadScene(int SceneIndex, float WaitingTime) [Coroutine]
+    /// <summary>
+    /// Load a scene after given delay [use for playing SFX befor starting the game]
+    /// </summary>
+    /// <param name="SceneIndex"></param>
+    /// <param name="WaitingTime"></param>
+    /// <returns></returns>
+    IEnumerator DelayLoadScene(int SceneIndex, float WaitingTime)
+    {
+        yield return new WaitForSeconds(WaitingTime);
+        SceneManager.LoadScene(SceneIndex);
+    }
+    #endregion
+
+    #region DelayExit(float WaitingTime)  [Coroutine]
+    /// <summary>
+    /// Exit the game after given delay [use for playing SFX befor exiting the game]
+    /// </summary>
+    /// <param name="WaitingTime"></param>
+    /// <returns></returns>
+    IEnumerator DelayExit(float WaitingTime)
+    {
+        yield return new WaitForSeconds(WaitingTime);
+        Application.Quit();
+    }
+    #endregion
 }

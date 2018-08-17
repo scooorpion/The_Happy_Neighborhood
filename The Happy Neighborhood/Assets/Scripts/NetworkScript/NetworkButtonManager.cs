@@ -10,18 +10,38 @@ public class NetworkButtonManager : MonoBehaviour {
     NetworkManager networkManager;
     MyNetworkDiscovery networkDiscovery;
     HUDNetworkManagerCostumized hudManager;
+    SoundManager soundManager;
     public Text serverText;
+
+    public GameObject CreateRoomBtn;
+    public GameObject FindRoomBtn;
+
+    public Animator UIAnimator;
 
 
     private void Start()
     {
+        soundManager = FindObjectOfType<SoundManager>();
         networkManager = GameObject.FindObjectOfType<NetworkManager>();
         networkDiscovery = GameObject.FindObjectOfType<MyNetworkDiscovery>();
         hudManager = FindObjectOfType<HUDNetworkManagerCostumized>();
+        CreateRoomBtn.SetActive(true);
+        FindRoomBtn.SetActive(true);
+
     }
 
     public void CreateRoom()
     {
+        soundManager.SFX_MenuButtonPlay();
+
+        UIAnimator.SetBool("Find_Waiting", false);
+        UIAnimator.SetBool("Create_waiting", true);
+
+        CreateRoomBtn.SetActive(false);
+        FindRoomBtn.SetActive(true);
+
+
+
         networkDiscovery.StopBroadcast();
 
 
@@ -40,6 +60,7 @@ public class NetworkButtonManager : MonoBehaviour {
 
     IEnumerator ShowError()
     {
+
         serverText.text = ("Error: Port already in use. Try Find a room");
         yield return new WaitForSeconds(2);
         serverText.text = "";
@@ -47,6 +68,17 @@ public class NetworkButtonManager : MonoBehaviour {
 
     public void FindRoom()
     {
+        networkManager.StopHost();
+
+        soundManager.SFX_MenuButtonPlay();
+
+        UIAnimator.SetBool("Create_waiting", false);
+        UIAnimator.SetBool("Find_Waiting", true);
+
+        CreateRoomBtn.SetActive(true);
+        FindRoomBtn.SetActive(false);
+
+
         networkDiscovery.StopBroadcast();
 
 
@@ -57,6 +89,8 @@ public class NetworkButtonManager : MonoBehaviour {
 
     public void Exit()
     {
+        soundManager.SFX_MenuButtonPlay();
+
         networkManager.StopHost();
         SceneManager.LoadScene(0);
     }

@@ -487,7 +487,6 @@ public class PlayerConnection : NetworkBehaviour
 
         gameManagerscript.SetMyName(UserName);
 
-        gameManagerscript.ShowGameLoading();
 
         gameManagerscript.SetDiactiveUIBeginingWaitingPanel();
 
@@ -500,6 +499,8 @@ public class PlayerConnection : NetworkBehaviour
         CmdAskToCreateHouseTilesArray(MyTurnID);
 
         StartCoroutine(RequestForFirstTurnSet(0.5f));
+
+        gameManagerscript.ShowGameLoading();
 
     }
 

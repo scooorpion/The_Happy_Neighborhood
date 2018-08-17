@@ -6,7 +6,7 @@ public class SoundManager : MonoBehaviour {
 
     public AudioSource MainSoundTrackAudioSource;
     public AudioSource SFXAudioSource;
-
+    public AudioClip Error;
     public AudioClip WrongACtion;
     public AudioClip CharactersPlacement;
     public AudioClip EndOfGame;
@@ -25,6 +25,13 @@ public class SoundManager : MonoBehaviour {
         SFXAudioSource.clip = WrongACtion;
         SFXAudioSource.Play();
     }
+
+    public void SFX_ErrorPlay()
+    {
+        SFXAudioSource.clip = Error;
+        SFXAudioSource.Play();
+    }
+
 
     public void SFX_CharactersPlacementPlay()
     {
