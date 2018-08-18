@@ -101,6 +101,10 @@ public class PlayerConnection : NetworkBehaviour
 
 
     public bool ShowConnectionLostPanel = false;
+
+
+
+    private bool[] FlagsToDisable;
     #endregion
 
     #region Start()
@@ -118,6 +122,13 @@ public class PlayerConnection : NetworkBehaviour
             print("Run On Server");
         }
 
+        FlagsToDisable = new bool[] 
+        {
+            IsReadyForUpdateHouseCellsOnScreen ,
+            IsReadyForUpdateCharacterCellsOnScreen,
+            IsReadyForUpdateHouseCardsOnScreen,
+            IsReadyForUpdateCharacterCardsOnScreen
+        };
 
         soundManager = FindObjectOfType<SoundManager>();
 
@@ -140,7 +151,7 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-    
+
     void Update()
     {
 
@@ -353,10 +364,23 @@ public class PlayerConnection : NetworkBehaviour
 
             #endregion
 
+
+            StartCoroutine(DisableFlag(FlagsToDisable, 0.4f));
         }
 
 
     }
+
+    IEnumerator DisableFlag(bool[] FlagToDisable, float WaitTime)
+    {
+        yield return new WaitForSeconds(WaitTime);
+
+        for (int i = 0; i < FlagToDisable.Length; i++)
+        {
+            FlagToDisable[i] = false;
+        }
+    }
+
 
     #region ShowAnimationBasedOnActiveConnectionNumbers()
     /// <summary>
@@ -366,6 +390,7 @@ public class PlayerConnection : NetworkBehaviour
     {
         if(!IsGameStarted)
         {
+            HandleTextFile.WriteString("Active Connections: " + ActiveConnections.ToString());
             switch (ActiveConnections)
             {
                 case 0:
