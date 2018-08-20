@@ -1,25 +1,31 @@
 ﻿using UnityEngine;
 using System.IO;
+using UnityEditor;
 
 public class HandleTextFile : MonoBehaviour
 {
+    static string path = "ConnectionLog.txt";
+    static StreamWriter writer;
 
-    public static void WriteString(string Message)
+    public static void CreateStreamLog()
     {
-        string path = "test.txt";
 
-        //Write some text to the test.txt file
-        StreamWriter writer = new StreamWriter(path, true);
-        writer.WriteLine(Message);
+        writer = new StreamWriter(path, true);
+        writer.WriteLine("<< Log File >>");
         writer.Close();
 
         //Re-import the file to update the reference in the editor
-        
+
         /*
-        AssetDatabase.ImportAsset(path);
-        TextAsset asset = Resources.Load("test");
         */
     }
 
+
+    public static void WriteString(string Message)
+    {
+        writer = new StreamWriter(path, true);
+        writer.WriteLine(Message);
+        writer.Close();
+    }
 
 }

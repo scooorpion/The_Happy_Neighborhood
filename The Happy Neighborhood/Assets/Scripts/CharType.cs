@@ -75,6 +75,9 @@ public class CharType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 tempScore = 40;
                 break;
 
+            case CharactersType.Ghost:
+                tempScore = -10;
+                break;
 
             case CharactersType.Wizard:
                 tempScore = 0;

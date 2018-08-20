@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CardType { NoSelection, CharacterCard, HouseCard }
+public enum CardType { NoSelection, CharacterCard, HouseCard, GhostCard }
 
 public class HouseDeckManager : MonoBehaviour
 {

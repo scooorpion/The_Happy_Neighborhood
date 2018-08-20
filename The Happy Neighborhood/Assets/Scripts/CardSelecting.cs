@@ -7,11 +7,14 @@ public class CardSelecting : MonoBehaviour
 {
     PlayerConnection myConnection;
     SoundManager soundManager;
+    GameManager gameManager;
 
     private void Start()
     {
         myConnection = GameObject.FindGameObjectWithTag("MyConnection").GetComponent<PlayerConnection>();
         soundManager = FindObjectOfType<SoundManager>();
+        gameManager = FindObjectOfType<GameManager>();
+
     }
 
     public void SelectCard()
@@ -20,6 +23,8 @@ public class CardSelecting : MonoBehaviour
         HouseType houseType;
 
         soundManager.SFX_SelectingCardPlay();
+        gameManager.DisableEnemyTilesActiveForGhosts();
+
         if (charType = GetComponent<CharType>())
         {
             myConnection.CharacterdCardSelected = charType.charactersType;
@@ -35,10 +40,20 @@ public class CardSelecting : MonoBehaviour
             myConnection.CardTypeSelected = CardType.HouseCard;
             ResetAllButtonToNormalColor();
             GetComponent<Image>().color = new Color(0.725f, 1f, 0.725f);
-
         }
 
     }
+
+    public void SelectGhost()
+    {
+        myConnection.CharacterdCardSelected = CharactersType.Ghost;
+        myConnection.CardTypeSelected = CardType.GhostCard;
+        myConnection.HouseCardSelected = HouseCellsType.EmptyTile;
+        ResetAllButtonToNormalColor();
+        GetComponent<Image>().color = new Color(0.725f, 1f, 0.725f);
+        gameManager.EnableEnemyTilesActiveForGhosts();
+    }
+
 
     void ResetAllButtonToNormalColor()
     {
@@ -50,6 +65,9 @@ public class CardSelecting : MonoBehaviour
         {
             CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Image>().color = Color.white;
         }
+
+        gameManager.ResetGhostColorToWhite();
+
 
     }
 }

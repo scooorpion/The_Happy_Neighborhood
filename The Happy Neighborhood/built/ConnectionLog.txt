@@ -1,0 +1,68 @@
+<< Log File >>
+Active Connections: 2
+<< Log File >>
+Active Connections: 2
+<< Log File >>
+Active Connections: 2
+<< Log File >>
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+<< Log File >>
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+<< Log File >>
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+<< Log File >>
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[2] ** MyTurnID[2]
+TurnSet Falg[true] ** ServerTurn[1] ** MyTurnID[2]
+<< Log File >>
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+<< Log File >>
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+Command Server to Update Turn ===> [Client: 1 ]
+<< Log File >>

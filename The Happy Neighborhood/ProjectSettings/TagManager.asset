@@ -11,6 +11,7 @@ TagManager:
   - MyConnection
   - ServerText
   - Network
+  - BannedHouse
   layers:
   - Default
   - TransparentFX

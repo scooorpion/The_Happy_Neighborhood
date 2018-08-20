@@ -32,11 +32,17 @@ public class PlayerConnection : NetworkBehaviour
     private bool IsReadyForUpdateCharacterCellsOnScreen = false;
     private bool IsReadyForUpdateHouseCardsOnScreen = false;
     private bool IsReadyForUpdateCharacterCardsOnScreen = false;
+    private static bool  IsReadyForUpdateGhostsOnScreen = false;
+    private static bool IsGhostAttackDone = false;
     private bool IsErrorMustShown = false;
     private int ErrorForPlayerID = 0;
     private static bool IsScoreChanged = false;
     private static int ScoreForPlayerID = 0;
     private static int ThePlayerIDWhoLeft = 0;
+
+    private static int GhostAttacked_PlayerID;
+    private static int GhostAttackedIndex;
+
     public static bool IsGameTurnSet = false;
     private bool IsOldHousePlacementDone = false;
     private bool IsHousePlacementDone = false;
@@ -72,6 +78,9 @@ public class PlayerConnection : NetworkBehaviour
     public CharactersType CharacterdCardSelected;
 
     public static int Score = 0;
+    static int tempGhost = 0;
+
+    public static int GhostChangedID = 0;
 
 
     // Server-Side Arrays
@@ -89,6 +98,9 @@ public class PlayerConnection : NetworkBehaviour
 
     static CharactersType[] CharCells_P1_Server ;
     static CharactersType[] CharCells_P2_Server ;
+
+    static int Ghosts_P1_Server;
+    static int Ghosts_P2_Server;
 
     static public List<HouseCellsType> HouseCardsDeckInGame_Server ;
     static public List<CharactersType> CharacterCardsDeckInGame_Server ;
@@ -119,16 +131,16 @@ public class PlayerConnection : NetworkBehaviour
         if (isServer)
         {
             CmdResetServerData();
-            print("Run On Server");
         }
 
-        FlagsToDisable = new bool[] 
+        /*FlagsToDisable = new bool[] 
         {
             IsReadyForUpdateHouseCellsOnScreen ,
             IsReadyForUpdateCharacterCellsOnScreen,
             IsReadyForUpdateHouseCardsOnScreen,
-            IsReadyForUpdateCharacterCardsOnScreen
-        };
+            IsReadyForUpdateCharacterCardsOnScreen,
+            IsReadyForUpdateGhostsOnScreen
+        };    */
 
         soundManager = FindObjectOfType<SoundManager>();
 
@@ -148,6 +160,8 @@ public class PlayerConnection : NetworkBehaviour
 
         SetCardSelectedToNull();
 
+        HandleTextFile.CreateStreamLog();
+
     }
     #endregion
 
@@ -163,44 +177,7 @@ public class PlayerConnection : NetworkBehaviour
         #endregion
 
 
-        //if(ShowConnectionLostPanel)
-        //{
-        //    //gameManagerscript.LoseConnection(EnemyName);
-
-        //    soundManager.SFX_WrongACtionPlay();
-
-        //    ShowConnectionLostPanel = false;
-        //}
-
-        //if (IsOnePlayerLeftTheGame)
-        //{
-
-
-        //    if (ThePlayerIDWhoLeft == MyTurnID)
-        //    {
-        //        //CmdResetServerRandomTurn();
-
-        //        SceneManager.LoadScene(0);
-
-        //        IsOnePlayerLeftTheGame = false;
-
-        //        print("My Exit");
-        //    }
-        //    else
-        //    {
-        //        // When Enemy Left The Game
-
-        //        soundManager.SFX_WrongACtionPlay();
-
-        //        IsOnePlayerLeftTheGame = false;
-
-        //        print("Enemy Exit");
-
-        //    }
-
-
-        //}
-
+        #region Check If the game is finished
         if (IsGameFinished)
         {
             if(WinnerID == MyTurnID)
@@ -217,6 +194,9 @@ public class PlayerConnection : NetworkBehaviour
             gameManagerscript.FinishGame(WinnerName, WinnerScore.ToString(), WinnerPpoint.ToString(), WinnerNpoint.ToString(), LoserName, LoserScore.ToString(), LoserPpoint.ToString(), LoserNpoint.ToString());
             IsGameFinished = false;
         }
+        #endregion
+        
+        #region if the gmae is not finished
         else
         {
             #region Wait untill MyTurnId is set by RPC to 1 or 2
@@ -252,7 +232,7 @@ public class PlayerConnection : NetworkBehaviour
 
 
                 // Set Flag For Update Screen to flase
-                IsReadyForUpdateHouseCellsOnScreen = false;
+                IsReadyForUpdateHouseCellsOnScreen = false;              //===> Disable by couroutine
 
             }
             #endregion
@@ -273,24 +253,63 @@ public class PlayerConnection : NetworkBehaviour
                 // Simiulating my enemy cell array
                 StartCoroutine(CreateAndUpdateEnemyCharacterTiles(0.5f));
 
-
                 // Set Flag For Update Screen to flase
-                IsReadyForUpdateCharacterCellsOnScreen = false;
-
+                IsReadyForUpdateCharacterCellsOnScreen = false;              //===> Disable by couroutine
+                
             }
             #endregion
 
+            if (IsGhostAttackDone)
+            {
+                if (GhostAttacked_PlayerID == MyTurnID)
+                {
+                    gameManagerscript.UpdateCharacterTileMap(GhostAttackedIndex, true);
+                }
+                else
+                {
+                    gameManagerscript.UpdateCharacterTileMap(GhostAttackedIndex, false);
+                }
+
+                soundManager.SFX_CharactersPlacementPlay();
+
+                IsGhostAttackDone = false;
+            }
+
+
+            #region Show Ghost Card on mine and my enemy screen based on flag: IsReadyForUpdateGhostsOnScreen
+            if (IsReadyForUpdateGhostsOnScreen)
+            {
+
+                if (GhostChangedID == MyTurnID)
+                {
+                    gameManagerscript.UpdateGhost(tempGhost, true);
+                }
+                else
+                {
+                    gameManagerscript.UpdateGhost(tempGhost, false);
+
+                }
+
+                IsReadyForUpdateGhostsOnScreen = false;   //==> Disable by couroutine
+            }
+            #endregion
+
+            #region Show Error on my screen based on flag: IsErrorMustShown
             if (IsErrorMustShown)
             {
                 if (ErrorForPlayerID == MyTurnID)
                 {
                     gameManagerscript.ShowWrongSelection();
-                    IsErrorMustShown = false;
                 }
-            }
 
+                IsErrorMustShown = false;
+            }
+            #endregion
+
+            #region Update Score on my enemy and my screen based on flag: IsScoreChanged
             if (IsScoreChanged)
             {
+
                 if (ScoreForPlayerID == MyTurnID)
                 {
                     gameManagerscript.UpdatePlayersScore(Score, true);
@@ -302,15 +321,16 @@ public class PlayerConnection : NetworkBehaviour
 
                 IsScoreChanged = false;
             }
+            #endregion
 
             #region Simiulating the character decks on screen based on flag: IsReadyForUpdateCharacterCardsOnScreen
 
             if (IsReadyForUpdateCharacterCardsOnScreen)
             {
                 gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
-                IsReadyForUpdateCharacterCardsOnScreen = false;
+                IsReadyForUpdateCharacterCardsOnScreen = false;             // ===> Disable by couroutine
 
-                print("Simiulating the character decks ");
+
             }
 
             #endregion
@@ -320,10 +340,9 @@ public class PlayerConnection : NetworkBehaviour
             if (IsReadyForUpdateHouseCardsOnScreen)
             {
                 gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
-                IsReadyForUpdateHouseCardsOnScreen = false;
+                IsReadyForUpdateHouseCardsOnScreen = false;              //===> Disable by couroutine
 
                 print("Simiulating the house decks ");
-
             }
 
             #endregion
@@ -333,22 +352,29 @@ public class PlayerConnection : NetworkBehaviour
             if (IsGameTurnSet)
             {
 
-                print("IsGameTurnSet: " + IsGameTurnSet);
-
                 if (ServerTurn == MyTurnID)
                 {
+                    CmdAskToUpdateItsTurnVariable();
+                    string Log = ("Command Server to Update Turn ===> [Client: " + MyTurnID + " ]");
+                    HandleTextFile.WriteString(Log);
+                    print(Log);
+
                     #region When its your turn, First update card deck and your enemy map
 
                     gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
                     gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
+
+                    gameManagerscript.SetEnemyName(EnemyName);
+                    gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
+                    gameManagerscript.UpdateCharacterTileMap(enemyConnection.MyCharCells, enemyConnection.MyHouseCells, false);
+
+                    /*
                     StartCoroutine(CreateAndUpdateEnemyHouseTiles(0.5f));
                     StartCoroutine(CreateAndUpdateEnemyCharacterTiles(0.5f));
-
+                    */
                     #endregion
-
                     gameManagerscript.HighlightPlayerNameWhoHasTheTurn(true);
                     gameManagerscript.EnableDecks();
-                    CmdAskToUpdateItsTurnVariable();
 
                     IsGameTurnSet = false;
 
@@ -365,8 +391,9 @@ public class PlayerConnection : NetworkBehaviour
             #endregion
 
 
-            StartCoroutine(DisableFlag(FlagsToDisable, 0.4f));
+            //StartCoroutine(DisableFlag(FlagsToDisable, 0.4f));
         }
+        #endregion
 
 
     }
@@ -378,6 +405,7 @@ public class PlayerConnection : NetworkBehaviour
         for (int i = 0; i < FlagToDisable.Length; i++)
         {
             FlagToDisable[i] = false;
+            
         }
     }
 
@@ -390,7 +418,7 @@ public class PlayerConnection : NetworkBehaviour
     {
         if(!IsGameStarted)
         {
-            HandleTextFile.WriteString("Active Connections: " + ActiveConnections.ToString());
+            
             switch (ActiveConnections)
             {
                 case 0:
@@ -405,6 +433,11 @@ public class PlayerConnection : NetworkBehaviour
                 default:        // Display an error that server is full and a back button 
                     gameManagerscript.ShowRoomIsFull();
                     break;
+            }
+
+            if(ActiveConnections > 0)
+            {
+                //HandleTextFile.WriteString( "Active Connections: " + ActiveConnections.ToString());                    
             }
         }
     }
@@ -548,9 +581,9 @@ public class PlayerConnection : NetworkBehaviour
     /// When a place is selected on the map this function check it on the server
     /// </summary>
     /// <param name="cellNumber"></param>
-    public void CommandToCheckSelectedCell(int cellNumber)
+    public void CommandToCheckSelectedCell(int cellNumber, BoardType WhosBoardSelection)
     {
-        CmdAskToCheckSelectedCell(cellNumber, CardTypeSelected, HouseCardSelected, CharacterdCardSelected, MyTurnID);
+        CmdAskToCheckSelectedCell(cellNumber, CardTypeSelected, HouseCardSelected, CharacterdCardSelected, MyTurnID, WhosBoardSelection);
     }
     #endregion
 
@@ -558,17 +591,6 @@ public class PlayerConnection : NetworkBehaviour
 
 
     #region COMMANDS
-
-
-    //[Command]
-    //public void CmdOnePlayerLeft(int playerID)
-    //{
-    //    //IsOnePlayerLeftTheGame = true;
-
-    //    RpcTellOneLeft(playerID);
-
-    //    print("Server: OnePlayerLeft");
-    //}
 
     #region CmdAskToTellActiveConnection()
     /// <summary>
@@ -836,8 +858,6 @@ public class PlayerConnection : NetworkBehaviour
 
         if (IsFirstTimeCreateion)
         {
-            print("Server: First Time Deck Fill");
-            print("Server: CharacterCardsDeckInGame_Server.Count: " + CharacterCardsDeckInGame_Server.Count);
             while (CharacterCardsDeckInGame_Server.Count < 4)
             {
                 CharactersType CharacterTemp;
@@ -867,7 +887,6 @@ public class PlayerConnection : NetworkBehaviour
         }
         else if (!IsFirstTimeCreateion)
         {
-            print("Server: Not First Time Deck Fill");
 
             while (CharacterCardsDeckInGame_Server.Contains(CharactersType.Empty))
             {
@@ -897,7 +916,6 @@ public class PlayerConnection : NetworkBehaviour
             }
         }
 
-        print("Server: callRpc");
         RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
     }
     #endregion
@@ -989,7 +1007,6 @@ public class PlayerConnection : NetworkBehaviour
     void CmdAskToSetPlayerNextTurn(bool IsItForFirstTime)
     {
 
-        print("Server: CmdAskToSetPlayerNextTurn ==> first time: "+ IsItForFirstTime);
 
         int nextTurn = 0;
 
@@ -1015,16 +1032,14 @@ public class PlayerConnection : NetworkBehaviour
                 nextTurn = ServerTurn;
                 RpcTellTurn(nextTurn);
 
-                print("First time + Random Is Seting");
 
             }
             else
             {
-                print("First time + Random is Setted Before");
+
             }
         }
 
-        print("Server ==> Next turn: " + nextTurn);
     }
     #endregion
 
@@ -1043,6 +1058,7 @@ public class PlayerConnection : NetworkBehaviour
         {
             ServerTurn = 1;
         }
+        print("[Server] : Update Server Turn to: " + ServerTurn);
     }
     #endregion
 
@@ -1056,7 +1072,7 @@ public class PlayerConnection : NetworkBehaviour
     /// <param name="charactersType"></param>
     /// <param name="PlayerID"></param>
     [Command]
-    void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID)
+    void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID, BoardType WhosBoard)
     {
         HouseCellsType[] tempHouseCells = new HouseCellsType[49];
         CharactersType[] tempCharacterCells = new CharactersType[49];
@@ -1072,11 +1088,95 @@ public class PlayerConnection : NetworkBehaviour
         if (ServerTurn+PlayerID != 3)
         {
             print("Cheat--ServerTurn: "+ ServerTurn+ " *** PlayerID: "+PlayerID);
-            RpcTellCharacterCells(CharCells_P1_Server,false);
-            RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile, false);
+            //RpcTellCharacterCells(CharCells_P1_Server,false);
+            //RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile, false);
             return;
         }
         #endregion
+
+        // If It is an attack to enemy
+        if (WhosBoard == BoardType.EnemyBoard)
+        {
+            HouseCellsType[] tempEnemyHouseCells = new HouseCellsType[49];
+            CharactersType[] tempEnemyCharacterCells = new CharactersType[49];
+
+            if (PlayerID == 1)
+            {
+                tempEnemyHouseCells = HouseCells_P2_Server;
+                tempEnemyCharacterCells = CharCells_P2_Server;
+            }
+            else if (PlayerID == 2)
+            {
+                tempEnemyHouseCells = HouseCells_P1_Server;
+                tempEnemyCharacterCells = CharCells_P1_Server;
+            }
+
+            // Checking Ghost Attack
+
+            HouseCellsType SelectedHouse = tempEnemyHouseCells[cellNumber];
+
+            #region Check If The selected house is an old house
+            if (SelectedHouse != HouseCellsType.OldBlueTile && SelectedHouse != HouseCellsType.OldPurpleTile &&
+                SelectedHouse != HouseCellsType.OldRedTile && SelectedHouse != HouseCellsType.OldYellowTile)
+            {
+                RpcTellError(PlayerID);
+                return;
+            }
+            #endregion
+
+            #region Check if the selected house has not any character inside
+            if (tempEnemyCharacterCells[cellNumber] != CharactersType.Empty)
+            {
+                RpcTellError(PlayerID);
+                return;
+            }
+            #endregion
+
+            // Assume That Ghost is placable in the selected house of enemy
+
+            if (PlayerID == 1)
+            {
+                #region decrease Ghost number of player after using
+                Ghosts_P1_Server--;
+                RpcTellGhostNumberUpdate(Ghosts_P1_Server, PlayerID);
+                #endregion
+
+                #region Decrease Enemy Score
+                Score_P2_Server += CharType.CalculateCharacterScore(CharactersType.Ghost);
+                #endregion
+
+                #region Put Ghost in correspondig character cells array of enemy
+                CharCells_P2_Server[cellNumber] = CharactersType.Ghost;
+                #endregion
+
+                RpcTellScore(Score_P2_Server, 2);
+                RpcTellGhostAttacked(cellNumber, 2);
+
+            }
+            else if(PlayerID == 2)
+            {
+                #region decrease Ghost number of player after using
+                Ghosts_P2_Server--;
+                RpcTellGhostNumberUpdate(Ghosts_P2_Server, PlayerID);
+                #endregion
+
+                #region Decrease Enemy Score
+                Score_P1_Server += CharType.CalculateCharacterScore(CharactersType.Ghost);
+                #endregion
+
+                #region Put Ghost in correspondig character cells array of enemy
+                CharCells_P1_Server[cellNumber] = CharactersType.Ghost;
+                #endregion
+
+
+                RpcTellScore(Score_P1_Server, 1);
+                RpcTellGhostAttacked(cellNumber, 1);
+            }
+
+            RpcTellTurn(ServerTurn);
+
+            return;
+        }
 
         #region Wrong Input Detect And Reset Cells To Previous State And RPC It
         if (PlayerID == 1)
@@ -1531,7 +1631,7 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
                 RpcTellCharacterCells(CharCells_P1_Server,true);
 
-                print("CharactersInHouse_P1_Server: " + CharactersInHouse_P1_Server);
+                //print("CharactersInHouse_P1_Server: " + CharactersInHouse_P1_Server);
                 if (CharactersInHouse_P1_Server == 5)
                 {
                     // Finish the game 
@@ -1552,15 +1652,19 @@ public class PlayerConnection : NetworkBehaviour
                     houseCellsType == HouseCellsType.OldRedTile || houseCellsType == HouseCellsType.OldYellowTile)
                 {
                     IsOldHouseTile = true;
+                    Ghosts_P1_Server++;
+                    RpcTellGhostNumberUpdate(Ghosts_P1_Server, 1);
+                    print("Server ==> Call RPC for Ghost Player 1");
+
                 }
                 else
                 {
                     IsOldHouseTile = false;
                 }
+                
 
                 RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
                 RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile,true);
-                CmdAskToFillEmptyHouseInGameDeck(false);
             }
             #endregion
 
@@ -1612,14 +1716,20 @@ public class PlayerConnection : NetworkBehaviour
                     houseCellsType == HouseCellsType.OldRedTile || houseCellsType == HouseCellsType.OldYellowTile)
                 {
                     IsOldHouseTile = true;
+                    Ghosts_P2_Server++;
+                    RpcTellGhostNumberUpdate(Ghosts_P2_Server, 2);
+                   // print("Server ==> Call RPC for Ghost Player 2");
+
                 }
                 else
                 {
                     IsOldHouseTile = false;
                 }
 
+
                 RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
                 RpcTellHouseCells(HouseCells_P2_Server, IsOldHouseTile,true);
+
             }
 
             #endregion
@@ -1662,15 +1772,6 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-
-    //[Command]
-    //public void CmdResetServerRandomTurn()
-    //{
-    //    print("Server: Reset Turn: 0");
-        
-    //}
-
-
     #region CmdResetServerData(int playerTurn)
     /// <summary>
     /// Reset All Data after reseting game
@@ -1679,7 +1780,10 @@ public class PlayerConnection : NetworkBehaviour
     [Command]
     public void CmdResetServerData()
     {
-        print("ResetData [Server]");
+        //print("ResetData [Server]");
+
+        Ghosts_P1_Server = 0;
+        Ghosts_P2_Server = 0;
 
         HouseCells_P1_Server = new HouseCellsType[49];
         HouseCells_P2_Server = new HouseCellsType[49];
@@ -1773,6 +1877,15 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
+    [ClientRpc]
+    public void RpcTellGhostAttacked(int AttackedIndex, int PlayerID_GhostAttacked)
+    {
+        GhostAttacked_PlayerID = PlayerID_GhostAttacked;
+
+        GhostAttackedIndex = AttackedIndex;
+
+        IsGhostAttackDone = true;
+    }
 
 
     #region RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
@@ -1803,14 +1916,6 @@ public class PlayerConnection : NetworkBehaviour
 
     #endregion
 
-    [ClientRpc]
-    public void RpcTellScore(int score, int PlayerTurn)
-    {
-        ScoreForPlayerID = PlayerTurn;
-        Score = score;
-        IsScoreChanged = true;
-    }
-
     #region RpcTellTurn(int NextTurn)
     /// <summary>
     /// Tell Clients About server decision on whos turn is it now
@@ -1819,7 +1924,6 @@ public class PlayerConnection : NetworkBehaviour
     [ClientRpc]
     void RpcTellTurn(int NextTurn)
     {
-        print("RPC: Next Turn Activated");
         ServerTurn = NextTurn;
         IsGameTurnSet = true;
     }
@@ -1861,6 +1965,23 @@ public class PlayerConnection : NetworkBehaviour
 
         ThePlayerIDWhoLeft = playerID;
         IsOnePlayerLeftTheGame = true;
+    }
+
+    [ClientRpc]
+    public void RpcTellScore(int score, int PlayerTurn)
+    {
+        ScoreForPlayerID = PlayerTurn;
+        Score = score;
+        IsScoreChanged = true;
+    }
+
+    [ClientRpc]
+    public void RpcTellGhostNumberUpdate(int GhostsNumber, int GhostsID)
+    {
+        GhostChangedID = GhostsID;
+        tempGhost = GhostsNumber;
+        IsReadyForUpdateGhostsOnScreen = true;
+        //print("RPC ==> Ghost Update Flag: " + IsReadyForUpdateGhostsOnScreen);
     }
 
     #endregion

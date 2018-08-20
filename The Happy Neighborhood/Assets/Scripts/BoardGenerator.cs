@@ -63,7 +63,9 @@ public class BoardGenerator : MonoBehaviour
     public Text UserNameTextBox;
     public Text scoreText;
     public Text ScoreLable;
+    public Text GhostNumberText;
     public GameObject TurnPanel;
+    public GameObject GhostPanel;
 
 
     public float BoardSizeInPixle = 700f;

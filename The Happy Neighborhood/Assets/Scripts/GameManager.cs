@@ -139,6 +139,8 @@ public class GameManager : MonoBehaviour
         networkButtonManager = GameObject.FindObjectOfType<NetworkButtonManager>();
         myBoardGenerator.TurnPanel.SetActive(false);
         myEnemyBoardGenerator.TurnPanel.SetActive(false);
+        myBoardGenerator.GhostPanel.SetActive(false);
+        myEnemyBoardGenerator.GhostPanel.SetActive(false);
         ErrorMessagePanel.SetActive(false);
         NetworkHudBtns.SetActive(true);
         FinishedPanel.SetActive(false);
@@ -167,7 +169,6 @@ public class GameManager : MonoBehaviour
        // GameLoadingPanel.SetActive(true);
         UIAnimator.SetBool("loadGame", true);
         StartGame();
-        print("Loadiiing....");
 
     }
     #endregion
@@ -242,6 +243,8 @@ public class GameManager : MonoBehaviour
             if (CharDeckManager.CharacterCardsDeckPickable[i])
                 CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Button>().interactable = false;
         }
+
+        myBoardGenerator.GhostPanel.GetComponent<Button>().interactable = false;
     }
 
     public void EnableDecks()
@@ -254,6 +257,9 @@ public class GameManager : MonoBehaviour
             if (CharDeckManager.CharacterCardsDeckPickable[i])
                 CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Button>().interactable = true;
         }
+
+        myBoardGenerator.GhostPanel.GetComponent<Button>().interactable = true;
+
 
     }
 
@@ -330,6 +336,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < HouseCellsArray.Length; i++)
             {
+                myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<CellIndex>().CellType = BoardType.EnemyBoard;
                 myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
                 myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
 
@@ -338,9 +345,37 @@ public class GameManager : MonoBehaviour
                     myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().color = new Color(1, 1, 1, 1);
                 }
 
+                if (HouseCellsArray[i] == HouseCellsType.BannedTile)
+                {
+                    myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].tag = "BannedHouse";
+                }
+
+                
+
             }
 
         }
+    }
+
+    public void UpdateCharacterTileMap(int GhostAttackedIndex, bool IsMyBoard = true)
+    {
+        Image CharacterPlaceHolderImageComponenet;
+        if (IsMyBoard)
+        {
+            CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[GhostAttackedIndex / 7, GhostAttackedIndex % 7].transform.GetChild(0).GetComponent<Image>();
+
+        }
+        else
+        {
+            CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[GhostAttackedIndex / 7, GhostAttackedIndex % 7].transform.GetChild(0).GetComponent<Image>();
+        }
+
+        CharacterPlaceHolderImageComponenet.sprite = SpriteBasedOnCharacterCellType(CharactersType.Ghost);
+
+        Color tempColor = CharacterPlaceHolderImageComponenet.color;
+        tempColor.a = 1;
+        CharacterPlaceHolderImageComponenet.color = tempColor;
+
     }
 
     public void UpdateCharacterTileMap(CharactersType[] CharacterCellsArray, HouseCellsType[] HouseCellsArray, bool IsMyBoard = true)
@@ -417,6 +452,37 @@ public class GameManager : MonoBehaviour
             imageTempComponent.sprite = SpriteBasedOnCharacterCellType(CharactersType[i]);
             CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<CharType>().charactersType = CharactersType[i];
 
+
+        }
+    }
+
+    public void UpdateGhost(int Ghosts, bool IsItMyBoard)
+    {
+        if(IsItMyBoard)
+        {
+            if(Ghosts > 0)
+            {
+                myBoardGenerator.GhostNumberText.text = Ghosts.ToString();
+                myBoardGenerator.GhostPanel.SetActive(true);
+            }
+            else
+            {
+                myBoardGenerator.GhostPanel.SetActive(false);
+
+            }
+        }
+        else
+        {
+            if (Ghosts > 0)
+            {
+                myEnemyBoardGenerator.GhostNumberText.text = Ghosts.ToString();
+                myEnemyBoardGenerator.GhostPanel.SetActive(true);
+            }
+            else
+            {
+                myEnemyBoardGenerator.GhostPanel.SetActive(false);
+
+            }
 
         }
     }
@@ -976,4 +1042,35 @@ public class GameManager : MonoBehaviour
 
 
     }
+
+    public void EnableEnemyTilesActiveForGhosts()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                if (myEnemyBoardGenerator.BoardCellsArray[i, j].CompareTag("BannedHouse"))
+                    continue;
+                myEnemyBoardGenerator.BoardCellsArray[i, j].GetComponent<Button>().interactable = true;
+            }
+        }
+    }
+
+    public void DisableEnemyTilesActiveForGhosts()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                myEnemyBoardGenerator.BoardCellsArray[i, j].GetComponent<Button>().interactable = false;
+            }
+        }
+
+    }
+
+    public void ResetGhostColorToWhite()
+    {
+        myBoardGenerator.GhostPanel.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+    }
+
 }
