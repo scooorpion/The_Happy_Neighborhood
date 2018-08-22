@@ -20,8 +20,17 @@ public enum CharactersType
     OldGuy,
     PenthouseGuy,
     TwoHouseGuy,
+    TwoHouseGuy_Up,
+    TwoHouseGuy_Down,
     ThreeHouseLGuy,
+    ThreeHouseLGuy_Up,
+    ThreeHouseLGuy_Center,
+    ThreeHouseLGuy_Down_Right,
     FourHouseGuy,
+    FourHouseGuy_Up_Left,
+    FourHouseGuy_Up_Right,
+    FourHouseGuy_Down_Left,
+    FourHouseGuy_Down_Right,
     Ghost,
     FamilyTwoGuys,
     Animal,
@@ -31,7 +40,8 @@ public enum CharactersType
     Baby,
     GhostCatcher,
     Gangster,
-    Wizard
+    Wizard,
+
 }
 #endregion
 
@@ -92,7 +102,6 @@ public class GameManager : MonoBehaviour
 
     private static int[] LeftEdge = new int[] { 0, 7, 14, 21, 28, 35, 42 };
     private static int[] RightEdge = new int[] { 6, 13, 20, 27, 34, 41, 48 };
-
 
     public static string enemyName;
 
@@ -323,11 +332,17 @@ public class GameManager : MonoBehaviour
                 if (HouseCellsArray[i] == HouseCellsType.BannedTile)
                 {
                     myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
+                    myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().sprite = SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsType.BannedTile);
+                    myBoardGenerator.BoardCellsArray[i / 7, i % 7].tag = "Banned_Cell";
+
                 }
 
                 if (HouseCellsArray[i] != HouseCellsType.EmptyTile)
                 {
                     myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().color = new Color(1, 1, 1, 1);
+
+                    if (HouseCellsArray[i] != HouseCellsType.BannedTile)
+                        myBoardGenerator.BoardCellsArray[i / 7, i % 7].tag = "Full_Cell";
                 }
 
             }
@@ -363,7 +378,6 @@ public class GameManager : MonoBehaviour
         if (IsMyBoard)
         {
             CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[GhostAttackedIndex / 7, GhostAttackedIndex % 7].transform.GetChild(0).GetComponent<Image>();
-
         }
         else
         {
@@ -382,11 +396,53 @@ public class GameManager : MonoBehaviour
     {
         if (IsMyBoard)
         {
+            Image CharacterPlaceHolderImageComponenet;
+
             for (int i = 0; i < CharacterCellsArray.Length; i++)
             {
                 if (CharacterCellsArray[i] != CharactersType.Empty)
                 {
-                    Image CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.GetChild(0).GetComponent<Image>();
+                    if (CharacterCellsArray[i] == CharactersType.TwoHouseGuy_Up)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownCenter").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.TwoHouseGuy_Down)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpCenter").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.FourHouseGuy_Down_Left)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpRight").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.FourHouseGuy_Down_Right)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpLeft").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.FourHouseGuy_Up_Left)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownRight").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.FourHouseGuy_Up_Right)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownLeft").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.ThreeHouseLGuy_Up)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownRight").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.ThreeHouseLGuy_Center)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpRight").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.ThreeHouseLGuy_Down_Right)
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpLeft").GetComponent<Image>();
+                    }
+                    else
+                    {
+                        CharacterPlaceHolderImageComponenet = myBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownLeft").GetComponent<Image>();
+                    }
+
                     Color tempColor;
 
                     CharacterPlaceHolderImageComponenet.sprite = SpriteBasedOnCharacterCellType(CharacterCellsArray[i]);
@@ -399,11 +455,53 @@ public class GameManager : MonoBehaviour
         }
         else if (!IsMyBoard)
         {
+            Image CharacterPlaceHolderImageComponenet;
             for (int i = 0; i < CharacterCellsArray.Length; i++)
             {
                 if (CharacterCellsArray[i] != CharactersType.Empty)
                 {
-                    Image CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.GetChild(0).GetComponent<Image>();
+
+                    if (CharacterCellsArray[i] == CharactersType.TwoHouseGuy_Up)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownCenter").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.TwoHouseGuy_Down)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpCenter").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.FourHouseGuy_Down_Left)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpRight").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.FourHouseGuy_Down_Right)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpLeft").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.FourHouseGuy_Up_Left)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownRight").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.FourHouseGuy_Up_Right)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownLeft").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.ThreeHouseLGuy_Up)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownRight").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.ThreeHouseLGuy_Center)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpRight").GetComponent<Image>();
+                    }
+                    else if (CharacterCellsArray[i] == CharactersType.ThreeHouseLGuy_Down_Right)
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("UpLeft").GetComponent<Image>();
+                    }
+                    else
+                    {
+                        CharacterPlaceHolderImageComponenet = myEnemyBoardGenerator.BoardCellsArray[i / 7, i % 7].transform.Find("DownLeft").GetComponent<Image>();
+                    }
+
 
                     CharacterPlaceHolderImageComponenet.sprite = SpriteBasedOnCharacterCellType(CharacterCellsArray[i]);
 
@@ -432,7 +530,7 @@ public class GameManager : MonoBehaviour
             imageTempComponent.color = tempColor;
 
             // Error : IndexOutOfRange
-            imageTempComponent.sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
+            imageTempComponent.sprite = SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsArray[i]);
             HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<HouseType>().houseCellsType = HouseCellsArray[i];
 
         }
@@ -442,6 +540,7 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
+
             Image imageTempComponent = CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<Image>();
             Color tempColor;
 
@@ -495,7 +594,7 @@ public class GameManager : MonoBehaviour
 
     #region Sprite SpriteBasedOnHouseCellType(HouseCellsType HouseCellType)
     /// <summary>
-    /// Return a Sprite based on the enum house cell type
+    /// Return a Sprite based on the enum house cell type [Update Card on screen]
     /// </summary>
     /// <param name="HouseCellType"></param>
     /// <returns></returns>
@@ -506,7 +605,7 @@ public class GameManager : MonoBehaviour
         switch (HouseCellType)
         {
             case HouseCellsType.BannedTile:
-                tempHouseSprite = spriteReference.BannedTile;
+                tempHouseSprite = SpriteReference.BannedTile_Randomized;
                 break;
 
             case HouseCellsType.EmptyTile:
@@ -514,51 +613,128 @@ public class GameManager : MonoBehaviour
                 break;
 
             case HouseCellsType.BlueTile:
-                tempHouseSprite = spriteReference.BlueTile;
+                tempHouseSprite = SpriteReference.BlueTile_Randomized;
                 break;
 
             case HouseCellsType.RedTile:
-                tempHouseSprite = spriteReference.RedTile;
+                tempHouseSprite = SpriteReference.RedTile_Randomized;
                 break;
 
             case HouseCellsType.PurpleTile:
-                tempHouseSprite = spriteReference.PurpleTile;
+                tempHouseSprite = SpriteReference.PurpleTile_Randomized;
                 break;
 
             case HouseCellsType.YellowTile:
-                tempHouseSprite = spriteReference.YellowTile;
+                tempHouseSprite = SpriteReference.YellowTile_Randomized;
                 break;
 
             case HouseCellsType.OldBlueTile:
-                tempHouseSprite = spriteReference.OldBlueTile;
+                tempHouseSprite = SpriteReference.OldBlueTile_Randomized;
                 break;
 
             case HouseCellsType.OldRedTile:
-                tempHouseSprite = spriteReference.OldRedTile;
+                tempHouseSprite = SpriteReference.OldRedTile_Randomized;
                 break;
 
             case HouseCellsType.OldPurpleTile:
-                tempHouseSprite = spriteReference.OldPurpleTile;
+                tempHouseSprite = SpriteReference.OldPurpleTile_Randomized;
                 break;
 
             case HouseCellsType.OldYellowTile:
-                tempHouseSprite = spriteReference.OldYellowTile;
+                tempHouseSprite = SpriteReference.OldYellowTile_Randomized;
                 break;
 
             case HouseCellsType.PentHouse:
-                tempHouseSprite = spriteReference.PentHouse;
+                tempHouseSprite = SpriteReference.PentHouse_Randomized;
                 break;
 
             case HouseCellsType.Parking:
-                tempHouseSprite = spriteReference.Parking;
+                tempHouseSprite = SpriteReference.Parking_Randomized;
                 break;
 
             case HouseCellsType.Terrace:
-                tempHouseSprite = spriteReference.Terrace;
+                tempHouseSprite = SpriteReference.Terrace_Randomized;
                 break;
 
             case HouseCellsType.Garden:
-                tempHouseSprite = spriteReference.Garden;
+                tempHouseSprite = SpriteReference.Garden_Randomized;
+                break;
+
+            default:
+                tempHouseSprite = spriteReference.EmptyTile;
+                break;
+        }
+
+        return tempHouseSprite;
+    }
+    #endregion
+
+    #region Sprite SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsType HouseCellType) : [used for deck fill]
+    /// <summary>
+    /// Return a Sprite based on the enum house cell [used for deck fill]
+    /// </summary>
+    /// <param name="HouseCellType"></param>
+    /// <returns></returns>
+    public Sprite SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsType HouseCellType)
+    {
+        Sprite tempHouseSprite;
+
+        switch (HouseCellType)
+        {
+            case HouseCellsType.BannedTile:
+                tempHouseSprite = spriteReference.BannedTileSprite(); ;
+                break;
+
+            case HouseCellsType.EmptyTile:
+                tempHouseSprite = spriteReference.EmptyTile;
+                break;
+
+            case HouseCellsType.BlueTile:
+                tempHouseSprite = spriteReference.BlueTileSprite();
+                break;
+
+            case HouseCellsType.RedTile:
+                tempHouseSprite = spriteReference.RedTileSprite();
+                break;
+
+            case HouseCellsType.PurpleTile:
+                tempHouseSprite = spriteReference.PurpleTileSprite();
+                break;
+
+            case HouseCellsType.YellowTile:
+                tempHouseSprite = spriteReference.YellowTileSprite();
+                break;
+
+            case HouseCellsType.OldBlueTile:
+                tempHouseSprite = spriteReference.OldBlueTileSprite();
+                break;
+
+            case HouseCellsType.OldRedTile:
+                tempHouseSprite = spriteReference.OldRedTileSprite();
+                break;
+
+            case HouseCellsType.OldPurpleTile:
+                tempHouseSprite = spriteReference.OldPurpleTileSprite();
+                break;
+
+            case HouseCellsType.OldYellowTile:
+                tempHouseSprite = spriteReference.OldYellowSprite();
+                break;
+
+            case HouseCellsType.PentHouse:
+                tempHouseSprite = spriteReference.PentHouseSprite();
+                break;
+
+            case HouseCellsType.Parking:
+                tempHouseSprite = spriteReference.ParkingSprite();
+                break;
+
+            case HouseCellsType.Terrace:
+                tempHouseSprite = spriteReference.TerraceSprite();
+                break;
+
+            case HouseCellsType.Garden:
+                tempHouseSprite = spriteReference.GardenTileSprite();
                 break;
 
             default:
@@ -621,11 +797,39 @@ public class GameManager : MonoBehaviour
             case CharactersType.TwoHouseGuy:
                 tempCharacterSprite = spriteReference.TwoHouseGuy;
                 break;
+            case CharactersType.TwoHouseGuy_Down:
+                tempCharacterSprite = spriteReference.TwoGuys_Down;
+                break;
+            case CharactersType.TwoHouseGuy_Up:
+                tempCharacterSprite = spriteReference.TwoGuys_Up;
+                break;
             case CharactersType.ThreeHouseLGuy:
                 tempCharacterSprite = spriteReference.ThreeHouseLGuy;
                 break;
+            case CharactersType.ThreeHouseLGuy_Up:
+                tempCharacterSprite = spriteReference.ThreeHouseLGuy_Up;
+                break;
+            case CharactersType.ThreeHouseLGuy_Center:
+                tempCharacterSprite = spriteReference.ThreeHouseLGuy_Center;
+                break;
+            case CharactersType.ThreeHouseLGuy_Down_Right:
+                tempCharacterSprite = spriteReference.ThreeHouseLGuy_Down_Left;
+                break;
+
             case CharactersType.FourHouseGuy:
                 tempCharacterSprite = spriteReference.FourHouseGuy;
+                break;
+            case CharactersType.FourHouseGuy_Down_Left:
+                tempCharacterSprite = spriteReference.FourHouseGuy_Down_Left;
+                break;
+            case CharactersType.FourHouseGuy_Down_Right:
+                tempCharacterSprite = spriteReference.FourHouseGuy_Down_Right;
+                break;
+            case CharactersType.FourHouseGuy_Up_Left:
+                tempCharacterSprite = spriteReference.FourHouseGuy_Up_Left;
+                break;
+            case CharactersType.FourHouseGuy_Up_Right:
+                tempCharacterSprite = spriteReference.FourHouseGuy_Up_Right;
                 break;
             case CharactersType.Ghost:
                 tempCharacterSprite = spriteReference.Ghost;
@@ -953,6 +1157,311 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    #region IsTileIndexesNearEachOther(CharactersType Character, int[] HouseIndexes): Check for MultipleCharacters to all the selected cells be near each other
+    /// <summary>
+    /// Check for MultipleCharacters to all the selected cells be near each other
+    /// </summary>
+    /// <param name="Character"></param>
+    /// <param name="HouseIndexes"></param>
+    /// <returns></returns>
+    public static bool IsTileIndexesNearEachOther(CharactersType Character, int[] HouseIndexes)
+    {
+        bool IsNearEachOther = false;
+
+        #region Check if Two House selected near eachother
+        if (Character == CharactersType.TwoHouseGuy)
+        {
+            int tempSum = HouseIndexes[0] - HouseIndexes[1];
+
+            if (tempSum == 7 || tempSum == (-7))
+            {
+                IsNearEachOther = true;
+            }
+        }
+        #endregion
+       
+        #region Check if four House selected near eachother
+        else if (Character == CharactersType.FourHouseGuy)
+        {
+            int tempTheSmallestNumber = 49;
+            
+            #region Get The lowest index of the array
+            for (int i = 0; i < 4; i++)
+            {
+                if(tempTheSmallestNumber > HouseIndexes[i])
+                    tempTheSmallestNumber = HouseIndexes[i];
+            }
+            #endregion
+
+            #region Check all possible index based on the lowest index
+            int CounterCheck = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                if( HouseIndexes[i] == tempTheSmallestNumber )
+                {
+                    CounterCheck++;
+                }
+                else if(HouseIndexes[i] == (tempTheSmallestNumber+1))
+                {
+                    CounterCheck++;
+                }
+                else if (HouseIndexes[i] == (tempTheSmallestNumber + 7))
+                {
+                    CounterCheck++;
+                }
+                else if (HouseIndexes[i] == (tempTheSmallestNumber + 8))
+                {
+                    CounterCheck++;
+                }
+
+            }
+
+            if (CounterCheck == 4)
+            {
+                IsNearEachOther = true;
+            }
+            #endregion
+
+        }
+        #endregion
+
+        #region Check if three House selected near eachother
+        else if (Character == CharactersType.ThreeHouseLGuy)
+        {
+            int tempTheSmallestNumber = 49;
+
+            #region Get The lowest index of the array
+            for (int i = 0; i < 3; i++)
+            {
+                if (tempTheSmallestNumber > HouseIndexes[i])
+                    tempTheSmallestNumber = HouseIndexes[i];
+            }
+            #endregion
+
+            #region Check all possible index based on the lowest index
+            int CounterCheck = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                if (HouseIndexes[i] == tempTheSmallestNumber)
+                {
+                    CounterCheck++;
+                }
+                else if (HouseIndexes[i] == (tempTheSmallestNumber + 1))
+                {
+                    CounterCheck++;
+                }
+                else if (HouseIndexes[i] == (tempTheSmallestNumber + 7))
+                {
+                    CounterCheck++;
+                }
+
+            }
+
+            if (CounterCheck == 3)
+            {
+                IsNearEachOther = true;
+            }
+            #endregion
+
+        }
+        #endregion
+
+        return IsNearEachOther;
+    }
+    #endregion
+
+    #region IsTileIndexesTheSameColor(HouseCellsType[] Houses): Check for MultipleCharacters to all the selected cells be colord and the same color or terace tile
+    public static bool IsTileIndexesTheSameColor(HouseCellsType[] Houses)
+    {
+        bool AreTilesTheSameColor = true;
+
+        switch (Houses[0])
+        {
+            case HouseCellsType.BlueTile:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if(Houses[i] != HouseCellsType.BlueTile && Houses[i] != HouseCellsType.OldBlueTile && Houses[i] != HouseCellsType.Terrace)
+                    {
+                        AreTilesTheSameColor = false;
+                        break;
+                    }
+                }
+                break;
+            case HouseCellsType.RedTile:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if (Houses[i] != HouseCellsType.RedTile && Houses[i] != HouseCellsType.OldRedTile && Houses[i] != HouseCellsType.Terrace)
+                    {
+                        AreTilesTheSameColor = false;
+                        break;
+                    }
+                }
+                break;
+            case HouseCellsType.PurpleTile:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if (Houses[i] != HouseCellsType.PurpleTile && Houses[i] != HouseCellsType.OldPurpleTile && Houses[i] != HouseCellsType.Terrace)
+                    {
+                        AreTilesTheSameColor = false;
+                        break;
+                    }
+                }
+                break;
+            case HouseCellsType.YellowTile:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if (Houses[i] != HouseCellsType.YellowTile && Houses[i] != HouseCellsType.OldYellowTile && Houses[i] != HouseCellsType.Terrace)
+                    {
+                        AreTilesTheSameColor = false;
+                        break;
+                    }
+                }
+                break;
+            case HouseCellsType.OldBlueTile:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if (Houses[i] != HouseCellsType.BlueTile && Houses[i] != HouseCellsType.OldBlueTile && Houses[i] != HouseCellsType.Terrace)
+                    {
+                        AreTilesTheSameColor = false;
+                        break;
+                    }
+                }
+                break;
+            case HouseCellsType.OldRedTile:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if (Houses[i] != HouseCellsType.RedTile && Houses[i] != HouseCellsType.OldRedTile && Houses[i] != HouseCellsType.Terrace)
+                    {
+                        AreTilesTheSameColor = false;
+                        break;
+                    }
+                }
+                break;
+            case HouseCellsType.OldPurpleTile:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if (Houses[i] != HouseCellsType.PurpleTile && Houses[i] != HouseCellsType.OldPurpleTile && Houses[i] != HouseCellsType.Terrace)
+                    {
+                        AreTilesTheSameColor = false;
+                        break;
+                    }
+                }
+                break;
+            case HouseCellsType.OldYellowTile:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if (Houses[i] != HouseCellsType.YellowTile && Houses[i] != HouseCellsType.OldYellowTile && Houses[i] != HouseCellsType.Terrace)
+                    {
+                        AreTilesTheSameColor = false;
+                        break;
+                    }
+                }
+                break;
+            case HouseCellsType.Terrace:
+                for (int i = 1; i < Houses.Length; i++)
+                {
+                    if(Houses[i] != HouseCellsType.Parking && Houses[i] != HouseCellsType.Terrace && Houses[i] != HouseCellsType.PentHouse)
+                    {
+                        HouseCellsType[] TempHouses = Houses;
+                        TempHouses[0] = Houses[i];
+                        TempHouses[i] = Houses[0];
+                        AreTilesTheSameColor = IsTileIndexesTheSameColor(TempHouses);
+                    }
+                }
+                break;
+            default:
+                AreTilesTheSameColor = false;
+                break;
+        }
+        //........Here......... LastNight..........
+
+        return AreTilesTheSameColor;
+    }
+    #endregion
+
+    public static CharactersType[] OrderHouseTilesForMultipleUnitCharacter(int[] SelectedHouses, CharactersType Character)
+    {
+        CharactersType[] tempCharacterUnits = new CharactersType[SelectedHouses.Length];
+
+        if (Character == CharactersType.TwoHouseGuy)
+        {
+            if (SelectedHouses[0] - SelectedHouses[1] == 7)
+            {
+                tempCharacterUnits[0] = CharactersType.TwoHouseGuy_Up;
+                tempCharacterUnits[1] = CharactersType.TwoHouseGuy_Down;
+            }
+            else if (SelectedHouses[0] - SelectedHouses[1] == -7)
+            {
+                tempCharacterUnits[0] = CharactersType.TwoHouseGuy_Down;
+                tempCharacterUnits[1] = CharactersType.TwoHouseGuy_Up;
+            }
+        }
+        else if (Character == CharactersType.FourHouseGuy)
+        {
+            int tempSmallestIndex = 49;
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (SelectedHouses[i] < tempSmallestIndex)
+                {
+                    tempSmallestIndex = SelectedHouses[i];
+                }
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (SelectedHouses[i] == tempSmallestIndex)
+                {
+                    tempCharacterUnits[i] = CharactersType.FourHouseGuy_Down_Left;
+                }
+                else if (SelectedHouses[i] == (tempSmallestIndex + 1))
+                {
+                    tempCharacterUnits[i] = CharactersType.FourHouseGuy_Down_Right;
+                }
+                else if (SelectedHouses[i] == (tempSmallestIndex + 7))
+                {
+                    tempCharacterUnits[i] = CharactersType.FourHouseGuy_Up_Left;
+                }
+                else if (SelectedHouses[i] == (tempSmallestIndex + 8))
+                {
+                    tempCharacterUnits[i] = CharactersType.FourHouseGuy_Up_Right;
+                }
+
+            }
+        }
+        else if (Character == CharactersType.ThreeHouseLGuy)
+        {
+            int tempSmallestIndex = 49;
+
+            for (int i = 0; i < 3; i++)
+            {
+                if (SelectedHouses[i] < tempSmallestIndex)
+                {
+                    tempSmallestIndex = SelectedHouses[i];
+                }
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                if (SelectedHouses[i] == tempSmallestIndex)
+                {
+                    tempCharacterUnits[i] = CharactersType.ThreeHouseLGuy_Center;
+                }
+                else if (SelectedHouses[i] == (tempSmallestIndex + 1))
+                {
+                    tempCharacterUnits[i] = CharactersType.ThreeHouseLGuy_Down_Right;
+                }
+                else if (SelectedHouses[i] == (tempSmallestIndex + 7))
+                {
+                    tempCharacterUnits[i] = CharactersType.ThreeHouseLGuy_Up;
+                }
+
+            }
+        }
+
+        return tempCharacterUnits;
+    }
+
     // ------------------ Show Wrong Selection Function ---------------
 
     public void ShowWrongSelection()
@@ -1073,4 +1582,26 @@ public class GameManager : MonoBehaviour
         myBoardGenerator.GhostPanel.GetComponent<Image>().color = new Color(1, 1, 1, 1);
     }
 
+
+    public void ResetAllCellsColorToDefault()
+    {
+        for (int i = 0; i < 7; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                if(myBoardGenerator.BoardCellsArray[i, j].CompareTag("Empty_Cell"))
+                {
+                    myBoardGenerator.BoardCellsArray[i, j].GetComponent<Image>().color = new Color(1, 1, 1, 0.15f);
+                    print("Reset Empty cells");
+                }
+                else if (myBoardGenerator.BoardCellsArray[i, j].CompareTag("Full_Cell"))
+                {
+                    myBoardGenerator.BoardCellsArray[i, j].GetComponent<Image>().color = new Color(1,1,1,1);
+                    print("Reset Full cells");
+
+                }
+            }
+        }
+        
+    }
 }

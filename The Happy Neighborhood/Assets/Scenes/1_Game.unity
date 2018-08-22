@@ -2583,20 +2583,46 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 392cd325b7cc8544ca208cb93ae21e6e, type: 3}
   - {fileID: 21300000, guid: abefba96eda0bf64cb28dfd2b1f2fca5, type: 3}
   spriteReference:
-    BannedTile: {fileID: 21300000, guid: 56771dfd566146240b6af31fe83d159d, type: 3}
+    BannedTile:
+    - {fileID: 21300000, guid: 56771dfd566146240b6af31fe83d159d, type: 3}
     EmptyTile: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 3}
-    BlueTile: {fileID: 21300040, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    RedTile: {fileID: 21300014, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    PurpleTile: {fileID: 21300028, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    YellowTile: {fileID: 21300042, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    OldBlueTile: {fileID: 21300006, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    OldRedTile: {fileID: 21300018, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    OldPurpleTile: {fileID: 21300032, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    OldYellowTile: {fileID: 21300004, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    PentHouse: {fileID: 21300000, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    Parking: {fileID: 21300030, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    Terrace: {fileID: 21300016, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    Garden: {fileID: 21300002, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+    BlueTile:
+    - {fileID: 21300000, guid: a23ea4bbf107c7246b74d35826890478, type: 3}
+    - {fileID: 21300000, guid: cf0f2e79e82a6224c8e91aa7c5182f1a, type: 3}
+    - {fileID: 21300000, guid: 216d861cd6927674ba3b13c212aca110, type: 3}
+    - {fileID: 21300000, guid: 72d0c5a7b49c26449b60e834b1ca195c, type: 3}
+    RedTile:
+    - {fileID: 21300000, guid: f4d2abf24cf2ba442acfa7b60af3d32e, type: 3}
+    - {fileID: 21300000, guid: 51cbffb925a853f4cbdb3c17c0d5551f, type: 3}
+    - {fileID: 21300000, guid: 789feafba596fc645a7f2221dac87458, type: 3}
+    - {fileID: 21300000, guid: af4c0f270539ffe49a285158b62b1b95, type: 3}
+    PurpleTile:
+    - {fileID: 21300000, guid: 1132dfa217400124b84bf458c95ef48f, type: 3}
+    - {fileID: 21300000, guid: ba6d21eb0798d394a9da4591eeffd5b2, type: 3}
+    - {fileID: 21300000, guid: b8f003c5779b29f43b75776dc02ddeff, type: 3}
+    - {fileID: 21300000, guid: acb0ef10e6adba64199b2273a316e4bd, type: 3}
+    YellowTile:
+    - {fileID: 21300000, guid: 12d4b476f6b2a534f847f03a4a509d6a, type: 3}
+    - {fileID: 21300000, guid: d04eaad6779357a4a81a40f42402644b, type: 3}
+    - {fileID: 21300000, guid: a8c95f98abd7aab409a2ea8a9e3000d9, type: 3}
+    - {fileID: 21300000, guid: 7b7a026231dbe8948acdba4bcb2c0003, type: 3}
+    OldBlueTile:
+    - {fileID: 21300000, guid: 4108e988fb11fa54a9504068753f3219, type: 3}
+    - {fileID: 21300000, guid: 2ae5803a267ce9142bba00c9a0454092, type: 3}
+    OldRedTile:
+    - {fileID: 21300000, guid: b2d52af6ca2c9b849be78146e010f3d5, type: 3}
+    - {fileID: 21300000, guid: 9d61f141190107241a5266854d2832b2, type: 3}
+    OldPurpleTile:
+    - {fileID: 21300000, guid: a2be1f62f6764b043ab8efbbd9449eaf, type: 3}
+    - {fileID: 21300000, guid: 17f016423070e9c41a2db3dc9ed63f26, type: 3}
+    OldYellowTile:
+    - {fileID: 21300000, guid: 82ce4419ed296cd41b86d541a9b7cb3d, type: 3}
+    - {fileID: 21300000, guid: c8c1b1a66543f17419c6b3231a09d975, type: 3}
+    PentHouse:
+    - {fileID: 21300000, guid: ecd35a9af4fd1524f9e7eb0bb2b5afa3, type: 3}
+    Parking: []
+    Terrace: []
+    Garden: []
     Empty: {fileID: 21300004, guid: 56771dfd566146240b6af31fe83d159d, type: 3}
     NoramlGuy: {fileID: 21300036, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     DoubleGuys: {fileID: 21300020, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
@@ -2609,9 +2635,9 @@ MonoBehaviour:
     PurpleNoRedGuy: {fileID: 21300008, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     OldGuy: {fileID: 21300038, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     PenthouseGuy: {fileID: 21300024, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    TwoHouseGuy: {fileID: 21300020, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    ThreeHouseLGuy: {fileID: 21300046, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    FourHouseGuy: {fileID: 21300044, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+    TwoHouseGuy: {fileID: 21300000, guid: 3385c962856516947a39cb8be2d378e6, type: 3}
+    ThreeHouseLGuy: {fileID: 21300000, guid: 6ef79735c207fdf45bf8255dc32645b1, type: 3}
+    FourHouseGuy: {fileID: 21300000, guid: 383f76869ce05714c9b17e0fbab1339c, type: 3}
     FamilyTwoGuys: {fileID: 21300020, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Ghost: {fileID: 21300026, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Animal: {fileID: 21300046, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
@@ -2622,6 +2648,22 @@ MonoBehaviour:
     GhostCatcher: {fileID: 21300010, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Gangster: {fileID: 21300038, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Wizard: {fileID: 21300048, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+    TwoGuys_Up: {fileID: 21300000, guid: 1abe74feca81e4c43aa24e70c0492d47, type: 3}
+    TwoGuys_Down: {fileID: 21300000, guid: 210fbcbfe2afc0446844f14ff62629ef, type: 3}
+    FourHouseGuy_Up_Left: {fileID: 21300000, guid: 7e2d280b05e4aaf4bac75256647e2668,
+      type: 3}
+    FourHouseGuy_Up_Right: {fileID: 21300000, guid: 9a1e9a7cb6c5ab2439ca20146f32bedd,
+      type: 3}
+    FourHouseGuy_Down_Left: {fileID: 21300000, guid: a3b0c51f50c596b44b04a16bf1e8d7da,
+      type: 3}
+    FourHouseGuy_Down_Right: {fileID: 21300000, guid: 565e654058d34b44b87bc8b20fdadbd4,
+      type: 3}
+    ThreeHouseLGuy_Up: {fileID: 21300000, guid: a25a2b294be348b4aa66504b856556a5,
+      type: 3}
+    ThreeHouseLGuy_Center: {fileID: 21300000, guid: e369e70034ff2bd43a3ff1992ef33488,
+      type: 3}
+    ThreeHouseLGuy_Down_Left: {fileID: 21300000, guid: 0998cc7d4141fc84aaed8c47a225749b,
+      type: 3}
 --- !u!1 &774502650
 GameObject:
   m_ObjectHideFlags: 0
