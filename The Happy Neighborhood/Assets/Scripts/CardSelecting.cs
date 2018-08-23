@@ -54,6 +54,10 @@ public class CardSelecting : MonoBehaviour
         else if(houseType = GetComponent<HouseType>())
         {
             myConnection.HouseCardSelected = houseType.houseCellsType;
+            myConnection.HouseSpriteIndexSelected = houseType.SpriteIndex;
+
+            print("HouseSpriteIndexSelected: " + houseType.SpriteIndex);
+
             myConnection.CharacterdCardSelected = CharactersType.Empty;
             myConnection.CardTypeSelected = CardType.HouseCard;
             ResetAllButtonToNormalColor();

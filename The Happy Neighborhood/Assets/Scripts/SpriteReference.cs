@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public struct SpriteReference
 {
-    #region Sprite Refrences Array
+    #region Sprite Refrences
     [Header("House Sprite: ")]
 
     [SerializeField]
@@ -113,100 +113,190 @@ public struct SpriteReference
     public Sprite ThreeHouseLGuy_Down_Left;
     #endregion
 
-    #region Sprite Refrences Array
-    [Header("House Sprite: ")]
 
-    public static Sprite BannedTile_Randomized;
-    public static Sprite BlueTile_Randomized;
-    public static Sprite RedTile_Randomized;
-    public static Sprite PurpleTile_Randomized;
-    public static Sprite YellowTile_Randomized;
-    public static Sprite OldBlueTile_Randomized;
-    public static Sprite OldRedTile_Randomized;
-    public static Sprite OldPurpleTile_Randomized;
-    public static Sprite OldYellowTile_Randomized;
-    public static Sprite PentHouse_Randomized;
-    public static Sprite Parking_Randomized;
-    public static Sprite Terrace_Randomized;
-    public static Sprite Garden_Randomized;
+    //---------------- Functions -------------------
 
+    #region BannedTileSprite(int IndexGenerated)
+    public Sprite BannedTileSprite(int IndexGenerated)
+    {
+            return BannedTile[IndexGenerated];
+    }
     #endregion
 
-    public Sprite BannedTileSprite()
+    #region BlueTileSprite(int IndexGenerated)
+    public Sprite BlueTileSprite(int IndexGenerated)
     {
-        BannedTile_Randomized = BannedTile[UnityEngine.Random.Range(0, BannedTile.Length)];
-        return BannedTile_Randomized;
+        return BlueTile[IndexGenerated];
     }
+    #endregion
 
-    public Sprite BlueTileSprite()
+    #region RedTileSprite(int IndexGenerated)
+    public Sprite RedTileSprite(int IndexGenerated)
     {
-        BlueTile_Randomized = BlueTile[UnityEngine.Random.Range(0, BlueTile.Length)];
-        return BlueTile_Randomized;
+        return RedTile[IndexGenerated];
     }
+    #endregion
 
-    public Sprite RedTileSprite()
+    #region PurpleTileSprite(int IndexGenerated)
+    public Sprite PurpleTileSprite(int IndexGenerated)
     {
-        RedTile_Randomized = RedTile[UnityEngine.Random.Range(0, RedTile.Length)];
-        return RedTile_Randomized;
+        return PurpleTile[IndexGenerated];
     }
+    #endregion
 
-    public Sprite PurpleTileSprite()
+    #region YellowTileSprite(int IndexGenerated)
+    public Sprite YellowTileSprite(int IndexGenerated)
     {
-        PurpleTile_Randomized = PurpleTile[UnityEngine.Random.Range(0, PurpleTile.Length)];
-        return PurpleTile_Randomized;
+        return YellowTile[IndexGenerated];
     }
+    #endregion
 
-    public Sprite YellowTileSprite()
+    #region OldBlueTileSprite(int IndexGenerated)
+    public Sprite OldBlueTileSprite(int IndexGenerated)
     {
-        YellowTile_Randomized = YellowTile[UnityEngine.Random.Range(0, YellowTile.Length)];
-        return YellowTile_Randomized;
+        return OldBlueTile[IndexGenerated];
     }
-    public Sprite OldBlueTileSprite()
-    {
-        OldBlueTile_Randomized = OldBlueTile[UnityEngine.Random.Range(0, OldBlueTile.Length)];
-        return OldBlueTile_Randomized;
-    }
+    #endregion
 
-    public Sprite OldRedTileSprite()
+    #region OldRedTileSprite(int IndexGenerated)
+    public Sprite OldRedTileSprite(int IndexGenerated)
     {
-        OldRedTile_Randomized = OldRedTile[UnityEngine.Random.Range(0, OldRedTile.Length)];
-        return OldRedTile_Randomized;
+        return OldRedTile[IndexGenerated];
     }
+    #endregion
 
-    public Sprite OldPurpleTileSprite()
+    #region OldPurpleTileSprite(int IndexGenerated)
+    public Sprite OldPurpleTileSprite(int IndexGenerated)
     {
-        OldPurpleTile_Randomized = OldPurpleTile[UnityEngine.Random.Range(0, OldPurpleTile.Length)];
-        return OldPurpleTile_Randomized;
+        return OldPurpleTile[IndexGenerated];
     }
+    #endregion
 
-    public Sprite OldYellowSprite()
+    #region OldYellowSprite(int IndexGenerated)
+    public Sprite OldYellowSprite(int IndexGenerated)
     {
-        OldYellowTile_Randomized = OldYellowTile[UnityEngine.Random.Range(0, OldYellowTile.Length)];
-        return OldYellowTile_Randomized;
+        return OldYellowTile[IndexGenerated];
     }
+    #endregion
 
-    public Sprite PentHouseSprite()
+    #region PentHouseSprite(int IndexGenerated)
+    public Sprite PentHouseSprite(int IndexGenerated)
     {
-        PentHouse_Randomized = PentHouse[UnityEngine.Random.Range(0, PentHouse.Length)];
-        return PentHouse_Randomized;
+        return PentHouse[IndexGenerated];
     }
+    #endregion
 
-    public Sprite GardenTileSprite()
+    #region GardenTileSprite(int IndexGenerated)
+    public Sprite GardenTileSprite(int IndexGenerated)
     {
-        Garden_Randomized = Garden[UnityEngine.Random.Range(0, Garden.Length)];
-        return Garden_Randomized;
+        return Garden[IndexGenerated];
     }
+    #endregion
 
-    public Sprite TerraceSprite()
+    #region TerraceSprite(int IndexGenerated)
+    public Sprite TerraceSprite(int IndexGenerated)
     {
-        Terrace_Randomized = Terrace[UnityEngine.Random.Range(0, Terrace.Length)];
-        return Terrace_Randomized;
+        return Terrace[IndexGenerated];
     }
+    #endregion
 
-    public Sprite ParkingSprite()
+    #region ParkingSprite(int IndexGenerated)
+    public Sprite ParkingSprite(int IndexGenerated)
     {
-        Parking_Randomized = Parking[UnityEngine.Random.Range(0, Parking.Length)];
-        return Parking_Randomized;
+        return Parking[IndexGenerated];
     }
+    #endregion
+
+
+    #region BannedTileSprite()
+    public int BannedTileSprite()
+    {
+        return UnityEngine.Random.Range(0, BannedTile.Length);
+    }
+    #endregion
+
+    #region BlueTileSprite()
+    public int BlueTileSprite()
+    {
+        return (UnityEngine.Random.Range(0, BlueTile.Length));
+    }
+    #endregion
+
+    #region RedTileSprite()
+    public int RedTileSprite()
+    {
+        return UnityEngine.Random.Range(0, RedTile.Length);
+    }
+    #endregion
+
+    #region PurpleTileSprite()
+    public int PurpleTileSprite()
+    {
+        return UnityEngine.Random.Range(0, PurpleTile.Length);
+    }
+    #endregion
+
+    #region YellowTileSprite()
+    public int YellowTileSprite()
+    {
+        return UnityEngine.Random.Range(0, YellowTile.Length);
+    }
+    #endregion
+
+    #region OldBlueTileSprite()
+    public int OldBlueTileSprite()
+    {
+        return UnityEngine.Random.Range(0, OldBlueTile.Length);
+    }
+    #endregion
+
+    #region OldRedTileSprite()
+    public int OldRedTileSprite()
+    {
+        return UnityEngine.Random.Range(0, OldRedTile.Length);
+    }
+    #endregion
+
+    #region OldPurpleTileSprite()
+    public int OldPurpleTileSprite()
+    {
+        return UnityEngine.Random.Range(0, OldPurpleTile.Length);
+    }
+    #endregion
+
+    #region OldYellowSprite()
+    public int OldYellowSprite()
+    {
+        return UnityEngine.Random.Range(0, OldYellowTile.Length);
+    }
+    #endregion
+
+    #region PentHouseSprite()
+    public int PentHouseSprite()
+    {
+        return UnityEngine.Random.Range(0, PentHouse.Length);
+    }
+    #endregion
+
+    #region GardenTileSprite()
+    public int GardenTileSprite()
+    {
+        return UnityEngine.Random.Range(0, Garden.Length);
+    }
+    #endregion
+
+    #region TerraceSprite()
+    public int TerraceSprite()
+    {
+        return UnityEngine.Random.Range(0, Terrace.Length);
+    }
+    #endregion
+
+    #region ParkingSprite()
+    public int ParkingSprite()
+    {
+        return UnityEngine.Random.Range(0, Parking.Length);
+    }
+    #endregion
 
 }

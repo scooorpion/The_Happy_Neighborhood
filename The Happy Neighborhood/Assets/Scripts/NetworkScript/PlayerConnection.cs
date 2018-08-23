@@ -66,15 +66,17 @@ public class PlayerConnection : NetworkBehaviour
     private PlayerConnection enemyConnection;
     private SoundManager soundManager;
 
+    public int[] MyHouseTileSpriteIndex = new int[49];
     public HouseCellsType[] MyHouseCells = new HouseCellsType[49];
     public CharactersType[] MyCharCells = new CharactersType[49];
 
-
+    static int[] HouseCardsInGameSpriteIndex = new int[4];
     static HouseCellsType[] HouseCardsInGameDeck = new HouseCellsType[4];
     static CharactersType[] CharacterCardsInGameDeck = new CharactersType[4];
 
     public CardType CardTypeSelected;
     public HouseCellsType HouseCardSelected;
+    public int HouseSpriteIndexSelected;
     public CharactersType CharacterdCardSelected;
 
     public static int Score = 0;
@@ -87,6 +89,9 @@ public class PlayerConnection : NetworkBehaviour
 
     static HouseCellsType[] HouseCells_P1_Server ;
     static HouseCellsType[] HouseCells_P2_Server ;
+
+    static int[] HouseCells_SpriteIndex_P1_Server;
+    static int[] HouseCells_SpriteIndex_P2_Server;
 
     static int CharactersInHouse_P1_Server;
     static int CharactersInHouse_P2_Server;
@@ -102,6 +107,7 @@ public class PlayerConnection : NetworkBehaviour
     static int Ghosts_P1_Server;
     static int Ghosts_P2_Server;
 
+    static public List<int> HouseCardsSpriteIndexInGame_Server;
     static public List<HouseCellsType> HouseCardsDeckInGame_Server ;
     static public List<CharactersType> CharacterCardsDeckInGame_Server ;
 
@@ -225,7 +231,7 @@ public class PlayerConnection : NetworkBehaviour
 
 
                 // Simiulating my cell array
-                gameManagerscript.UpdateHouseTileMap(MyHouseCells);
+                gameManagerscript.UpdateHouseTileMap(MyHouseCells,MyHouseTileSpriteIndex);
 
                 // Simiulating my enemy cell array
                 StartCoroutine(CreateAndUpdateEnemyHouseTiles(0.5f));
@@ -338,7 +344,7 @@ public class PlayerConnection : NetworkBehaviour
 
             if (IsReadyForUpdateHouseCardsOnScreen)
             {
-                gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
+                gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck, HouseCardsInGameSpriteIndex);
                 IsReadyForUpdateHouseCardsOnScreen = false;              //===> Disable by couroutine
 
                 print("Simiulating the house decks ");
@@ -360,11 +366,11 @@ public class PlayerConnection : NetworkBehaviour
 
                     #region When its your turn, First update card deck and your enemy map
 
-                    gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
+                    gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck, HouseCardsInGameSpriteIndex);
                     gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
 
                     gameManagerscript.SetEnemyName(EnemyName);
-                    gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
+                    gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, enemyConnection.MyHouseTileSpriteIndex, false);
                     gameManagerscript.UpdateCharacterTileMap(enemyConnection.MyCharCells, enemyConnection.MyHouseCells, false);
 
                     /*
@@ -485,7 +491,7 @@ public class PlayerConnection : NetworkBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         gameManagerscript.SetEnemyName(EnemyName);
-        gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
+        gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, enemyConnection.MyHouseTileSpriteIndex, false);
     }
     #endregion
 
@@ -582,7 +588,7 @@ public class PlayerConnection : NetworkBehaviour
     /// <param name="cellNumber"></param>
     public void CommandToCheckSelectedCell(int cellNumber, BoardType WhosBoardSelection)
     {
-        CmdAskToCheckSelectedCell(cellNumber, CardTypeSelected, HouseCardSelected, CharacterdCardSelected, MyTurnID, WhosBoardSelection);
+        CmdAskToCheckSelectedCell(cellNumber, CardTypeSelected, HouseCardSelected, HouseSpriteIndexSelected, CharacterdCardSelected, MyTurnID, WhosBoardSelection);
 
     }
     #endregion
@@ -654,11 +660,13 @@ public class PlayerConnection : NetworkBehaviour
     void CmdAskToCreateHouseTilesArray(int Turn)
     {
         HouseCellsType[] cellhouseTemp = new HouseCellsType[49];
+        int[] spriteHouseTemp = new int[49];
         int[] bannedCellsTemp = new int[BanedConstructionCellNumber];
 
         for (int i = 0; i < 49; i++)
         {
             cellhouseTemp[i] = HouseCellsType.EmptyTile;
+            spriteHouseTemp[i] = -1;
         }
 
         for (int i = 0; i < BanedConstructionCellNumber; i++)
@@ -666,13 +674,14 @@ public class PlayerConnection : NetworkBehaviour
             bool RepeatedCell;
             int randomCell;
             int[] RandomRangeValidIndex = new int[]
-            {
+{
                 15,16,17,18,19,
                 22,23,24,25,26,
                 29,30,31,32,33,
                 36,37,38,39,40,
                 43,44,45,46,47
-            };
+};
+
             // Checking not to use repeated cell for NoConstructionCell
             do
             {
@@ -698,19 +707,23 @@ public class PlayerConnection : NetworkBehaviour
         for (int i = 0; i < BanedConstructionCellNumber; i++)
         {
             cellhouseTemp[ bannedCellsTemp[i] ] = HouseCellsType.BannedTile;
+            spriteHouseTemp[bannedCellsTemp[i]] = gameManagerscript.SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsType.BannedTile);
+            print("Server => bannedCellsTemp[i]]: " + spriteHouseTemp[bannedCellsTemp[i]]);
         }
 
         if (Turn == 1)
         {
             HouseCells_P1_Server = cellhouseTemp;
+            HouseCells_SpriteIndex_P1_Server = spriteHouseTemp;
         }
         else if (Turn == 2)
         {
             HouseCells_P2_Server = cellhouseTemp;
+            HouseCells_SpriteIndex_P2_Server = spriteHouseTemp;
         }
 
 
-        RpcTellHouseCells(cellhouseTemp,false,false);
+        RpcTellHouseCells(cellhouseTemp, spriteHouseTemp,false, false);
     }
     #endregion
 
@@ -985,6 +998,7 @@ public class PlayerConnection : NetworkBehaviour
 
                     HouseTemp = HousesDeckList_Server[RandomIndex];
 
+
                     if (HouseCardsDeckInGame_Server.Contains(HouseTemp))
                     {
                         RepeatedCard = true;
@@ -992,6 +1006,7 @@ public class PlayerConnection : NetworkBehaviour
 
                 } while (RepeatedCard);
 
+                HouseCardsSpriteIndexInGame_Server.Add(gameManagerscript.SpriteBasedOnHouseCellTypeForDeckAssign(HouseTemp));
 
                 HouseCardsDeckInGame_Server.Add(HouseTemp);
                 HousesDeckList_Server.RemoveAt(RandomIndex);
@@ -1022,12 +1037,17 @@ public class PlayerConnection : NetworkBehaviour
                 } while (RepeatedCard);
 
                 HouseCardsDeckInGame_Server.Remove(HouseCellsType.EmptyTile);
+                HouseCardsSpriteIndexInGame_Server.Remove(-1);
+
                 HouseCardsDeckInGame_Server.Add(HouseTemp);
+
+                HouseCardsSpriteIndexInGame_Server.Add(gameManagerscript.SpriteBasedOnHouseCellTypeForDeckAssign(HouseTemp));
+
                 HousesDeckList_Server.RemoveAt(RandomIndex);
             }
         }
 
-        RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
+        RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray(), HouseCardsSpriteIndexInGame_Server.ToArray());
     }
     #endregion
 
@@ -1105,7 +1125,7 @@ public class PlayerConnection : NetworkBehaviour
     /// <param name="charactersType"></param>
     /// <param name="PlayerID"></param>
     [Command]
-    void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID, BoardType WhosBoard)
+    void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, int houseSpriteIndexSelected, CharactersType charactersType, int PlayerID, BoardType WhosBoard)
     {
         print("[Server] ==> CmdAskToCheckSelectedCell");
 
@@ -1221,7 +1241,7 @@ public class PlayerConnection : NetworkBehaviour
                 // Error: Select baned house
                 RpcTellError(PlayerID);
                 RpcTellCharacterCells(CharCells_P1_Server, false);
-                RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile, false);
+                RpcTellHouseCells(HouseCells_P1_Server,HouseCells_SpriteIndex_P1_Server, IsOldHouseTile, false);
                 return;
             }
 
@@ -1230,7 +1250,7 @@ public class PlayerConnection : NetworkBehaviour
                 // Error: Select House tile with a character and wants to put card on it
                 RpcTellError(PlayerID);
                 RpcTellCharacterCells(CharCells_P1_Server, false);
-                RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile, false);
+                RpcTellHouseCells(HouseCells_P1_Server, HouseCells_SpriteIndex_P1_Server, IsOldHouseTile, false);
                 return;
             }
 
@@ -1239,7 +1259,7 @@ public class PlayerConnection : NetworkBehaviour
                 // Error: Select filled House tile and want to put another house card on it
                 RpcTellError(PlayerID);
                 RpcTellCharacterCells(CharCells_P1_Server, false);
-                RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile, false);
+                RpcTellHouseCells(HouseCells_P1_Server, HouseCells_SpriteIndex_P1_Server, IsOldHouseTile, false);
                 return;
             }
 
@@ -1248,7 +1268,7 @@ public class PlayerConnection : NetworkBehaviour
                 // Error: Select Empty House tile and want to put character card on it
                 RpcTellError(PlayerID);
                 RpcTellCharacterCells(CharCells_P1_Server, false);
-                RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile, false);
+                RpcTellHouseCells(HouseCells_P1_Server, HouseCells_SpriteIndex_P1_Server, IsOldHouseTile, false);
                 return;
             }
         }
@@ -1259,7 +1279,7 @@ public class PlayerConnection : NetworkBehaviour
                 // Error: Select baned house
                 RpcTellError(PlayerID);
                 RpcTellCharacterCells(CharCells_P2_Server, false);
-                RpcTellHouseCells(HouseCells_P2_Server, IsOldHouseTile, false);
+                RpcTellHouseCells(HouseCells_P2_Server, HouseCells_SpriteIndex_P2_Server, IsOldHouseTile, false);
                 return;
             }
 
@@ -1268,7 +1288,7 @@ public class PlayerConnection : NetworkBehaviour
                 // Error: Select House tile with a character and wants to put card on it
                 RpcTellError(PlayerID);
                 RpcTellCharacterCells(CharCells_P2_Server, false);
-                RpcTellHouseCells(HouseCells_P2_Server, IsOldHouseTile, false);
+                RpcTellHouseCells(HouseCells_P2_Server, HouseCells_SpriteIndex_P2_Server, IsOldHouseTile, false);
                 return;
             }
 
@@ -1277,7 +1297,7 @@ public class PlayerConnection : NetworkBehaviour
                 // Error: Select filled House tile and want to put another house card on it
                 RpcTellError(PlayerID);
                 RpcTellCharacterCells(CharCells_P2_Server, false);
-                RpcTellHouseCells(HouseCells_P2_Server, IsOldHouseTile, false);
+                RpcTellHouseCells(HouseCells_P2_Server, HouseCells_SpriteIndex_P2_Server, IsOldHouseTile, false);
                 return;
             }
 
@@ -1286,7 +1306,7 @@ public class PlayerConnection : NetworkBehaviour
                 // Error: Select Empty House tile and want to put character card on it
                 RpcTellError(PlayerID);
                 RpcTellCharacterCells(CharCells_P2_Server, false);
-                RpcTellHouseCells(HouseCells_P2_Server, IsOldHouseTile, false);
+                RpcTellHouseCells(HouseCells_P2_Server, HouseCells_SpriteIndex_P2_Server, IsOldHouseTile, false);
                 return;
             }
         }
@@ -1680,6 +1700,9 @@ public class PlayerConnection : NetworkBehaviour
             else if (houseCellsType != HouseCellsType.EmptyTile && charactersType == CharactersType.Empty)
             {
                 HouseCells_P1_Server[cellNumber] = houseCellsType;
+
+                HouseCells_SpriteIndex_P1_Server[cellNumber] = houseSpriteIndexSelected;
+
                 HouseCardsDeckInGame_Server.Remove(houseCellsType);
                 HouseCardsDeckInGame_Server.Add(HouseCellsType.EmptyTile);
 
@@ -1698,8 +1721,8 @@ public class PlayerConnection : NetworkBehaviour
                 }
                 
 
-                RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
-                RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile,true);
+                RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray(), HouseCardsSpriteIndexInGame_Server.ToArray());
+                RpcTellHouseCells(HouseCells_P1_Server, HouseCells_SpriteIndex_P1_Server, IsOldHouseTile,true);
             }
             #endregion
 
@@ -1744,6 +1767,9 @@ public class PlayerConnection : NetworkBehaviour
             else if (houseCellsType != HouseCellsType.EmptyTile && charactersType == CharactersType.Empty)
             {
                 HouseCells_P2_Server[cellNumber] = houseCellsType;
+
+                HouseCells_SpriteIndex_P2_Server[cellNumber] = houseSpriteIndexSelected;
+
                 HouseCardsDeckInGame_Server.Remove(houseCellsType);
                 HouseCardsDeckInGame_Server.Add(HouseCellsType.EmptyTile);
 
@@ -1762,8 +1788,8 @@ public class PlayerConnection : NetworkBehaviour
                 }
 
 
-                RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray());
-                RpcTellHouseCells(HouseCells_P2_Server, IsOldHouseTile,true);
+                RpcTellHouseInGameDeck(HouseCardsDeckInGame_Server.ToArray(), HouseCardsSpriteIndexInGame_Server.ToArray());
+                RpcTellHouseCells(HouseCells_P2_Server, HouseCells_SpriteIndex_P2_Server, IsOldHouseTile,true);
 
             }
 
@@ -1960,8 +1986,12 @@ public class PlayerConnection : NetworkBehaviour
         CharCells_P1_Server = new CharactersType[49];
         CharCells_P2_Server = new CharactersType[49];
 
+        HouseCells_SpriteIndex_P1_Server = new int[49];
+        HouseCells_SpriteIndex_P2_Server = new int[49]; ;
+
         HouseCardsDeckInGame_Server = new List<HouseCellsType>();
         CharacterCardsDeckInGame_Server = new List<CharactersType>();
+        HouseCardsSpriteIndexInGame_Server = new List<int>();
 
         CharactersInHouse_P1_Server = 0;
         CharactersInHouse_P2_Server = 0;
@@ -2006,7 +2036,7 @@ public class PlayerConnection : NetworkBehaviour
     /// <param name="IsOldTile"></param>
     /// <param name="IsThereChange"></param>
     [ClientRpc]
-    public void RpcTellHouseCells(HouseCellsType[] cellhouseArray, bool IsOldTile, bool IsThereChange)
+    public void RpcTellHouseCells(HouseCellsType[] cellhouseArray,int[] HouseCells_SpriteIndex, bool IsOldTile, bool IsThereChange)
     {
         if (IsThereChange)
         {
@@ -2021,6 +2051,7 @@ public class PlayerConnection : NetworkBehaviour
         }
 
         MyHouseCells = cellhouseArray;
+        MyHouseTileSpriteIndex = HouseCells_SpriteIndex;
 
         IsReadyForUpdateHouseCellsOnScreen = true;
     }
@@ -2077,8 +2108,9 @@ public class PlayerConnection : NetworkBehaviour
     /// </summary>
     /// <param name="houseCardsDeckInGame_Server"></param>
     [ClientRpc]
-    public void RpcTellHouseInGameDeck(HouseCellsType[] houseCardsDeckInGame_Server)
+    public void RpcTellHouseInGameDeck(HouseCellsType[] houseCardsDeckInGame_Server,int[] SpriteIndex)
     {
+        HouseCardsInGameSpriteIndex = SpriteIndex;
         HouseCardsInGameDeck = houseCardsDeckInGame_Server;
         IsReadyForUpdateHouseCardsOnScreen = true;
     }

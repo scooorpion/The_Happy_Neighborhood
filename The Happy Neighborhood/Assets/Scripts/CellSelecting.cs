@@ -119,9 +119,6 @@ public class CellSelecting : MonoBehaviour
                 return;
             }
 
-
-
-
             // ------------- Before --------------------
 
             if (myConnection.CharacterdCardSelected == CharactersType.Ghost)
