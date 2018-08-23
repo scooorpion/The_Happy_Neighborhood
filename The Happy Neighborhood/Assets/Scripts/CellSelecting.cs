@@ -5,21 +5,6 @@ using UnityEngine;
 
 public class CellSelecting : MonoBehaviour
 {
-    public static bool IsTwoUnitCharacterSelected = false;
-    public static int CellSelectedForTwoUnitCharacter = 0;
-
-    public static List<int> SelectedIndexesForTwoUnitCharacter = new List<int>();
-
-
-    public static bool IsFourUnitCharacterSelected = false;
-    public static int CellSelectedForFourUnitCharacter = 0;
-
-    public static List<int> SelectedIndexesForFourUnitCharacter = new List<int>();
-
-    public static bool IsThreeUnitCharacterSelected = false;
-    public static int CellSelectedForThreeUnitCharacter = 0;
-
-    public static List<int> SelectedIndexesForThreeUnitCharacter = new List<int>();
 
     PlayerConnection myConnection;
     GameManager gameManager;
@@ -41,6 +26,7 @@ public class CellSelecting : MonoBehaviour
 
         if (myConnection.CharacterdCardSelected != CharactersType.Empty || myConnection.HouseCardSelected != HouseCellsType.EmptyTile)
         {
+<<<<<<< HEAD
             if (myConnection.CharacterdCardSelected == CharactersType.TwoHouseGuy)
             {
                 CellSelectedForTwoUnitCharacter++;
@@ -121,6 +107,8 @@ public class CellSelecting : MonoBehaviour
 
             // ------------- Before --------------------
 
+=======
+>>>>>>> parent of 4a1bad5... Working on multiple Chars and random sprites
             if (myConnection.CharacterdCardSelected == CharactersType.Ghost)
             {
                 gameManager.DisableEnemyTilesActiveForGhosts();

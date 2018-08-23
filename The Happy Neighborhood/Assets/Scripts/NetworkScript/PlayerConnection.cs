@@ -336,6 +336,7 @@ public class PlayerConnection : NetworkBehaviour
                 gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
                 IsReadyForUpdateCharacterCardsOnScreen = false;             // ===> Disable by couroutine
 
+
             }
 
             #endregion
@@ -588,15 +589,14 @@ public class PlayerConnection : NetworkBehaviour
     /// <param name="cellNumber"></param>
     public void CommandToCheckSelectedCell(int cellNumber, BoardType WhosBoardSelection)
     {
+<<<<<<< HEAD
         CmdAskToCheckSelectedCell(cellNumber, CardTypeSelected, HouseCardSelected, HouseSpriteIndexSelected, CharacterdCardSelected, MyTurnID, WhosBoardSelection);
 
+=======
+        CmdAskToCheckSelectedCell(cellNumber, CardTypeSelected, HouseCardSelected, CharacterdCardSelected, MyTurnID, WhosBoardSelection);
+>>>>>>> parent of 4a1bad5... Working on multiple Chars and random sprites
     }
     #endregion
-
-    public void CommandToCheckMultipleCharsOnSelectedCells(int[] cellNumbers, CharactersType Character )
-    {
-        CmdAskToCheckMultipleCharsOnSelectedCells(cellNumbers, Character, MyTurnID);
-    }
 
     // --------------------- Network section ---------------------
 
@@ -755,58 +755,30 @@ public class PlayerConnection : NetworkBehaviour
                 CharactersType.GuyNeedParking,
                 CharactersType.GuyWithAnimal,
                 CharactersType.Baby,
-                CharactersType.Wizard,
                 CharactersType.Gangster,
                 CharactersType.DoubleGuys,
+                CharactersType.TwoHouseGuy,
                 CharactersType.FourHouseGuy,
                 CharactersType.FamilyTwoGuys,
-                CharactersType.ThreeHouseLGuy,
-                CharactersType.TwoHouseGuy_Up,
-                CharactersType.TwoHouseGuy_Down
+                CharactersType.ThreeHouseLGuy
+                
             };
 
-            /*
-                        for (int i = 0; i < EnumCharacterLenght; i++)
-                        {
-
-
-                            CharactersType CharacterTemp = (CharactersType)i;
-
-                            // These Character shouldnt be added to deck based on game design
-                            if ( Array.IndexOf(RemovedCharavter,CharacterTemp) >= 0 )
-                            {
-                                continue;
-                            }
-
-                            for (int j = 0; j < 3; j++)  // Each card has 3 Ratio in a deck
-                            {
-                                CharactersDeckList_Server.Add(CharacterTemp);
-                            }
-
-                        }
-
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                        Changeed For Test
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            */
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < EnumCharacterLenght; i++)
             {
-                CharactersDeckList_Server.Add(CharactersType.TwoHouseGuy);
-            }
-            for (int i = 0; i < 10; i++)
-            {
-                CharactersDeckList_Server.Add(CharactersType.FourHouseGuy);
-            }
-            for (int i = 0; i < 10; i++)
-            {
-                CharactersDeckList_Server.Add(CharactersType.ThreeHouseLGuy);
-            }
-            for (int i = 0; i < 10; i++)
-            {
-                CharactersDeckList_Server.Add(CharactersType.BlueNoYellow);
+                CharactersType CharacterTemp = (CharactersType)i;
+
+                // These Character shouldnt be added to deck based on game design
+                if( Array.IndexOf(RemovedCharavter,CharacterTemp) >= 0 )
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < 3; j++)  // Each card has 3 Ratio in a deck
+                {
+                    CharactersDeckList_Server.Add(CharacterTemp);
+                }
+
             }
 
 
@@ -1127,8 +1099,6 @@ public class PlayerConnection : NetworkBehaviour
     [Command]
     void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, int houseSpriteIndexSelected, CharactersType charactersType, int PlayerID, BoardType WhosBoard)
     {
-        print("[Server] ==> CmdAskToCheckSelectedCell");
-
         HouseCellsType[] tempHouseCells = new HouseCellsType[49];
         CharactersType[] tempCharacterCells = new CharactersType[49];
         bool IsErorFound = false;
@@ -1828,140 +1798,6 @@ public class PlayerConnection : NetworkBehaviour
             CmdAskToFillEmptyCharInGameDeck(false);
             CmdAskToFillEmptyHouseInGameDeck(false);
 
-        }
-
-    }
-    #endregion
-
-    #region CmdAskToCheckMultipleCharsOnSelectedCells(int[] cellNumbers, CharactersType character, int myTurnID)
-    [Command]
-    void CmdAskToCheckMultipleCharsOnSelectedCells(int[] cellNumbers, CharactersType character, int myTurnID)
-    {
-
-        HouseCellsType[] houseTemp = new HouseCellsType[49];
-        CharactersType[] charTemp = new CharactersType[49];
-        HouseCellsType[] SelectedHouses = new HouseCellsType[cellNumbers.Length];
-
-        if (myTurnID == 1)
-        {
-            houseTemp = HouseCells_P1_Server;
-            charTemp = CharCells_P1_Server;
-        }
-        else if(myTurnID == 2)
-        {
-            houseTemp = HouseCells_P2_Server;
-            charTemp = CharCells_P2_Server;
-        }
-
-        for (int i = 0; i < cellNumbers.Length; i++)
-        {
-            #region Check Cells to be empty of character
-            if (charTemp[cellNumbers[i]] != CharactersType.Empty)
-            {
-                RpcTellError(myTurnID);
-                return;
-            }
-            #endregion
-
-            #region Putting All the selected house tile in the SelectedHouses Array
-            SelectedHouses[i] = houseTemp[cellNumbers[i]];
-            #endregion
-        }
-
-        #region Check Cells to be near each other
-        if ( !GameManager.IsTileIndexesNearEachOther(character, cellNumbers) )
-        {
-            RpcTellError(myTurnID);
-            return;
-        }
-        #endregion
-
-        #region Check Cells to be Colored Tiled and the same color
-        if ( !GameManager.IsTileIndexesTheSameColor(SelectedHouses) )
-        {
-            RpcTellError(myTurnID);
-            return;
-        }
-        #endregion
-
-        #region When a multiplie unit character is legally selected by Client ID 1
-        if (myTurnID == 1)
-        {
-            CharactersInHouse_P1_Server++;
-            Score_P1_Server += CharType.CalculateCharacterScore(character);
-
-            CharactersType[] tempCharacterUnits = GameManager.OrderHouseTilesForMultipleUnitCharacter(cellNumbers, character);
-
-            for (int i = 0; i < cellNumbers.Length; i++)
-            {
-                CharCells_P1_Server[cellNumbers[i]] = tempCharacterUnits[i];
-            }
-
-            RpcTellScore(Score_P1_Server, 1);
-            RpcTellCharacterCells(CharCells_P1_Server, true);
-
-            if (CharactersInHouse_P1_Server == 5)
-            {
-                // Finish the game 
-                IsGameFinished = true;
-            }
-
-        }
-        #endregion
-
-        #region When a multiplie unit character is legally selected by Client ID 2
-        else if (myTurnID == 2)
-        {
-            CharactersInHouse_P2_Server++;
-            Score_P2_Server += CharType.CalculateCharacterScore(character);
-
-            CharactersType[] tempCharacterUnits = GameManager.OrderHouseTilesForMultipleUnitCharacter(cellNumbers, character);
-
-            for (int i = 0; i < cellNumbers.Length; i++)
-            {
-                CharCells_P2_Server[cellNumbers[i]] = tempCharacterUnits[i];
-            }
-
-            RpcTellScore(Score_P2_Server, 2);
-            RpcTellCharacterCells(CharCells_P2_Server, true);
-
-            if (CharactersInHouse_P2_Server == 5)
-            {
-                // Finish the game 
-                IsGameFinished = true;
-            }
-
-        }
-        #endregion
-
-
-
-        if (IsGameFinished)
-        {
-            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server, CharactersInHouse_P1_Server);
-            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server, CharactersInHouse_P2_Server);
-            int score_P1 = Score_P1_Server + negativeScore_P1;
-            int score_P2 = Score_P2_Server + negativeScore_P2;
-
-            if (score_P1 > score_P2)
-            {
-                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
-            }
-            else
-            {
-                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
-            }
-
-        }
-        else if (!IsGameFinished)
-        {
-            CharacterCardsDeckInGame_Server.Remove(character);
-            CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
-
-            RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
-            RpcTellTurn(ServerTurn);
-            CmdAskToFillEmptyCharInGameDeck(false);
-            CmdAskToFillEmptyHouseInGameDeck(false);
         }
 
     }

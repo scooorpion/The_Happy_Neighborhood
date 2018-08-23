@@ -6,37 +6,40 @@ using UnityEngine;
 [System.Serializable]
 public struct SpriteReference
 {
+<<<<<<< HEAD
     #region Sprite Refrences
+=======
+>>>>>>> parent of 4a1bad5... Working on multiple Chars and random sprites
     [Header("House Sprite: ")]
 
     [SerializeField]
-    public Sprite[] BannedTile;
+    public Sprite BannedTile;
     [SerializeField]
     public Sprite EmptyTile;
     [SerializeField]
-    public Sprite[] BlueTile;
+    public Sprite BlueTile;
     [SerializeField]
-    public Sprite[] RedTile;
+    public Sprite RedTile;
     [SerializeField]
-    public Sprite[] PurpleTile;
+    public Sprite PurpleTile;
     [SerializeField]
-    public Sprite[] YellowTile;
+    public Sprite YellowTile;
     [SerializeField]
-    public Sprite[] OldBlueTile;
+    public Sprite OldBlueTile;
     [SerializeField]
-    public Sprite[] OldRedTile;
+    public Sprite OldRedTile;
     [SerializeField]
-    public Sprite[] OldPurpleTile;
+    public Sprite OldPurpleTile;
     [SerializeField]
-    public Sprite[] OldYellowTile;
+    public Sprite OldYellowTile;
     [SerializeField]
-    public Sprite[] PentHouse;
+    public Sprite PentHouse;
     [SerializeField]
-    public Sprite[] Parking;
+    public Sprite Parking;
     [SerializeField]
-    public Sprite[] Terrace;
+    public Sprite Terrace;
     [SerializeField]
-    public Sprite[] Garden;
+    public Sprite Garden;
 
     [Header("Character Sprite: ")]
     [SerializeField]
@@ -90,6 +93,7 @@ public struct SpriteReference
     [SerializeField]
     public Sprite Wizard;
 
+<<<<<<< HEAD
 
     [Header("Character's Part Sprite: ")]
 
@@ -299,4 +303,6 @@ public struct SpriteReference
     }
     #endregion
 
+=======
+>>>>>>> parent of 4a1bad5... Working on multiple Chars and random sprites
 }
