@@ -113,13 +113,6 @@ public class GameManager : MonoBehaviour
         Initialazation();
     }
 
-    private void Update()
-    {
-        if(Input.GetMouseButtonDown(0))
-        {
-            HideErrorPanel();
-        }
-    }
 
     #region Initialazation(bool ToReset = false)
     /// <summary>
@@ -154,6 +147,7 @@ public class GameManager : MonoBehaviour
         NetworkHudBtns.SetActive(true);
         FinishedPanel.SetActive(false);
         soundManager = FindObjectOfType<SoundManager>();
+        spriteReference.FirstHouseSpriteRandomInitialization();
     }
     #endregion
 
@@ -332,7 +326,7 @@ public class GameManager : MonoBehaviour
                 if (HouseCellsArray[i] == HouseCellsType.BannedTile)
                 {
                     myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Button>().interactable = false;
-                    myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().sprite = SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsType.BannedTile);
+                    myBoardGenerator.BoardCellsArray[i / 7, i % 7].GetComponent<Image>().sprite = SpriteBasedOnHouseCellType(HouseCellsType.BannedTile);
                     myBoardGenerator.BoardCellsArray[i / 7, i % 7].tag = "Banned_Cell";
 
                 }
@@ -530,7 +524,7 @@ public class GameManager : MonoBehaviour
             imageTempComponent.color = tempColor;
 
             // Error : IndexOutOfRange
-            imageTempComponent.sprite = SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsArray[i]);
+            imageTempComponent.sprite = SpriteBasedOnHouseCellType(HouseCellsArray[i]);
             HouseDeckManager.HousesCardsDeckPickable[i].GetComponent<HouseType>().houseCellsType = HouseCellsArray[i];
 
         }
@@ -605,7 +599,7 @@ public class GameManager : MonoBehaviour
         switch (HouseCellType)
         {
             case HouseCellsType.BannedTile:
-                tempHouseSprite = SpriteReference.BannedTile_Randomized;
+                tempHouseSprite = spriteReference.BannedTile;
                 break;
 
             case HouseCellsType.EmptyTile:
@@ -613,128 +607,51 @@ public class GameManager : MonoBehaviour
                 break;
 
             case HouseCellsType.BlueTile:
-                tempHouseSprite = SpriteReference.BlueTile_Randomized;
+                tempHouseSprite = spriteReference.BlueTile;
                 break;
 
             case HouseCellsType.RedTile:
-                tempHouseSprite = SpriteReference.RedTile_Randomized;
+                tempHouseSprite = spriteReference.RedTile;
                 break;
 
             case HouseCellsType.PurpleTile:
-                tempHouseSprite = SpriteReference.PurpleTile_Randomized;
+                tempHouseSprite = spriteReference.PurpleTile;
                 break;
 
             case HouseCellsType.YellowTile:
-                tempHouseSprite = SpriteReference.YellowTile_Randomized;
+                tempHouseSprite = spriteReference.YellowTile;
                 break;
 
             case HouseCellsType.OldBlueTile:
-                tempHouseSprite = SpriteReference.OldBlueTile_Randomized;
+                tempHouseSprite = spriteReference.OldBlueTile;
                 break;
 
             case HouseCellsType.OldRedTile:
-                tempHouseSprite = SpriteReference.OldRedTile_Randomized;
+                tempHouseSprite = spriteReference.OldRedTile;
                 break;
 
             case HouseCellsType.OldPurpleTile:
-                tempHouseSprite = SpriteReference.OldPurpleTile_Randomized;
+                tempHouseSprite = spriteReference.OldPurpleTile;
                 break;
 
             case HouseCellsType.OldYellowTile:
-                tempHouseSprite = SpriteReference.OldYellowTile_Randomized;
+                tempHouseSprite = spriteReference.OldYellowTile;
                 break;
 
             case HouseCellsType.PentHouse:
-                tempHouseSprite = SpriteReference.PentHouse_Randomized;
+                tempHouseSprite = spriteReference.PentHouse;
                 break;
 
             case HouseCellsType.Parking:
-                tempHouseSprite = SpriteReference.Parking_Randomized;
+                tempHouseSprite = spriteReference.Parking;
                 break;
 
             case HouseCellsType.Terrace:
-                tempHouseSprite = SpriteReference.Terrace_Randomized;
+                tempHouseSprite = spriteReference.Terrace;
                 break;
 
             case HouseCellsType.Garden:
-                tempHouseSprite = SpriteReference.Garden_Randomized;
-                break;
-
-            default:
-                tempHouseSprite = spriteReference.EmptyTile;
-                break;
-        }
-
-        return tempHouseSprite;
-    }
-    #endregion
-
-    #region Sprite SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsType HouseCellType) : [used for deck fill]
-    /// <summary>
-    /// Return a Sprite based on the enum house cell [used for deck fill]
-    /// </summary>
-    /// <param name="HouseCellType"></param>
-    /// <returns></returns>
-    public Sprite SpriteBasedOnHouseCellTypeForDeckAssign(HouseCellsType HouseCellType)
-    {
-        Sprite tempHouseSprite;
-
-        switch (HouseCellType)
-        {
-            case HouseCellsType.BannedTile:
-                tempHouseSprite = spriteReference.BannedTileSprite(); ;
-                break;
-
-            case HouseCellsType.EmptyTile:
-                tempHouseSprite = spriteReference.EmptyTile;
-                break;
-
-            case HouseCellsType.BlueTile:
-                tempHouseSprite = spriteReference.BlueTileSprite();
-                break;
-
-            case HouseCellsType.RedTile:
-                tempHouseSprite = spriteReference.RedTileSprite();
-                break;
-
-            case HouseCellsType.PurpleTile:
-                tempHouseSprite = spriteReference.PurpleTileSprite();
-                break;
-
-            case HouseCellsType.YellowTile:
-                tempHouseSprite = spriteReference.YellowTileSprite();
-                break;
-
-            case HouseCellsType.OldBlueTile:
-                tempHouseSprite = spriteReference.OldBlueTileSprite();
-                break;
-
-            case HouseCellsType.OldRedTile:
-                tempHouseSprite = spriteReference.OldRedTileSprite();
-                break;
-
-            case HouseCellsType.OldPurpleTile:
-                tempHouseSprite = spriteReference.OldPurpleTileSprite();
-                break;
-
-            case HouseCellsType.OldYellowTile:
-                tempHouseSprite = spriteReference.OldYellowSprite();
-                break;
-
-            case HouseCellsType.PentHouse:
-                tempHouseSprite = spriteReference.PentHouseSprite();
-                break;
-
-            case HouseCellsType.Parking:
-                tempHouseSprite = spriteReference.ParkingSprite();
-                break;
-
-            case HouseCellsType.Terrace:
-                tempHouseSprite = spriteReference.TerraceSprite();
-                break;
-
-            case HouseCellsType.Garden:
-                tempHouseSprite = spriteReference.GardenTileSprite();
+                tempHouseSprite = spriteReference.Garden;
                 break;
 
             default:
@@ -1476,6 +1393,7 @@ public class GameManager : MonoBehaviour
     public void HideErrorPanel()
     {
         ErrorMessagePanel.SetActive(false);
+        print("Disable...");
     }
 
     public static int CalculateNegativeScore(CharactersType[] characters, HouseCellsType[] houseCells, int PlacedCharacter)

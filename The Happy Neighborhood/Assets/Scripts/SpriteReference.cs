@@ -7,36 +7,38 @@ using UnityEngine;
 public struct SpriteReference
 {
     #region Sprite Refrences Array
-    [Header("House Sprite: ")]
+    [Header("House Sprite Array: ")]
 
     [SerializeField]
-    public Sprite[] BannedTile;
+    public Sprite[] BannedTile_Arr;
+    [SerializeField]
+    public Sprite[] BlueTile_Arr;
+    [SerializeField]
+    public Sprite[] RedTile_Arr;
+    [SerializeField]
+    public Sprite[] PurpleTile_Arr;
+    [SerializeField]
+    public Sprite[] YellowTile_Arr;
+    [SerializeField]
+    public Sprite[] OldBlueTile_Arr;
+    [SerializeField]
+    public Sprite[] OldRedTile_Arr;
+    [SerializeField]
+    public Sprite[] OldPurpleTile_Arr;
+    [SerializeField]
+    public Sprite[] OldYellowTile_Arr;
+    [SerializeField]
+    public Sprite[] PentHouse_Arr;
+    [SerializeField]
+    public Sprite[] Parking_Arr;
+    [SerializeField]
+    public Sprite[] Terrace_Arr;
+    [SerializeField]
+    public Sprite[] Garden_Arr;
     [SerializeField]
     public Sprite EmptyTile;
-    [SerializeField]
-    public Sprite[] BlueTile;
-    [SerializeField]
-    public Sprite[] RedTile;
-    [SerializeField]
-    public Sprite[] PurpleTile;
-    [SerializeField]
-    public Sprite[] YellowTile;
-    [SerializeField]
-    public Sprite[] OldBlueTile;
-    [SerializeField]
-    public Sprite[] OldRedTile;
-    [SerializeField]
-    public Sprite[] OldPurpleTile;
-    [SerializeField]
-    public Sprite[] OldYellowTile;
-    [SerializeField]
-    public Sprite[] PentHouse;
-    [SerializeField]
-    public Sprite[] Parking;
-    [SerializeField]
-    public Sprite[] Terrace;
-    [SerializeField]
-    public Sprite[] Garden;
+
+
 
     [Header("Character Sprite: ")]
     [SerializeField]
@@ -111,102 +113,65 @@ public struct SpriteReference
     public Sprite ThreeHouseLGuy_Center;
     [SerializeField]
     public Sprite ThreeHouseLGuy_Down_Left;
+
+    public Sprite BannedTile;
+
+    public Sprite BlueTile;
+
+    public Sprite RedTile;
+
+    public Sprite PurpleTile;
+
+    public Sprite YellowTile;
+
+    public Sprite OldBlueTile;
+
+    public Sprite OldRedTile;
+
+    public Sprite OldPurpleTile;
+
+    public Sprite OldYellowTile;
+
+    public Sprite PentHouse;
+
+    public Sprite Parking;
+
+    public Sprite Terrace;
+
+    public Sprite Garden;
+
+
     #endregion
 
-    #region Sprite Refrences Array
-    [Header("House Sprite: ")]
 
-    public static Sprite BannedTile_Randomized;
-    public static Sprite BlueTile_Randomized;
-    public static Sprite RedTile_Randomized;
-    public static Sprite PurpleTile_Randomized;
-    public static Sprite YellowTile_Randomized;
-    public static Sprite OldBlueTile_Randomized;
-    public static Sprite OldRedTile_Randomized;
-    public static Sprite OldPurpleTile_Randomized;
-    public static Sprite OldYellowTile_Randomized;
-    public static Sprite PentHouse_Randomized;
-    public static Sprite Parking_Randomized;
-    public static Sprite Terrace_Randomized;
-    public static Sprite Garden_Randomized;
-
-    #endregion
-
-    public Sprite BannedTileSprite()
+    public void FirstHouseSpriteRandomInitialization()
     {
-        BannedTile_Randomized = BannedTile[UnityEngine.Random.Range(0, BannedTile.Length)];
-        return BannedTile_Randomized;
-    }
+        BannedTile = BannedTile_Arr[UnityEngine.Random.Range(0, BannedTile_Arr.Length)];
 
-    public Sprite BlueTileSprite()
-    {
-        BlueTile_Randomized = BlueTile[UnityEngine.Random.Range(0, BlueTile.Length)];
-        return BlueTile_Randomized;
-    }
+        BlueTile = BlueTile_Arr[UnityEngine.Random.Range(0, BlueTile_Arr.Length)];
 
-    public Sprite RedTileSprite()
-    {
-        RedTile_Randomized = RedTile[UnityEngine.Random.Range(0, RedTile.Length)];
-        return RedTile_Randomized;
-    }
+        RedTile = RedTile_Arr[UnityEngine.Random.Range(0, RedTile_Arr.Length)];
 
-    public Sprite PurpleTileSprite()
-    {
-        PurpleTile_Randomized = PurpleTile[UnityEngine.Random.Range(0, PurpleTile.Length)];
-        return PurpleTile_Randomized;
-    }
+        PurpleTile = PurpleTile_Arr[UnityEngine.Random.Range(0, PurpleTile_Arr.Length)];
 
-    public Sprite YellowTileSprite()
-    {
-        YellowTile_Randomized = YellowTile[UnityEngine.Random.Range(0, YellowTile.Length)];
-        return YellowTile_Randomized;
-    }
-    public Sprite OldBlueTileSprite()
-    {
-        OldBlueTile_Randomized = OldBlueTile[UnityEngine.Random.Range(0, OldBlueTile.Length)];
-        return OldBlueTile_Randomized;
-    }
+        YellowTile = YellowTile_Arr[UnityEngine.Random.Range(0, YellowTile_Arr.Length)];
 
-    public Sprite OldRedTileSprite()
-    {
-        OldRedTile_Randomized = OldRedTile[UnityEngine.Random.Range(0, OldRedTile.Length)];
-        return OldRedTile_Randomized;
-    }
+        OldBlueTile = OldBlueTile_Arr[UnityEngine.Random.Range(0, OldBlueTile_Arr.Length)];
 
-    public Sprite OldPurpleTileSprite()
-    {
-        OldPurpleTile_Randomized = OldPurpleTile[UnityEngine.Random.Range(0, OldPurpleTile.Length)];
-        return OldPurpleTile_Randomized;
-    }
+        OldRedTile = OldRedTile_Arr[UnityEngine.Random.Range(0, OldRedTile_Arr.Length)];
 
-    public Sprite OldYellowSprite()
-    {
-        OldYellowTile_Randomized = OldYellowTile[UnityEngine.Random.Range(0, OldYellowTile.Length)];
-        return OldYellowTile_Randomized;
-    }
+        OldPurpleTile = OldPurpleTile_Arr[UnityEngine.Random.Range(0, OldPurpleTile_Arr.Length)];
 
-    public Sprite PentHouseSprite()
-    {
-        PentHouse_Randomized = PentHouse[UnityEngine.Random.Range(0, PentHouse.Length)];
-        return PentHouse_Randomized;
-    }
+        OldYellowTile = OldYellowTile_Arr[UnityEngine.Random.Range(0, OldYellowTile_Arr.Length)];
 
-    public Sprite GardenTileSprite()
-    {
-        Garden_Randomized = Garden[UnityEngine.Random.Range(0, Garden.Length)];
-        return Garden_Randomized;
-    }
+        PentHouse = PentHouse_Arr[UnityEngine.Random.Range(0, PentHouse_Arr.Length)];
 
-    public Sprite TerraceSprite()
-    {
-        Terrace_Randomized = Terrace[UnityEngine.Random.Range(0, Terrace.Length)];
-        return Terrace_Randomized;
-    }
+        Parking = Parking_Arr[UnityEngine.Random.Range(0, Parking_Arr.Length)];
 
-    public Sprite ParkingSprite()
-    {
-        Parking_Randomized = Parking[UnityEngine.Random.Range(0, Parking.Length)];
-        return Parking_Randomized;
+        Terrace = Terrace_Arr[UnityEngine.Random.Range(0, Terrace_Arr.Length)];
+
+        Garden = Garden_Arr[UnityEngine.Random.Range(0, Garden_Arr.Length)];
+
     }
 
 }

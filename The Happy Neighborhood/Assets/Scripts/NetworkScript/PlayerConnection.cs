@@ -176,6 +176,10 @@ public class PlayerConnection : NetworkBehaviour
         }
         #endregion
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            gameManagerscript.HideErrorPanel();
+        }
 
         #region Check If the game is finished
         if (IsGameFinished)
