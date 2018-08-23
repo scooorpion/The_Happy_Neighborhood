@@ -12,6 +12,9 @@ TagManager:
   - ServerText
   - Network
   - BannedHouse
+  - Empty_Cell
+  - Full_Cell
+  - Banned_Cell
   layers:
   - Default
   - TransparentFX

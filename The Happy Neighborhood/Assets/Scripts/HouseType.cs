@@ -5,5 +5,4 @@ using UnityEngine;
 public class HouseType : MonoBehaviour
 {
     public HouseCellsType houseCellsType;
-    public int SpriteIndex;
 }
