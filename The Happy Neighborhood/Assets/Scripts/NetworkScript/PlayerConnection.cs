@@ -785,7 +785,7 @@ public class PlayerConnection : NetworkBehaviour
             */
             for (int i = 0; i < 10; i++)
             {
-                CharactersDeckList_Server.Add(CharactersType.TwoHouseGuy);
+                CharactersDeckList_Server.Add(CharactersType.RedNoBlueGuy);
             }
             for (int i = 0; i < 10; i++)
             {
@@ -813,6 +813,7 @@ public class PlayerConnection : NetworkBehaviour
                 int CardRatioNumber;
 
                 // Assign proper card ratio to each card
+                /*
                 switch (HouseCellTemp)
                 {
                     case HouseCellsType.BannedTile:
@@ -853,6 +854,55 @@ public class PlayerConnection : NetworkBehaviour
                         break;
                     case HouseCellsType.Terrace:
                         CardRatioNumber = 0;
+                        break;
+                    case HouseCellsType.Garden:
+                        CardRatioNumber = 0;
+                        break;
+                    default:
+                        CardRatioNumber = 0;
+                        break;
+                }
+                */
+                switch (HouseCellTemp)
+                {
+                    case HouseCellsType.BannedTile:
+                        CardRatioNumber = 0;
+                        break;
+                    case HouseCellsType.EmptyTile:
+                        CardRatioNumber = 0;
+                        break;
+                    case HouseCellsType.BlueTile:
+                        CardRatioNumber = 15;
+                        break;
+                    case HouseCellsType.RedTile:
+                        CardRatioNumber = 15;
+                        break;
+                    case HouseCellsType.PurpleTile:
+                        CardRatioNumber = 15;
+                        break;
+                    case HouseCellsType.YellowTile:
+                        CardRatioNumber = 15;
+                        break;
+                    case HouseCellsType.OldBlueTile:
+                        CardRatioNumber = 5;
+                        break;
+                    case HouseCellsType.OldRedTile:
+                        CardRatioNumber = 5;
+                        break;
+                    case HouseCellsType.OldPurpleTile:
+                        CardRatioNumber = 5;
+                        break;
+                    case HouseCellsType.OldYellowTile:
+                        CardRatioNumber = 5;
+                        break;
+                    case HouseCellsType.PentHouse:
+                        CardRatioNumber = 8;
+                        break;
+                    case HouseCellsType.Parking:
+                        CardRatioNumber = 0;
+                        break;
+                    case HouseCellsType.Terrace:
+                        CardRatioNumber = 100;
                         break;
                     case HouseCellsType.Garden:
                         CardRatioNumber = 0;
@@ -1310,7 +1360,6 @@ public class PlayerConnection : NetworkBehaviour
         {
             tempHouseCells = HouseCells_P2_Server;
             tempCharacterCells = CharCells_P2_Server;
-
         }
         #endregion
 
@@ -1322,12 +1371,30 @@ public class PlayerConnection : NetworkBehaviour
             {
                 case CharactersType.RedGuy:
 
-                    if (tempHouseCells[cellNumber] != HouseCellsType.RedTile && tempHouseCells[cellNumber] != HouseCellsType.OldRedTile)
+                    if (tempHouseCells[cellNumber] != HouseCellsType.RedTile && tempHouseCells[cellNumber] != HouseCellsType.OldRedTile && tempHouseCells[cellNumber] != HouseCellsType.Terrace)
+                    {
                         IsErorFound = true;
+                        break;
+                    }
 
+                    if(tempHouseCells[cellNumber] == HouseCellsType.Terrace)
+                    {
+                        aroundIndex = GameManager.TileIndex_Around(cellNumber);
+
+                        for (int i = 0; i < aroundIndex.Length; i++)
+                        {
+
+                            if (tempCharacterCells[aroundIndex[i]] == CharactersType.PurpleNoRedGuy)
+                            {
+                                IsErorFound = true;
+                                break;
+                            }
+                        }
+                    }
                     break;
                 case CharactersType.RedNoBlueGuy:
-                    if (tempHouseCells[cellNumber] != HouseCellsType.RedTile && tempHouseCells[cellNumber] != HouseCellsType.OldRedTile)
+
+                    if (tempHouseCells[cellNumber] != HouseCellsType.RedTile && tempHouseCells[cellNumber] != HouseCellsType.OldRedTile && tempHouseCells[cellNumber] != HouseCellsType.Terrace)
                     {
                         IsErorFound = true;
                         break;
@@ -1336,7 +1403,17 @@ public class PlayerConnection : NetworkBehaviour
                     aroundIndex = GameManager.TileIndex_Around(cellNumber);
                     for (int i = 0; i < aroundIndex.Length; i++)
                     {
-                        if (tempHouseCells[aroundIndex[i]] == HouseCellsType.BlueTile || tempHouseCells[cellNumber] == HouseCellsType.OldBlueTile)
+                        if(tempHouseCells[cellNumber] == HouseCellsType.Terrace)
+                        {
+                            if (tempCharacterCells[aroundIndex[i]] == CharactersType.PurpleNoRedGuy)
+                            {
+                                IsErorFound = true;
+                                break;
+                            }
+
+                        }
+
+                        if (tempHouseCells[aroundIndex[i]] == HouseCellsType.BlueTile || tempHouseCells[aroundIndex[i]] == HouseCellsType.OldBlueTile)
                         {
                             IsErorFound = true;
                             break;
@@ -1346,22 +1423,51 @@ public class PlayerConnection : NetworkBehaviour
                     break;
                 case CharactersType.BlueGuy:
 
-                    if (tempHouseCells[cellNumber] != HouseCellsType.BlueTile && tempHouseCells[cellNumber] != HouseCellsType.OldBlueTile)
-                        IsErorFound = true;
-
-                    break;
-                case CharactersType.BlueNoYellow:
-
-                    if (tempHouseCells[cellNumber] != HouseCellsType.BlueTile && tempHouseCells[cellNumber] != HouseCellsType.OldBlueTile)
+                    if (tempHouseCells[cellNumber] != HouseCellsType.BlueTile && tempHouseCells[cellNumber] != HouseCellsType.OldBlueTile && tempHouseCells[cellNumber] != HouseCellsType.Terrace)
                     {
                         IsErorFound = true;
                         break;
                     }
 
+                    if (tempHouseCells[cellNumber] == HouseCellsType.Terrace)
+                    {
+                        aroundIndex = GameManager.TileIndex_Around(cellNumber);
+
+                        for (int i = 0; i < aroundIndex.Length; i++)
+                        {
+
+                            if (tempCharacterCells[aroundIndex[i]] == CharactersType.RedNoBlueGuy)
+                            {
+                                IsErorFound = true;
+                                break;
+                            }
+                        }
+
+                    }
+
+                    break;
+                case CharactersType.BlueNoYellow:
+
+                    if (tempHouseCells[cellNumber] != HouseCellsType.BlueTile && tempHouseCells[cellNumber] != HouseCellsType.OldBlueTile && tempHouseCells[cellNumber] != HouseCellsType.Terrace)
+                    {
+                        IsErorFound = true;
+                        break;
+                    }
+
+
                     aroundIndex = GameManager.TileIndex_Around(cellNumber);
                     for (int i = 0; i < aroundIndex.Length; i++)
                     {
-                        if (tempHouseCells[aroundIndex[i]] == HouseCellsType.YellowTile || tempHouseCells[cellNumber] == HouseCellsType.OldYellowTile)
+                        if (tempHouseCells[cellNumber] == HouseCellsType.Terrace)
+                        {
+                            if (tempCharacterCells[aroundIndex[i]] == CharactersType.RedNoBlueGuy)
+                            {
+                                IsErorFound = true;
+                                break;
+                            }
+                        }
+
+                        if (tempHouseCells[aroundIndex[i]] == HouseCellsType.YellowTile || tempHouseCells[aroundIndex[i]] == HouseCellsType.OldYellowTile)
                         {
                             IsErorFound = true;
                             break;
@@ -1371,13 +1477,14 @@ public class PlayerConnection : NetworkBehaviour
                     break;
                 case CharactersType.PurpuleGuy:
 
-                    if (tempHouseCells[cellNumber] != HouseCellsType.PurpleTile && tempHouseCells[cellNumber] != HouseCellsType.OldPurpleTile)
+                    if (tempHouseCells[cellNumber] != HouseCellsType.PurpleTile && tempHouseCells[cellNumber] != HouseCellsType.OldPurpleTile && tempHouseCells[cellNumber] != HouseCellsType.Terrace)
                         IsErorFound = true;
+
 
                     break;
                 case CharactersType.PurpleNoRedGuy:
 
-                    if (tempHouseCells[cellNumber] != HouseCellsType.PurpleTile && tempHouseCells[cellNumber] != HouseCellsType.OldPurpleTile)
+                    if (tempHouseCells[cellNumber] != HouseCellsType.PurpleTile && tempHouseCells[cellNumber] != HouseCellsType.OldPurpleTile && tempHouseCells[cellNumber] != HouseCellsType.Terrace)
                     {
                         IsErorFound = true;
                         break;
@@ -1386,7 +1493,8 @@ public class PlayerConnection : NetworkBehaviour
                     aroundIndex = GameManager.TileIndex_Around(cellNumber);
                     for (int i = 0; i < aroundIndex.Length; i++)
                     {
-                        if (tempHouseCells[aroundIndex[i]] == HouseCellsType.RedTile || tempHouseCells[cellNumber] == HouseCellsType.OldRedTile)
+
+                        if (tempHouseCells[aroundIndex[i]] == HouseCellsType.RedTile || tempHouseCells[aroundIndex[i]] == HouseCellsType.OldRedTile)
                         {
                             IsErorFound = true;
                             break;
@@ -1401,7 +1509,6 @@ public class PlayerConnection : NetworkBehaviour
 
                     if(GameManager.TileIndex_Above(cellNumber) != -1)
                     {
-                        print("tempHouseCells[GameManager.TileIndex_Above(cellNumber)]: " + tempHouseCells[GameManager.TileIndex_Above(cellNumber)]);
                         if(tempHouseCells[GameManager.TileIndex_Above(cellNumber)] != HouseCellsType.EmptyTile && tempHouseCells[GameManager.TileIndex_Above(cellNumber)] != HouseCellsType.BannedTile)
                             IsErorFound = true;
                     }
@@ -1423,74 +1530,144 @@ public class PlayerConnection : NetworkBehaviour
         #region Check House Card if it is a valid action or not
         else if (charactersType == CharactersType.Empty && houseCellsType != HouseCellsType.EmptyTile)
         {
-            #region Check: Vertical connection check
-            if ( !GameManager.IsTileInFirstRow(cellNumber))
+
+            #region Check: Terrace rules
+            if(houseCellsType == HouseCellsType.Terrace)
             {
-                if(tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.EmptyTile)
+                #region Check: If Terace Tile is in or higher than second level
+                if(!GameManager.IsTerraceTileAllowed(cellNumber))
                 {
                     RpcTellError(PlayerID);
                     return;
                 }
+                #endregion
+
+                #region Check: If vertical or horizontal connection is OK
+                if (tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.EmptyTile )
+                {
+                    int[] SidesIndex = GameManager.TileIndex_Sides(cellNumber);
+                    int bannedTilesInSides = 0;
+                    int emptyTilesInSides = 0;
+                    int sidesAvailableTile = SidesIndex.Length;
+
+                    for (int i = 0; i < sidesAvailableTile; i++)
+                    {
+                        if (tempHouseCells[SidesIndex[i]] == HouseCellsType.EmptyTile)
+                            emptyTilesInSides++;
+                        else if (tempHouseCells[SidesIndex[i]] == HouseCellsType.BannedTile)
+                            bannedTilesInSides++;
+                    }
+                    #region If two sides are empty
+                    if (sidesAvailableTile == 2 && emptyTilesInSides == 2)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+                    #endregion
+
+                    #region If one side is empty and other side is edge
+                    else if (sidesAvailableTile == 1 && emptyTilesInSides == 1)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+                    #endregion
+
+                    #region If one side is empty and other side is banned
+                    else if (emptyTilesInSides == 1 && bannedTilesInSides == 1)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+                    #endregion
+
+                    #region If two sides are banned
+                    else if (bannedTilesInSides == 2)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+                    #endregion
+
+                }
+                #endregion
+
             }
             #endregion
 
-            #region Check: Horizontal connection check
-            int[] SelectedRowIndex = GameManager.TileIndex_InTheRow(cellNumber);
-            bool IsThereAnotherHouseInTheRow = false;
-
-            for (int i = 0; i < SelectedRowIndex.Length; i++)
+            #region Check: Vertical and Horizontal connection of all tiles except Terrace
+            else
             {
-                if(tempHouseCells[SelectedRowIndex[i]] != HouseCellsType.EmptyTile && tempHouseCells[SelectedRowIndex[i]] != HouseCellsType.BannedTile)
+                #region Check: Vertical connection check
+                if (!GameManager.IsTileInFirstRow(cellNumber))
                 {
-                    IsThereAnotherHouseInTheRow = true;
-                    break;
+                    if (tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.EmptyTile)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
                 }
+                #endregion
+
+                #region Check: Horizontal connection check
+                int[] SelectedRowIndex = GameManager.TileIndex_InTheRow(cellNumber);
+                bool IsThereAnotherHouseInTheRow = false;
+
+                for (int i = 0; i < SelectedRowIndex.Length; i++)
+                {
+                    if (tempHouseCells[SelectedRowIndex[i]] != HouseCellsType.EmptyTile && tempHouseCells[SelectedRowIndex[i]] != HouseCellsType.BannedTile)
+                    {
+                        IsThereAnotherHouseInTheRow = true;
+                        break;
+                    }
+                }
+
+                if (IsThereAnotherHouseInTheRow)
+                {
+                    int[] SidesIndex = GameManager.TileIndex_Sides(cellNumber);
+                    int bannedTilesInSides = 0;
+                    int emptyTilesInSides = 0;
+                    int sidesAvailableTile = SidesIndex.Length;
+
+                    for (int i = 0; i < sidesAvailableTile; i++)
+                    {
+                        if (tempHouseCells[SidesIndex[i]] == HouseCellsType.EmptyTile)
+                            emptyTilesInSides++;
+                        else if (tempHouseCells[SidesIndex[i]] == HouseCellsType.BannedTile)
+                            bannedTilesInSides++;
+                    }
+
+                    if (sidesAvailableTile == 2 && emptyTilesInSides == 2)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+                    else if (emptyTilesInSides == 1 && bannedTilesInSides == 1)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+                    else if (sidesAvailableTile == 1 && emptyTilesInSides == 1)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+
+                    // Here...
+                }
+                else if (!IsThereAnotherHouseInTheRow && !GameManager.IsTileInFirstRow(cellNumber))
+                {
+                    if (tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.BannedTile)
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+                }
+
+                #endregion
+
             }
-
-            if( IsThereAnotherHouseInTheRow )
-            {
-                int[] SidesIndex = GameManager.TileIndex_Sides(cellNumber);
-                int bannedTilesInSides = 0;
-                int emptyTilesInSides = 0;
-                int sidesAvailableTile = SidesIndex.Length;
-
-                for (int i = 0; i < sidesAvailableTile; i++)
-                {
-                    if (tempHouseCells[SidesIndex[i]] == HouseCellsType.EmptyTile)
-                        emptyTilesInSides++;
-                    else if (tempHouseCells[SidesIndex[i]] == HouseCellsType.BannedTile)
-                        bannedTilesInSides++;
-                }
-
-                if(sidesAvailableTile == 2 && emptyTilesInSides == 2)
-                {
-                    RpcTellError(PlayerID);
-                    return;
-                }
-                else if (emptyTilesInSides == 1 && bannedTilesInSides == 1)
-                {
-                    RpcTellError(PlayerID);
-                    return;
-                }
-                else if ( sidesAvailableTile == 1 && emptyTilesInSides == 1)
-                {
-                    RpcTellError(PlayerID);
-                    return;
-                }
-
-                // Here...
-            }
-            else if(!IsThereAnotherHouseInTheRow && !GameManager.IsTileInFirstRow(cellNumber) )
-            {
-                if(tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.BannedTile)
-                {
-                    RpcTellError(PlayerID);
-                    return;
-                }
-            }
-
             #endregion
-
 
             #region Check: If there is old House in three house below and there isnt baned house between them, Then this is an unvalid one
             if (GameManager.ThreeTileBelowSelectedIndex(cellNumber) != -1)

@@ -163,14 +163,14 @@ public struct SpriteReference
         OldPurpleTile = OldPurpleTile_Arr[UnityEngine.Random.Range(0, OldPurpleTile_Arr.Length)];
 
         OldYellowTile = OldYellowTile_Arr[UnityEngine.Random.Range(0, OldYellowTile_Arr.Length)];
+        
+        Terrace = Terrace_Arr[UnityEngine.Random.Range(0, Terrace_Arr.Length)];
 
         PentHouse = PentHouse_Arr[UnityEngine.Random.Range(0, PentHouse_Arr.Length)];
 
-        Parking = Parking_Arr[UnityEngine.Random.Range(0, Parking_Arr.Length)];
+        //Parking = Parking_Arr[UnityEngine.Random.Range(0, Parking_Arr.Length)];
 
-        Terrace = Terrace_Arr[UnityEngine.Random.Range(0, Terrace_Arr.Length)];
-
-        Garden = Garden_Arr[UnityEngine.Random.Range(0, Garden_Arr.Length)];
+        //Garden = Garden_Arr[UnityEngine.Random.Range(0, Garden_Arr.Length)];
 
     }
 

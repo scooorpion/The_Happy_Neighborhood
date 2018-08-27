@@ -2621,7 +2621,8 @@ MonoBehaviour:
     PentHouse_Arr:
     - {fileID: 21300000, guid: ecd35a9af4fd1524f9e7eb0bb2b5afa3, type: 3}
     Parking_Arr: []
-    Terrace_Arr: []
+    Terrace_Arr:
+    - {fileID: 21300016, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Garden_Arr: []
     EmptyTile: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 3}
     Empty: {fileID: 21300004, guid: 56771dfd566146240b6af31fe83d159d, type: 3}

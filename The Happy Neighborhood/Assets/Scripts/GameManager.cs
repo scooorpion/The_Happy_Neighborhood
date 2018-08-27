@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -337,6 +338,7 @@ public class GameManager : MonoBehaviour
 
                     if (HouseCellsArray[i] != HouseCellsType.BannedTile)
                         myBoardGenerator.BoardCellsArray[i / 7, i % 7].tag = "Full_Cell";
+
                 }
 
             }
@@ -379,7 +381,7 @@ public class GameManager : MonoBehaviour
         }
 
         CharacterPlaceHolderImageComponenet.sprite = SpriteBasedOnCharacterCellType(CharactersType.Ghost);
-
+        
         Color tempColor = CharacterPlaceHolderImageComponenet.color;
         tempColor.a = 1;
         CharacterPlaceHolderImageComponenet.color = tempColor;
@@ -647,6 +649,7 @@ public class GameManager : MonoBehaviour
                 break;
 
             case HouseCellsType.Terrace:
+                print("Terrace");
                 tempHouseSprite = spriteReference.Terrace;
                 break;
 
@@ -806,6 +809,25 @@ public class GameManager : MonoBehaviour
 
         return (SelectedIndex-7);
 
+    }
+    #endregion
+
+    #region IsTerraceTileAllowed(int SelectedIndex): Return true if entered index is in or higher than level 2
+    /// <summary>
+    /// Return true if entered index is in or higher than level 2
+    /// </summary>
+    /// <param name="SelectedIndex"></param>
+    /// <returns></returns>
+    public static bool IsTerraceTileAllowed(int SelectedIndex)
+    {
+        if (SelectedIndex > 6)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     #endregion
 
