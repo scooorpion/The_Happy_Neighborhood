@@ -70,6 +70,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   houseCellsType: 13
+  spriteReference_HouseHelp:
+    BlueTile_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    RedTile_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    PurpleTile_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    YellowTile_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    OldBlueTile_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    OldRedTile_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    OldPurpleTile_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    OldYellowTile_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    PentHouse_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    Parking_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    Terrace_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    Garden_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
 --- !u!114 &114286500746575434
 MonoBehaviour:
   m_ObjectHideFlags: 1

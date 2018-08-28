@@ -114,6 +114,13 @@ public class GameManager : MonoBehaviour
         Initialazation();
     }
 
+    #region VisibleCursor(float waitingTime): Wait To Show Cursor at the begining
+    IEnumerator VisibleCursor(float waitingTime)
+    {
+        yield return new WaitForSeconds(waitingTime);
+        Cursor.visible = true;
+    }
+    #endregion
 
     #region Initialazation(bool ToReset = false)
     /// <summary>
@@ -131,6 +138,7 @@ public class GameManager : MonoBehaviour
 
             UIAnimator.SetBool("loadGame", false);
         }
+        StartCoroutine(VisibleCursor(0.4f));
         ConnectionLostPanel.SetActive(false);
         SetDiactiveUIBeginingWaitingPanel();
         CharacterDeck.SetActive(false);
@@ -1003,6 +1011,7 @@ public class GameManager : MonoBehaviour
             AroundIndex.Add(SelectedIndex + 7);
         }
 
+        /*
         if(!IsInTopEdge && !IsInRightEdge)
         {
             AroundIndex.Add((SelectedIndex + 7) + 1);
@@ -1023,7 +1032,7 @@ public class GameManager : MonoBehaviour
         {
             AroundIndex.Add((SelectedIndex - 7) - 1);
         }
-
+        */
 
         return AroundIndex.ToArray();
     }

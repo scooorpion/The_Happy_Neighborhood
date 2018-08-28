@@ -789,7 +789,7 @@ public class PlayerConnection : NetworkBehaviour
             }
             for (int i = 0; i < 10; i++)
             {
-                CharactersDeckList_Server.Add(CharactersType.FourHouseGuy);
+                CharactersDeckList_Server.Add(CharactersType.OldGuy);
             }
             for (int i = 0; i < 10; i++)
             {
@@ -1159,7 +1159,7 @@ public class PlayerConnection : NetworkBehaviour
     /// <param name="charactersType"></param>
     /// <param name="PlayerID"></param>
     [Command]
-    void CmdAskToCheckSelectedCell(int cellNumber,CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID, BoardType WhosBoard)
+    void CmdAskToCheckSelectedCell(int cellNumber, CardType cardType, HouseCellsType houseCellsType, CharactersType charactersType, int PlayerID, BoardType WhosBoard)
     {
         print("[Server] ==> CmdAskToCheckSelectedCell");
 
@@ -1168,15 +1168,15 @@ public class PlayerConnection : NetworkBehaviour
         bool IsErorFound = false;
         int[] aroundIndex;
 
-        bool IsOldHouseTile = false ;
+        bool IsOldHouseTile = false;
 
         #region Check For Wrong Input and Cheat
 
         #region Cheat Detection
         // ServerTurn has next turn which is 1 or 2 and is opposit the player id who choose. sum of these two number is always 3 1+2 or 2+1
-        if (ServerTurn+PlayerID != 3)
+        if (ServerTurn + PlayerID != 3)
         {
-            print("Cheat--ServerTurn: "+ ServerTurn+ " *** PlayerID: "+PlayerID);
+            print("Cheat--ServerTurn: " + ServerTurn + " *** PlayerID: " + PlayerID);
             //RpcTellCharacterCells(CharCells_P1_Server,false);
             //RpcTellHouseCells(HouseCells_P1_Server, IsOldHouseTile, false);
             return;
@@ -1204,9 +1204,8 @@ public class PlayerConnection : NetworkBehaviour
 
             HouseCellsType SelectedHouse = tempEnemyHouseCells[cellNumber];
 
-            #region Check If The selected house is an old house
-            if (SelectedHouse != HouseCellsType.OldBlueTile && SelectedHouse != HouseCellsType.OldPurpleTile &&
-                SelectedHouse != HouseCellsType.OldRedTile && SelectedHouse != HouseCellsType.OldYellowTile)
+            #region Check If The selected house is not empty or banned
+            if (SelectedHouse == HouseCellsType.EmptyTile || SelectedHouse == HouseCellsType.BannedTile)
             {
                 RpcTellError(PlayerID);
                 return;
@@ -1610,6 +1609,7 @@ public class PlayerConnection : NetworkBehaviour
                 #endregion
 
                 #region Check: Horizontal connection check
+                
                 int[] SelectedRowIndex = GameManager.TileIndex_InTheRow(cellNumber);
                 bool IsThereAnotherHouseInTheRow = false;
 
@@ -1622,6 +1622,27 @@ public class PlayerConnection : NetworkBehaviour
                     }
                 }
 
+                if(GameManager.IsTileInFirstRow(cellNumber) && IsThereAnotherHouseInTheRow)
+                {
+                    int[] SidesIndex = GameManager.TileIndex_Sides(cellNumber);
+                    bool IsThereHouseTileInSides = false;
+
+                    for (int i = 0; i < SidesIndex.Length; i++)
+                    {
+                        if(tempHouseCells[SidesIndex[i]] != HouseCellsType.EmptyTile)
+                        {
+                            IsThereHouseTileInSides = true;
+                            break;
+                        }
+                    }
+
+                    if( !IsThereHouseTileInSides )
+                    {
+                        RpcTellError(PlayerID);
+                        return;
+                    }
+                }
+                /*
                 if (IsThereAnotherHouseInTheRow)
                 {
                     int[] SidesIndex = GameManager.TileIndex_Sides(cellNumber);
@@ -1663,7 +1684,7 @@ public class PlayerConnection : NetworkBehaviour
                         return;
                     }
                 }
-
+                */
                 #endregion
 
             }
@@ -1673,23 +1694,25 @@ public class PlayerConnection : NetworkBehaviour
             if (GameManager.ThreeTileBelowSelectedIndex(cellNumber) != -1)
             {
                 HouseCellsType ThreeHouseBelow = tempHouseCells[GameManager.ThreeTileBelowSelectedIndex(cellNumber)];
+
                 if (ThreeHouseBelow == HouseCellsType.OldBlueTile || ThreeHouseBelow == HouseCellsType.OldPurpleTile || 
                     ThreeHouseBelow == HouseCellsType.OldRedTile || ThreeHouseBelow == HouseCellsType.OldYellowTile )
                 {
                     print("Three tile below index is: " + GameManager.ThreeTileBelowSelectedIndex(cellNumber));
 
                     int[] twoIndexBelow = GameManager.TwooTileBelowSelectedIndex(cellNumber);
-                    bool IsThereBanedHouseBelow = false;
+                    bool IsThereBanedOrEmptyHouseBelow = false;
+
                     for (int i = 0; i < twoIndexBelow.Length; i++)
                     {
-                        if (tempHouseCells[twoIndexBelow[i]] == HouseCellsType.BannedTile)
+                        if (tempHouseCells[twoIndexBelow[i]] == HouseCellsType.BannedTile || tempHouseCells[twoIndexBelow[i]] == HouseCellsType.EmptyTile)
                         {
-                            IsThereBanedHouseBelow = true;
+                            IsThereBanedOrEmptyHouseBelow = true;
                             break;
                         }
                     }
 
-                    if (IsThereBanedHouseBelow == false)
+                    if (IsThereBanedOrEmptyHouseBelow == false)
                     {
                         RpcTellError(PlayerID);
                         return;

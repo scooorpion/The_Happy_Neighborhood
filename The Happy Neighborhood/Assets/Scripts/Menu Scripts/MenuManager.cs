@@ -6,7 +6,6 @@ public class MenuManager : MonoBehaviour
 {
 
     public static string UserNamePlayerPrefs = "UserName";
-    public static string FirstTimeTutorial = "FirstTimeTutorial";
     public GameObject PopupPanelForName;
     public GameObject MainMenuPanel;
     public GameObject OptionPanel;
@@ -34,16 +33,8 @@ public class MenuManager : MonoBehaviour
 
         if (PlayerPrefs.HasKey(UserNamePlayerPrefs))
         {
-
-            if (PlayerPrefs.HasKey(FirstTimeTutorial))
-            {
-                MainMenuPanel.SetActive(true);
-            }
-            else
-            {
-                PlayerPrefs.SetInt(FirstTimeTutorial, 1);
-                TutorialPanel.SetActive(true);
-            }
+            MainMenuPanel.SetActive(true);
+            PopupPanelForName.SetActive(false);
         }
         else
         {

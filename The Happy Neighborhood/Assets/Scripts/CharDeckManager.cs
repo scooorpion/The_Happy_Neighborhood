@@ -15,6 +15,7 @@ public class CharDeckManager : MonoBehaviour
     public Text CharacterNameInfo;
     public Text CharacterscoreInfo;
     public Text CharacterValidHouseInfo;
+    public Image CharacterHelpImage;
 
     void Start()
     {
@@ -31,23 +32,20 @@ public class CharDeckManager : MonoBehaviour
         }
     }
 
-    public void ShowCharacterInfo(string CharName, string CharValidHouse, int CharScore)
+    public void ShowCharacterInfo(string CharName, string CharValidHouse, int CharScore, Sprite HelpSprite)
     {
-        //print("CharName: " + CharName);
-        //print("CharValidHouse: " + CharValidHouse);
-
-
-        CharacterNameInfo.text = CharName;
-        CharacterscoreInfo.text = CharScore.ToString();
-        CharacterValidHouseInfo.text = CharValidHouse;
+        //CharacterNameInfo.text = CharName;
+        //CharacterscoreInfo.text = CharScore.ToString();
+        //CharacterValidHouseInfo.text = CharValidHouse;
+        CharacterHelpImage.sprite = HelpSprite;
         CharacterInfo.SetActive(true);
     }
 
     public void HideCharacterInfo()
     {
-        CharacterNameInfo.text = "";
-        CharacterscoreInfo.text = "";
-        CharacterValidHouseInfo.text = "";
+        //CharacterNameInfo.text = "";
+        //CharacterscoreInfo.text = "";
+        //CharacterValidHouseInfo.text = "";
         CharacterInfo.SetActive(false);
     }
 

@@ -14,11 +14,14 @@ public class MenuButtonManager : MonoBehaviour
 
     private MenuManager menuManager;
     private SoundManager soundManager;
+    private Animator animator;
 
     private void Start()
     {
         menuManager = GetComponent<MenuManager>();
         soundManager = FindObjectOfType<SoundManager>();
+        animator = FindObjectOfType<Animator>();
+        animator.enabled = false;
     }
 
     #region StartGame()
@@ -29,7 +32,7 @@ public class MenuButtonManager : MonoBehaviour
     {
         soundManager.SFX_MenuButtonPlay();
         StopAllCoroutines();
-        StartCoroutine(DelayLoadScene(1, 0.4f));
+        StartCoroutine(DelayLoadScene(1, 1f));
     }
     #endregion
 
@@ -90,7 +93,7 @@ public class MenuButtonManager : MonoBehaviour
     public void ShowTutorial()
     {
         soundManager.SFX_MenuButtonPlay();
-        menuManager.OptionPanel.SetActive(false);
+        menuManager.MainMenuPanel.SetActive(false);
         menuManager.TutorialPanel.SetActive(true);
     }
 
@@ -154,8 +157,12 @@ public class MenuButtonManager : MonoBehaviour
     /// <returns></returns>
     IEnumerator DelayLoadScene(int SceneIndex, float WaitingTime)
     {
+        animator.enabled = true;
+        animator.SetBool("StartGame",true);
+        Cursor.visible = false;
         yield return new WaitForSeconds(WaitingTime);
         SceneManager.LoadScene(SceneIndex);
+
     }
     #endregion
 

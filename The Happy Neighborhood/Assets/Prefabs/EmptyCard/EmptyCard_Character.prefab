@@ -121,7 +121,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 240e7fb45fa288b40883ed0afc5cddf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deckManager: {fileID: 0}
   charactersType: 0
+  characterScore: 0
+  ValidHouses: 
+  CharacterNames: 
+  spriteReference_CharacterHelp:
+    NoramlGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    DoubleGuys_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    TripleGuys_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    RedGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    RedNoBlueGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    BlueGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    BlueNoYellow_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    PurpuleGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    PurpleNoRedGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    OldGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    PenthouseGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    TwoHouseGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    ThreeHouseLGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    FourHouseGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    FamilyTwoGuys_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    Ghost_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    Animal_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    GuyWithAnimal_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    GuyNeedParking_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    GuyNeedGarden_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    Baby_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    GhostCatcher_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+      type: 3}
+    Gangster_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    Wizard_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
 --- !u!114 &114962582652705250
 MonoBehaviour:
   m_ObjectHideFlags: 1
