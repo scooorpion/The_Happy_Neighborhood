@@ -1170,8 +1170,6 @@ public class PlayerConnection : NetworkBehaviour
 
         bool IsOldHouseTile = false;
 
-        #region Check For Wrong Input and Cheat
-
         #region Cheat Detection
         // ServerTurn has next turn which is 1 or 2 and is opposit the player id who choose. sum of these two number is always 3 1+2 or 2+1
         if (ServerTurn + PlayerID != 3)
@@ -1237,11 +1235,15 @@ public class PlayerConnection : NetworkBehaviour
                 CharCells_P2_Server[cellNumber] = CharactersType.Ghost;
                 #endregion
 
+                #region Increase Placed Character of Player 2
+                CharactersInHouse_P2_Server++;
+                #endregion
+
                 RpcTellScore(Score_P2_Server, 2);
                 RpcTellGhostAttacked(cellNumber, 2);
 
             }
-            else if(PlayerID == 2)
+            else if (PlayerID == 2)
             {
                 #region decrease Ghost number of player after using
                 Ghosts_P2_Server--;
@@ -1256,12 +1258,25 @@ public class PlayerConnection : NetworkBehaviour
                 CharCells_P1_Server[cellNumber] = CharactersType.Ghost;
                 #endregion
 
+                #region Increase Placed Character of Player 1
+                CharactersInHouse_P1_Server++;
+                #endregion
+
 
                 RpcTellScore(Score_P1_Server, 1);
                 RpcTellGhostAttacked(cellNumber, 1);
             }
 
-            RpcTellTurn(ServerTurn);
+            if (CharactersInHouse_P1_Server == 5 || CharactersInHouse_P2_Server == 5)
+            {
+                IsGameFinished = true;
+                CmdCheckForFinishTheGame(IsGameFinished);
+            }
+            else
+            {
+                RpcTellTurn(ServerTurn);
+            }
+
 
             return;
         }
@@ -1345,7 +1360,7 @@ public class PlayerConnection : NetworkBehaviour
         }
         #endregion
 
-        #endregion
+
 
         // ToDo: Check if this action can be done based on game logic
 
@@ -1985,8 +2000,8 @@ public class PlayerConnection : NetworkBehaviour
 
         if(IsGameFinished)
         {
-            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server, CharactersInHouse_P1_Server);
-            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server, CharactersInHouse_P2_Server);
+            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server);
+            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server);
             int score_P1 = Score_P1_Server + negativeScore_P1;
             int score_P2 = Score_P2_Server + negativeScore_P2;
 
@@ -2116,8 +2131,8 @@ public class PlayerConnection : NetworkBehaviour
 
         if (IsGameFinished)
         {
-            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server, CharactersInHouse_P1_Server);
-            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server, CharactersInHouse_P2_Server);
+            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server);
+            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server);
             int score_P1 = Score_P1_Server + negativeScore_P1;
             int score_P2 = Score_P2_Server + negativeScore_P2;
 
@@ -2184,6 +2199,40 @@ public class PlayerConnection : NetworkBehaviour
 
     }
     #endregion
+
+    #region CmdCheckForFinishTheGame(bool IsItFinished)
+    [Command]
+    public void CmdCheckForFinishTheGame(bool IsItFinished)
+    {
+
+        if (IsItFinished)
+        {
+            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server);
+            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server);
+            int score_P1 = Score_P1_Server + negativeScore_P1;
+            int score_P2 = Score_P2_Server + negativeScore_P2;
+
+            if (score_P1 > score_P2)
+            {
+                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
+            }
+            else
+            {
+                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
+            }
+
+        }
+        else if (!IsItFinished)
+        {
+            RpcTellTurn(ServerTurn);
+            CmdAskToFillEmptyCharInGameDeck(false);
+            CmdAskToFillEmptyHouseInGameDeck(false);
+
+        }
+
+    }
+    #endregion
+
 
     #endregion
 

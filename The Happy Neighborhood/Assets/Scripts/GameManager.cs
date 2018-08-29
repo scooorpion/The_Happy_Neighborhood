@@ -1427,18 +1427,23 @@ public class GameManager : MonoBehaviour
         print("Disable...");
     }
 
-    public static int CalculateNegativeScore(CharactersType[] characters, HouseCellsType[] houseCells, int PlacedCharacter)
+    public static int CalculateNegativeScore(CharactersType[] characters, HouseCellsType[] houseCells)
     {
         int tempNegativeScore = 0;
         int allPlacedHouses = 0;
         int emptyHouses = 0;
+        int PlacedCharacter = 0;
 
         for (int i = 0; i < characters.Length; i++)
         {
-            if(characters[i] == CharactersType.Ghost)
+            //if(characters[i] == CharactersType.Ghost)
+            //{
+            //    tempNegativeScore -= 10;
+            //    print("Ghost --");
+            //}
+            if(characters[i] != CharactersType.Empty)
             {
-                tempNegativeScore -= 10;
-                print("Ghost --");
+                PlacedCharacter++;
             }
         }
 
@@ -1451,6 +1456,8 @@ public class GameManager : MonoBehaviour
         }
 
         emptyHouses = allPlacedHouses - PlacedCharacter;
+
+        print("Placed houses: " + PlacedCharacter);
 
         print("Empty houses: " + emptyHouses);
 
@@ -1496,7 +1503,7 @@ public class GameManager : MonoBehaviour
         // Load MainMenue Scene
         ConnectionLostPanel.SetActive(false);
         
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
 
 
     }

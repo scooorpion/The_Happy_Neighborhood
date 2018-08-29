@@ -32,7 +32,7 @@ public class MenuButtonManager : MonoBehaviour
     {
         soundManager.SFX_MenuButtonPlay();
         StopAllCoroutines();
-        StartCoroutine(DelayLoadScene(1, 1f));
+        StartCoroutine(DelayLoadScene(2, 1f));
     }
     #endregion
 

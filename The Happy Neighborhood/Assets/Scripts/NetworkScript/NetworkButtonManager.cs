@@ -92,7 +92,7 @@ public class NetworkButtonManager : MonoBehaviour {
         soundManager.SFX_MenuButtonPlay();
 
         networkManager.StopHost();
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 
 
