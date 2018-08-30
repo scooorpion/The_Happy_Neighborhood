@@ -621,7 +621,7 @@ public class GameManager : MonoBehaviour
                     myBoardGenerator.GhostPanel.SetActive(true);
 
                     // PlaySFX For Ghost ----------->>>>>
-
+                    soundManager.SFX_GhostFlyPlay();
                     StartCoroutine(GhostFlying(3, Ghosts, IsItFirstTimeGhostWantToEnterTheHouse));
 
                 }

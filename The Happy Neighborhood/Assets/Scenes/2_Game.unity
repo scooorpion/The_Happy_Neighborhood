@@ -2662,7 +2662,7 @@ MonoBehaviour:
     ThreeHouseLGuy: {fileID: 21300000, guid: 6ef79735c207fdf45bf8255dc32645b1, type: 3}
     FourHouseGuy: {fileID: 21300000, guid: 383f76869ce05714c9b17e0fbab1339c, type: 3}
     FamilyTwoGuys: {fileID: 21300020, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
-    Ghost: {fileID: 21300026, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+    Ghost: {fileID: 21300000, guid: 7a37c90aa05e075489863a8b246ed526, type: 3}
     Animal: {fileID: 21300046, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     GuyWithAnimal: {fileID: 21300036, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     GuyNeedParking: {fileID: 21300024, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
@@ -2671,6 +2671,10 @@ MonoBehaviour:
     GhostCatcher: {fileID: 21300010, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Gangster: {fileID: 21300038, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
     Wizard: {fileID: 21300048, guid: 55cb399c1bd14eb42b6dcc302c30a025, type: 3}
+    GhostInsideSprite: {fileID: 21300000, guid: a404d3f5943cdee45a156536739836df,
+      type: 3}
+    GhostNotInsideSprite: {fileID: 21300000, guid: 0213f8ef81104d44aa4e13e92e178237,
+      type: 3}
     TwoGuys_Up: {fileID: 21300000, guid: 1abe74feca81e4c43aa24e70c0492d47, type: 3}
     TwoGuys_Down: {fileID: 21300000, guid: 210fbcbfe2afc0446844f14ff62629ef, type: 3}
     FourHouseGuy_Up_Left: {fileID: 21300000, guid: 7e2d280b05e4aaf4bac75256647e2668,
@@ -4446,6 +4450,11 @@ Prefab:
       propertyPath: m_Volume
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114903642505291534, guid: bb04459aecf912e4f9329a5e327f61bd,
+        type: 2}
+      propertyPath: GhostFly
+      value: 
+      objectReference: {fileID: 8300000, guid: 0feb0684e6158a6428e974b1aed70fda, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bb04459aecf912e4f9329a5e327f61bd, type: 2}
   m_IsPrefabParent: 0
@@ -5924,6 +5933,12 @@ Prefab:
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114799966562631868, guid: c9c83160605f39741a751e15fb20564d,
+        type: 2}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0213f8ef81104d44aa4e13e92e178237,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c9c83160605f39741a751e15fb20564d, type: 2}
   m_IsPrefabParent: 0
@@ -7191,6 +7206,12 @@ Prefab:
       propertyPath: m_Color.a
       value: 0.5019608
       objectReference: {fileID: 0}
+    - target: {fileID: 114799966562631868, guid: c9c83160605f39741a751e15fb20564d,
+        type: 2}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a404d3f5943cdee45a156536739836df,
+        type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c9c83160605f39741a751e15fb20564d, type: 2}
   m_IsPrefabParent: 0
