@@ -91,6 +91,10 @@ public struct SpriteReference
     public Sprite Gangster;
     [SerializeField]
     public Sprite Wizard;
+    [SerializeField]
+    public Sprite GhostInsideSprite;
+    [SerializeField]
+    public Sprite GhostNotInsideSprite;
 
 
     [Header("Character's Part Sprite: ")]

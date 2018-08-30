@@ -19,6 +19,7 @@ public class NetworkButtonManager : MonoBehaviour {
     public Animator UIAnimator;
 
 
+
     private void Start()
     {
         soundManager = FindObjectOfType<SoundManager>();
@@ -85,15 +86,39 @@ public class NetworkButtonManager : MonoBehaviour {
         networkDiscovery.StartListening();
     }
 
-
-
-    public void Exit()
+    public void ExitInGame()
     {
         soundManager.SFX_MenuButtonPlay();
-
         networkManager.StopHost();
         SceneManager.LoadScene(1);
+
     }
+
+
+    public void ExitInFinishPanel()
+    {
+        soundManager.SFX_MenuButtonPlay();
+        if (GameObject.FindGameObjectWithTag("MyConnection"))
+        {
+            GameObject.FindGameObjectWithTag("MyConnection").GetComponent<PlayerConnection>().CmdAskToSetFinishPanelExitFlagTrue();
+        }
+        StartCoroutine(ExitDelay(1f));
+    }
+
+    IEnumerator ExitDelay(float waitingTime)
+    {
+        yield return new WaitForSeconds(waitingTime);
+        
+        // It Work For Just The first player who exit and stop host
+        if (PlayerConnection.HowManyClientExitAtTheEnd == 1)
+        {
+            networkManager.StopHost();
+        }
+        SceneManager.LoadScene(1);
+
+    }
+
+
 
 
 }

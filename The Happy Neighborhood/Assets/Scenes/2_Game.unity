@@ -1741,7 +1741,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1832437732}
-        m_MethodName: Exit
+        m_MethodName: ExitInGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1904,6 +1904,7 @@ GameObject:
   - component: {fileID: 606228502}
   - component: {fileID: 606228501}
   - component: {fileID: 606228500}
+  - component: {fileID: 606228503}
   m_Layer: 5
   m_Name: ExitBtn
   m_TagString: Untagged
@@ -1969,8 +1970,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1832437732}
-        m_MethodName: Exit
+      - m_Target: {fileID: 606228503}
+        m_MethodName: ExitInFinishPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2015,6 +2016,21 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 606228498}
+--- !u!114 &606228503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 606228498}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32334dffc5f44a841802763c4abc4fe1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serverText: {fileID: 1473088644}
+  CreateRoomBtn: {fileID: 723792488}
+  FindRoomBtn: {fileID: 1816950413}
+  UIAnimator: {fileID: 456893621}
 --- !u!1 &616412641
 GameObject:
   m_ObjectHideFlags: 0
@@ -2583,6 +2599,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 63d5ae827d3e3f84d953e4107ebbfac0, type: 3}
   - {fileID: 21300000, guid: 392cd325b7cc8544ca208cb93ae21e6e, type: 3}
   - {fileID: 21300000, guid: abefba96eda0bf64cb28dfd2b1f2fca5, type: 3}
+  GhostPrefab: {fileID: 1908311878993772, guid: e3cc5de735713ba4a951785fa8068b81,
+    type: 2}
+  MyGhostParent: {fileID: 1084834786}
+  EnemyGhostParent: {fileID: 2116606701}
   spriteReference:
     BannedTile_Arr:
     - {fileID: 21300002, guid: 56771dfd566146240b6af31fe83d159d, type: 3}
@@ -5898,6 +5918,11 @@ Prefab:
         type: 2}
       propertyPath: m_Color.a
       value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 114799966562631868, guid: c9c83160605f39741a751e15fb20564d,
+        type: 2}
+      propertyPath: m_Color.a
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c9c83160605f39741a751e15fb20564d, type: 2}

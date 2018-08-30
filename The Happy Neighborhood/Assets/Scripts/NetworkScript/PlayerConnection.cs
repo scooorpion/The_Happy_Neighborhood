@@ -81,7 +81,13 @@ public class PlayerConnection : NetworkBehaviour
     static int tempGhost = 0;
 
     public static int GhostChangedID = 0;
+    public static bool IsExitAfterFinishPanel = false;
+    public static int HowManyClientExitAtTheEnd = 0;
 
+
+    public static int Ghost_OldHouseIndex;
+
+    public static bool IsGhostIncreasing;
 
     // Server-Side Arrays
 
@@ -286,11 +292,11 @@ public class PlayerConnection : NetworkBehaviour
 
                 if (GhostChangedID == MyTurnID)
                 {
-                    gameManagerscript.UpdateGhost(tempGhost, true);
+                    gameManagerscript.UpdateGhost(tempGhost, true, Ghost_OldHouseIndex,IsGhostIncreasing);
                 }
                 else
                 {
-                    gameManagerscript.UpdateGhost(tempGhost, false);
+                    gameManagerscript.UpdateGhost(tempGhost, false, Ghost_OldHouseIndex, IsGhostIncreasing);
 
                 }
 
@@ -1224,7 +1230,7 @@ public class PlayerConnection : NetworkBehaviour
             {
                 #region decrease Ghost number of player after using
                 Ghosts_P1_Server--;
-                RpcTellGhostNumberUpdate(Ghosts_P1_Server, PlayerID);
+                RpcTellGhostNumberUpdate(Ghosts_P1_Server, PlayerID, cellNumber,false);
                 #endregion
 
                 #region Decrease Enemy Score
@@ -1247,7 +1253,7 @@ public class PlayerConnection : NetworkBehaviour
             {
                 #region decrease Ghost number of player after using
                 Ghosts_P2_Server--;
-                RpcTellGhostNumberUpdate(Ghosts_P2_Server, PlayerID);
+                RpcTellGhostNumberUpdate(Ghosts_P2_Server, PlayerID, cellNumber,false);
                 #endregion
 
                 #region Decrease Enemy Score
@@ -1557,7 +1563,8 @@ public class PlayerConnection : NetworkBehaviour
                 #endregion
 
                 #region Check: If vertical or horizontal connection is OK
-                if (tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.EmptyTile )
+                if (tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.EmptyTile 
+                    || tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.BannedTile)
                 {
                     int[] SidesIndex = GameManager.TileIndex_Sides(cellNumber);
                     int bannedTilesInSides = 0;
@@ -1596,7 +1603,7 @@ public class PlayerConnection : NetworkBehaviour
                     #endregion
 
                     #region If two sides are banned
-                    else if (bannedTilesInSides == 2)
+                    else if (bannedTilesInSides == 2 && tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.EmptyTile)
                     {
                         RpcTellError(PlayerID);
                         return;
@@ -1637,7 +1644,55 @@ public class PlayerConnection : NetworkBehaviour
                     }
                 }
 
-                if(GameManager.IsTileInFirstRow(cellNumber) && IsThereAnotherHouseInTheRow)
+
+                #region Check Sides, When Below is Banned Tile
+                if(GameManager.TileIndex_Below(cellNumber) != -1)
+                {
+                    if (tempHouseCells[GameManager.TileIndex_Below(cellNumber)] == HouseCellsType.BannedTile)
+                    {
+                        int[] SidesIndex = GameManager.TileIndex_Sides(cellNumber);
+                        int bannedTilesInSides = 0;
+                        int emptyTilesInSides = 0;
+                        int sidesAvailableTile = SidesIndex.Length;
+
+                        for (int i = 0; i < sidesAvailableTile; i++)
+                        {
+                            if (tempHouseCells[SidesIndex[i]] == HouseCellsType.EmptyTile)
+                                emptyTilesInSides++;
+                            else if (tempHouseCells[SidesIndex[i]] == HouseCellsType.BannedTile)
+                                bannedTilesInSides++;
+                        }
+                        #region If two sides are empty
+                        if (sidesAvailableTile == 2 && emptyTilesInSides == 2)
+                        {
+                            RpcTellError(PlayerID);
+                            return;
+                        }
+                        #endregion
+
+                        #region If one side is empty and other side is edge
+                        else if (sidesAvailableTile == 1 && emptyTilesInSides == 1)
+                        {
+                            RpcTellError(PlayerID);
+                            return;
+                        }
+                        #endregion
+
+                        #region If one side is empty and other side is banned
+                        else if (emptyTilesInSides == 1 && bannedTilesInSides == 1)
+                        {
+                            RpcTellError(PlayerID);
+                            return;
+                        }
+                        #endregion
+
+                    }
+
+                }
+                #endregion
+
+
+                if (GameManager.IsTileInFirstRow(cellNumber) && IsThereAnotherHouseInTheRow)
                 {
                     int[] SidesIndex = GameManager.TileIndex_Sides(cellNumber);
                     bool IsThereHouseTileInSides = false;
@@ -1907,7 +1962,7 @@ public class PlayerConnection : NetworkBehaviour
                 {
                     IsOldHouseTile = true;
                     Ghosts_P1_Server++;
-                    RpcTellGhostNumberUpdate(Ghosts_P1_Server, 1);
+                    RpcTellGhostNumberUpdate(Ghosts_P1_Server, 1, cellNumber,true);
                     print("Server ==> Call RPC for Ghost Player 1");
 
                 }
@@ -1971,7 +2026,7 @@ public class PlayerConnection : NetworkBehaviour
                 {
                     IsOldHouseTile = true;
                     Ghosts_P2_Server++;
-                    RpcTellGhostNumberUpdate(Ghosts_P2_Server, 2);
+                    RpcTellGhostNumberUpdate(Ghosts_P2_Server, 2, cellNumber,true);
                    // print("Server ==> Call RPC for Ghost Player 2");
 
                 }
@@ -2196,6 +2251,13 @@ public class PlayerConnection : NetworkBehaviour
         IsNoFirstRandomTurn = true;
         ServerTurn = 0;
 
+        IsExitAfterFinishPanel = false;
+        HowManyClientExitAtTheEnd = 0;
+
+        Ghost_OldHouseIndex = 0;
+
+        IsGhostIncreasing = false;
+
 
     }
     #endregion
@@ -2232,6 +2294,15 @@ public class PlayerConnection : NetworkBehaviour
 
     }
     #endregion
+
+    [Command]
+    public void CmdAskToSetFinishPanelExitFlagTrue()
+    {
+        IsExitAfterFinishPanel = true;
+        HowManyClientExitAtTheEnd++;
+        RpcTellFinishPanelExitFlagTrue(IsExitAfterFinishPanel, HowManyClientExitAtTheEnd);
+        print("Server => Ask To Set Finish Panel Exit Flag True");
+    }
 
 
     #endregion
@@ -2398,12 +2469,24 @@ public class PlayerConnection : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcTellGhostNumberUpdate(int GhostsNumber, int GhostsID)
+    public void RpcTellGhostNumberUpdate(int GhostsNumber, int GhostsID, int OldHouse_Ghost_Index, bool IsGhostNumberIncreasing)
     {
+        Ghost_OldHouseIndex = OldHouse_Ghost_Index;
+
+        IsGhostIncreasing = IsGhostNumberIncreasing;
+
         GhostChangedID = GhostsID;
         tempGhost = GhostsNumber;
         IsReadyForUpdateGhostsOnScreen = true;
         //print("RPC ==> Ghost Update Flag: " + IsReadyForUpdateGhostsOnScreen);
+    }
+
+    [ClientRpc]
+    public void RpcTellFinishPanelExitFlagTrue(bool isExitAfterFinishPanel,int ClientsNumberExit)
+    {
+        IsExitAfterFinishPanel = isExitAfterFinishPanel;
+        HowManyClientExitAtTheEnd = ClientsNumberExit;
+        print("RPC: Flag => True");
     }
 
     #endregion

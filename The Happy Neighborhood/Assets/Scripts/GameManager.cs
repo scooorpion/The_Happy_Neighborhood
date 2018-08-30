@@ -104,6 +104,14 @@ public class GameManager : MonoBehaviour
     private static int[] LeftEdge = new int[] { 0, 7, 14, 21, 28, 35, 42 };
     private static int[] RightEdge = new int[] { 6, 13, 20, 27, 34, 41, 48 };
 
+    Vector2 GhostOriginPoint;
+    Vector2 GhostDestinPoint;
+
+    GameObject GhostCardToFly;
+    public GameObject GhostPrefab;
+    public Transform MyGhostParent;
+    public Transform EnemyGhostParent;
+
     public static string enemyName;
 
     [SerializeField]
@@ -559,14 +567,70 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateGhost(int Ghosts, bool IsItMyBoard)
+    IEnumerator GhostFlying(float FlyingSpeed, int GhostNumber, bool IsItFirstTimeGhostIn)
     {
-        if(IsItMyBoard)
+       
+        while (Vector2.Distance(GhostCardToFly.GetComponent<RectTransform>().anchoredPosition, GhostDestinPoint) > 10)
+        {
+            GhostCardToFly.GetComponent<RectTransform>().anchoredPosition = Vector2.Lerp(GhostCardToFly.GetComponent<RectTransform>().anchoredPosition, GhostDestinPoint, Time.deltaTime* FlyingSpeed);
+            yield return null;
+        }
+        
+
+        GhostCardToFly.GetComponent<RectTransform>().anchoredPosition = GhostDestinPoint;
+        if(IsItFirstTimeGhostIn)
+        {
+            myBoardGenerator.GhostPanel.GetComponent<Image>().sprite = spriteReference.GhostInsideSprite;
+        }
+        myBoardGenerator.GhostNumberText.text = GhostNumber.ToString();
+        myBoardGenerator.GhostPanel.SetActive(true);
+        GameObject.Destroy(GhostCardToFly);
+
+        yield return null;
+
+    }
+
+    public void UpdateGhost(int Ghosts, bool IsItMyBoard, int SelectedIndex, bool IsGhostIncreasing)
+    {
+
+        if (IsItMyBoard)
         {
             if(Ghosts > 0)
             {
-                myBoardGenerator.GhostNumberText.text = Ghosts.ToString();
-                myBoardGenerator.GhostPanel.SetActive(true);
+                if(IsGhostIncreasing)
+                {
+                    bool IsItFirstTimeGhostWantToEnterTheHouse = false;
+
+                    if (myBoardGenerator.GhostPanel.active == true)
+                    {
+                        IsItFirstTimeGhostWantToEnterTheHouse = false;
+                        //myBoardGenerator.GhostPanel.GetComponent<Image>().sprite = spriteReference.GhostInsideSprite;
+                    }
+                    else if (myBoardGenerator.GhostPanel.active == false)
+                    {
+                        IsItFirstTimeGhostWantToEnterTheHouse = true;
+                        myBoardGenerator.GhostPanel.GetComponent<Image>().sprite = spriteReference.GhostNotInsideSprite;
+                    }
+
+                    GhostCardToFly = Instantiate<GameObject>(GhostPrefab);
+                    GhostCardToFly.GetComponent<Transform>().SetParent(MyGhostParent.transform, false);
+                    GhostCardToFly.GetComponent<RectTransform>().anchoredPosition = myBoardGenerator.BoardCellsArray[SelectedIndex / 7, SelectedIndex % 7].GetComponent<RectTransform>().anchoredPosition;
+
+                    GhostDestinPoint = myBoardGenerator.GhostPanel.GetComponent<RectTransform>().anchoredPosition;
+
+                    myBoardGenerator.GhostPanel.SetActive(true);
+
+                    // PlaySFX For Ghost ----------->>>>>
+
+                    StartCoroutine(GhostFlying(3, Ghosts, IsItFirstTimeGhostWantToEnterTheHouse));
+
+                }
+                else
+                {
+                    myBoardGenerator.GhostNumberText.text = Ghosts.ToString();
+                    myBoardGenerator.GhostPanel.SetActive(true);
+
+                }
             }
             else
             {

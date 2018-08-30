@@ -9,10 +9,15 @@ public class MyNetworkManager : NetworkManager
     {
         base.OnServerDisconnect(conn);
         //StopHost();
-        print("Server is disconnected");
 
-        FindObjectOfType<SoundManager>().SFX_WrongACtionPlay();
-        StartCoroutine(FindObjectOfType<GameManager>().OtherConnectionLost(2));
+        if ( !PlayerConnection.IsExitAfterFinishPanel )
+        {
+            FindObjectOfType<SoundManager>().SFX_WrongACtionPlay();
+            StartCoroutine(FindObjectOfType<GameManager>().OtherConnectionLost(2));
+            print("Server is disconnected");
+
+        }
+
         StopHost();
 
     }
@@ -24,10 +29,14 @@ public class MyNetworkManager : NetworkManager
         //StopClient();
        // GameObject.FindGameObjectWithTag("MyConnection").GetComponent<PlayerConnection>().ShowConnectionLostPanel = true;
 
-        print("Client is disconnected");
 
-        FindObjectOfType<SoundManager>().SFX_WrongACtionPlay();
-        StartCoroutine(FindObjectOfType<GameManager>().OtherConnectionLost(2));
+        if (!PlayerConnection.IsExitAfterFinishPanel)
+        {
+            FindObjectOfType<SoundManager>().SFX_WrongACtionPlay();
+            StartCoroutine(FindObjectOfType<GameManager>().OtherConnectionLost(2));
+            print("Client is disconnected");
+
+        }
         StopHost();
 
     }
