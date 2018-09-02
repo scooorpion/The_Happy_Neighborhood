@@ -90,6 +90,8 @@ public class GameManager : MonoBehaviour
     public GameObject LoserPpoint;
     public GameObject LoserNpoint;
 
+    public GameObject DeathPlacePrefab;
+
 
     public GameObject MyBoard;
     public GameObject EnemyBoard;
@@ -112,7 +114,11 @@ public class GameManager : MonoBehaviour
     public Transform MyGhostParent;
     public Transform EnemyGhostParent;
 
+    public Transform DeathPlaceParent;
+
     public static string enemyName;
+
+
 
     [SerializeField]
     public SpriteReference spriteReference;
@@ -326,9 +332,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
-        // New Functions: 
+    // New Functions: 
 
+    public void ShowDeathChar(CharactersType[] DeadCharacter, int DeadCharsNumber)
+    {
+        foreach (Transform child in DeathPlaceParent.transform)
+        {
+            Destroy(child.gameObject);
+        }
 
+        for (int i = 0; i < DeadCharsNumber; i++)
+        {
+            GameObject DeathPlace = Instantiate(DeathPlacePrefab);
+            DeathPlace.GetComponent<Transform>().SetParent(DeathPlaceParent.transform, false);
+            DeathPlace.GetComponent<DeathImage>().PlaceDeathCharInPic(SpriteBasedOnCharacterCellType(DeadCharacter[i]));
+
+        }
+    }
 
     public void UpdateHouseTileMap(HouseCellsType[] HouseCellsArray, bool IsMyBoard = true)
     {
@@ -548,7 +568,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateCharacterDeck(CharactersType[] CharactersType)
+
+    // To-Do : int[] CreationTime bayad daryaft beshe
+    public void UpdateCharacterDeck(CharactersType[] CharactersType, float[] CreationTime, float ServerTime)
     {
         for (int i = 0; i < 4; i++)
         {
@@ -562,8 +584,24 @@ public class GameManager : MonoBehaviour
 
             imageTempComponent.sprite = SpriteBasedOnCharacterCellType(CharactersType[i]);
             CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<CharType>().charactersType = CharactersType[i];
+        }
+    }
 
+    public void UpdateCharactersHealthBar(float[] HealthBars, CharactersType[] Characters)
+    {
 
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (CharDeckManager.CharacterCardsDeckPickable[j].GetComponent<CharType>().charactersType == Characters[i])
+                {
+                    print("Update Character Bar: "+Characters[i]+" To : "+ HealthBars[i]);
+                    CharDeckManager.CharacterCardsDeckPickable[j].GetComponentInParent<CharacterLife>().UpdateCharactersHealthBar(HealthBars[i]);
+                    break;
+                }
+
+            }
         }
     }
 
@@ -1601,7 +1639,6 @@ public class GameManager : MonoBehaviour
     {
         myBoardGenerator.GhostPanel.GetComponent<Image>().color = new Color(1, 1, 1, 1);
     }
-
 
     public void ResetAllCellsColorToDefault()
     {

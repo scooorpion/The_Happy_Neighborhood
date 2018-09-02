@@ -33,8 +33,11 @@ public class PlayerConnection : NetworkBehaviour
     private bool IsReadyForUpdateHouseCardsOnScreen = false;
     private bool IsReadyForUpdateCharacterCardsOnScreen = false;
     private static bool  IsReadyForUpdateGhostsOnScreen = false;
+    private static bool IsReadyForUpdateCharHealthBar = false;
+    private static bool IsReadyForUpdateDeadCaharacters = false;
     private static bool IsGhostAttackDone = false;
     private bool IsErrorMustShown = false;
+
     private int ErrorForPlayerID = 0;
     private static bool IsScoreChanged = false;
     private static int ScoreForPlayerID = 0;
@@ -69,9 +72,14 @@ public class PlayerConnection : NetworkBehaviour
     public HouseCellsType[] MyHouseCells = new HouseCellsType[49];
     public CharactersType[] MyCharCells = new CharactersType[49];
 
-
+    static int DeadCharactersNumberIngame = 0; 
+    static CharactersType[] DeadCharactersItems = new CharactersType[5];
     static HouseCellsType[] HouseCardsInGameDeck = new HouseCellsType[4];
     static CharactersType[] CharacterCardsInGameDeck = new CharactersType[4];
+    static float[] CharacterCardsCreationTime= new float[4];
+
+    public static float[] CharactersLifeBarForUpdateBar = new float[4];
+    public static CharactersType[] CharactersForUpdateBar = new CharactersType[4];
 
     public CardType CardTypeSelected;
     public HouseCellsType HouseCardSelected;
@@ -89,6 +97,7 @@ public class PlayerConnection : NetworkBehaviour
 
     public static bool IsGhostIncreasing;
 
+    public static float ServerCurrentTime;
     // Server-Side Arrays
 
     static HouseCellsType[] HouseCells_P1_Server ;
@@ -96,6 +105,9 @@ public class PlayerConnection : NetworkBehaviour
 
     static int CharactersInHouse_P1_Server;
     static int CharactersInHouse_P2_Server;
+
+    static int CharactersDeadNumber_Server;
+    static List<CharactersType> CharactersDeadItem_Server;
 
     static int Score_P1_Server;
     static int Score_P2_Server;
@@ -110,16 +122,22 @@ public class PlayerConnection : NetworkBehaviour
 
     static public List<HouseCellsType> HouseCardsDeckInGame_Server ;
     static public List<CharactersType> CharacterCardsDeckInGame_Server ;
+    static public Dictionary<CharactersType, float> CharacterCardsCreationTime_Server;
+
+    static public List<float> CharacterLifeBar_Server;
+    static public List<CharactersType> CharactersForLifeBar_Server;
 
     public static List<HouseCellsType> HousesDeckList_Server ;
     public static List<CharactersType> CharactersDeckList_Server ;
 
+    public static bool IsNewDeathHappern = false;
 
     static bool IsNoFirstRandomTurn = true;
 
 
     public bool ShowConnectionLostPanel = false;
 
+    public float[] CreationTimeArray;
 
 
     private bool[] FlagsToDisable;
@@ -185,6 +203,11 @@ public class PlayerConnection : NetworkBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             gameManagerscript.HideErrorPanel();
+        }
+
+        if(Input.GetKeyDown(KeyCode.G))
+        {
+            CmdAskToUpdateCharHealthBar();
         }
 
         #region Check If the game is finished
@@ -285,6 +308,17 @@ public class PlayerConnection : NetworkBehaviour
                 IsGhostAttackDone = false;
             }
 
+            if(IsReadyForUpdateDeadCaharacters)
+            {
+                gameManagerscript.ShowDeathChar(DeadCharactersItems, DeadCharactersNumberIngame);
+                IsReadyForUpdateDeadCaharacters = false;
+            }
+
+            if(IsReadyForUpdateCharHealthBar)
+            {
+                gameManagerscript.UpdateCharactersHealthBar(CharactersLifeBarForUpdateBar, CharactersForUpdateBar);
+                IsReadyForUpdateCharHealthBar = false;
+            }
 
             #region Show Ghost Card on mine and my enemy screen based on flag: IsReadyForUpdateGhostsOnScreen
             if (IsReadyForUpdateGhostsOnScreen)
@@ -337,7 +371,8 @@ public class PlayerConnection : NetworkBehaviour
 
             if (IsReadyForUpdateCharacterCardsOnScreen)
             {
-                gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
+                // !@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#
+                gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck, CharacterCardsCreationTime,ServerCurrentTime);
                 IsReadyForUpdateCharacterCardsOnScreen = false;             // ===> Disable by couroutine
 
             }
@@ -371,7 +406,9 @@ public class PlayerConnection : NetworkBehaviour
                     #region When its your turn, First update card deck and your enemy map
 
                     gameManagerscript.UpdateHouseDeck(HouseCardsInGameDeck);
-                    gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck);
+                    
+                    // !@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#
+                    gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck, CharacterCardsCreationTime, ServerCurrentTime);
 
                     gameManagerscript.SetEnemyName(EnemyName);
                     gameManagerscript.UpdateHouseTileMap(enemyConnection.MyHouseCells, false);
@@ -512,7 +549,16 @@ public class PlayerConnection : NetworkBehaviour
     }
     #endregion
 
-
+    #region UpdateCharacterBar(float waitTime) [Coroutine]
+    IEnumerator UpdateCharacterBar(float waitTime)
+    {
+        while (true)
+        {
+            CmdAskToUpdateCharHealthBar();
+            yield return new WaitForSeconds(waitTime);
+        }
+    }
+    #endregion
 
     #region RequestForFirstTurnSet(float waitTime) [Coroutine]
     /// <summary>
@@ -540,6 +586,11 @@ public class PlayerConnection : NetworkBehaviour
     /// </summary>
     void FirstTimeStartTheGameSetting()
     {
+        if(isServer)
+        {
+            StartCoroutine(UpdateCharacterBar(0.5f));
+        }
+
         FindObjectOfType<MyNetworkDiscovery>().StopBroadcast();
 
         soundManager.SoundTrackPlay();
@@ -762,33 +813,33 @@ public class PlayerConnection : NetworkBehaviour
                 CharactersType.TwoHouseGuy_Down
             };
 
-            /*
-                        for (int i = 0; i < EnumCharacterLenght; i++)
-                        {
+/*
+            for (int i = 0; i < EnumCharacterLenght; i++)
+            {
 
 
-                            CharactersType CharacterTemp = (CharactersType)i;
+                CharactersType CharacterTemp = (CharactersType)i;
 
-                            // These Character shouldnt be added to deck based on game design
-                            if ( Array.IndexOf(RemovedCharavter,CharacterTemp) >= 0 )
-                            {
-                                continue;
-                            }
+                // These Character shouldnt be added to deck based on game design
+                if (Array.IndexOf(RemovedCharavter, CharacterTemp) >= 0)
+                {
+                    continue;
+                }
 
-                            for (int j = 0; j < 3; j++)  // Each card has 3 Ratio in a deck
-                            {
-                                CharactersDeckList_Server.Add(CharacterTemp);
-                            }
+                for (int j = 0; j < 3; j++)  // Each card has 3 Ratio in a deck
+                {
+                    CharactersDeckList_Server.Add(CharacterTemp);
+                }
 
-                        }
+            }
+            
+                                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                                    Changeed For Test
+                                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
 
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                        Changeed For Test
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            */
             for (int i = 0; i < 10; i++)
             {
                 CharactersDeckList_Server.Add(CharactersType.RedNoBlueGuy);
@@ -975,6 +1026,9 @@ public class PlayerConnection : NetworkBehaviour
 
 
                 CharacterCardsDeckInGame_Server.Add(CharacterTemp);
+                // Assign Time Creation
+                CharacterCardsCreationTime_Server.Add(CharacterTemp, Time.time);
+
                 CharactersDeckList_Server.RemoveAt(RandomIndex);
             }
         }
@@ -1004,12 +1058,23 @@ public class PlayerConnection : NetworkBehaviour
                 } while (RepeatedCard);
 
                 CharacterCardsDeckInGame_Server.Remove(CharactersType.Empty);
+                CharacterCardsCreationTime_Server.Remove(CharactersType.Empty);
+
                 CharacterCardsDeckInGame_Server.Add(CharacterTemp);
+                // Assign Time Creation
+                CharacterCardsCreationTime_Server.Add(CharacterTemp, Time.time);
+
                 CharactersDeckList_Server.RemoveAt(RandomIndex);
             }
         }
 
-        RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
+        List<float> CreationValues = new List<float>();
+        foreach (var item in CharacterCardsCreationTime_Server.Values)
+        {
+            CreationValues.Add(item);
+        }
+
+        RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray(), CreationValues.ToArray() , Time.time);
     }
     #endregion
 
@@ -1933,11 +1998,24 @@ public class PlayerConnection : NetworkBehaviour
                 Score_P1_Server += CharType.CalculateCharacterScore(charactersType);
 
                 CharCells_P1_Server[cellNumber] = charactersType;
+
                 CharacterCardsDeckInGame_Server.Remove(charactersType);
+                CharacterCardsCreationTime_Server.Remove(charactersType);
+
                 CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
+                CharacterCardsCreationTime_Server.Add(CharactersType.Empty,Time.time);
 
                 RpcTellScore(Score_P1_Server, 1);
-                RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
+
+                //CharacterCardsCreationTime_Server.Values.CopyTo(CreationTimeArray, 0);
+                List<float> CreationValues = new List<float>();
+                foreach (var item in CharacterCardsCreationTime_Server.Values)
+                {
+                    CreationValues.Add(item);
+                }
+
+                RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray(), CreationValues.ToArray(), Time.time);
+
                 RpcTellCharacterCells(CharCells_P1_Server,true);
 
                 //print("CharactersInHouse_P1_Server: " + CharactersInHouse_P1_Server);
@@ -1997,10 +2075,22 @@ public class PlayerConnection : NetworkBehaviour
 
                 CharCells_P2_Server[cellNumber] = charactersType;
                 CharacterCardsDeckInGame_Server.Remove(charactersType);
+                CharacterCardsCreationTime_Server.Remove(charactersType);
+
                 CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
+                CharacterCardsCreationTime_Server.Add(CharactersType.Empty,Time.time);
 
                 RpcTellScore(Score_P2_Server, 2);
-                RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
+
+                //CharacterCardsCreationTime_Server.Values.CopyTo(CreationTimeArray, 0);
+                List<float> CreationValues = new List<float>();
+                foreach (var item in CharacterCardsCreationTime_Server.Values)
+                {
+                    CreationValues.Add(item);
+                }
+
+                RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray(), CreationValues.ToArray(), Time.time);
+
                 RpcTellCharacterCells(CharCells_P2_Server,true);
 
                 print("CharactersInHouse_P2_Server: " + CharactersInHouse_P2_Server);
@@ -2204,9 +2294,21 @@ public class PlayerConnection : NetworkBehaviour
         else if (!IsGameFinished)
         {
             CharacterCardsDeckInGame_Server.Remove(character);
-            CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
+            CharacterCardsCreationTime_Server.Remove(character);
 
-            RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray());
+            CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
+            CharacterCardsCreationTime_Server.Add(CharactersType.Empty,Time.time);
+
+            //CharacterCardsCreationTime_Server.Values.CopyTo(CreationTimeArray, 0);
+
+            List<float> CreationValues = new List<float>();
+            foreach (var item in CharacterCardsCreationTime_Server.Values)
+            {
+                CreationValues.Add(item);
+            }
+
+            RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray(), CreationValues.ToArray(), Time.time);
+
             RpcTellTurn(ServerTurn);
             CmdAskToFillEmptyCharInGameDeck(false);
             CmdAskToFillEmptyHouseInGameDeck(false);
@@ -2236,15 +2338,24 @@ public class PlayerConnection : NetworkBehaviour
 
         HouseCardsDeckInGame_Server = new List<HouseCellsType>();
         CharacterCardsDeckInGame_Server = new List<CharactersType>();
+        CharacterCardsCreationTime_Server = new Dictionary<CharactersType, float>();
+
+        CreationTimeArray = new float[4];
 
         CharactersInHouse_P1_Server = 0;
         CharactersInHouse_P2_Server = 0;
+
+        CharactersDeadNumber_Server = 0;
+        CharactersDeadItem_Server = new List<CharactersType>();
 
         Score_P1_Server = 0;
         Score_P2_Server = 0;
 
         HousesDeckList_Server = new List<HouseCellsType>();
         CharactersDeckList_Server = new List<CharactersType>();
+
+        CharacterLifeBar_Server = new List<float>();
+        CharactersForLifeBar_Server = new List<CharactersType>();
 
         IsNoFirstRandomTurn = true;
 
@@ -2257,6 +2368,7 @@ public class PlayerConnection : NetworkBehaviour
         Ghost_OldHouseIndex = 0;
 
         IsGhostIncreasing = false;
+
 
 
     }
@@ -2304,6 +2416,134 @@ public class PlayerConnection : NetworkBehaviour
         print("Server => Ask To Set Finish Panel Exit Flag True");
     }
 
+    [Command]
+    public void CmdAskToUpdateCharHealthBar()
+    {
+        print("Server => CmdAskToUpdateCharHealthBar");
+        List<CharactersType> CharToRemove = new List<CharactersType>();
+
+        CharacterLifeBar_Server.Clear();
+        CharactersForLifeBar_Server.Clear();
+
+        IsNewDeathHappern = false;
+
+        foreach (var CharacterCreationItem in CharacterCardsCreationTime_Server)
+        {
+            float RatioToBarWidth = 90 / CharacterLife.CharLifeTime(CharacterCreationItem.Key);
+
+            //print("Creation Time[" + CharacterCreationItem.Key + "]" + CharacterCreationItem.Value);
+            float LifeBar = ((CharacterLife.CharLifeTime(CharacterCreationItem.Key) + CharacterCreationItem.Value) - Time.time) * RatioToBarWidth;
+            //print("LifeBar: " + LifeBar);
+
+            if (LifeBar >= 0)
+            {
+                CharacterLifeBar_Server.Add(LifeBar);
+                CharactersForLifeBar_Server.Add(CharacterCreationItem.Key);
+            }
+            else
+            {
+                CharactersDeadNumber_Server ++;
+                if (CharactersDeadNumber_Server >= 5)
+                {
+                    break;
+                }
+                else
+                {
+                    IsNewDeathHappern = true;
+                    CharactersDeadItem_Server.Add(CharacterCreationItem.Key);
+                    CharToRemove.Add(CharacterCreationItem.Key);
+
+                }
+            }
+        }
+
+        #region If 5 Character Is Killed, The Game Should finish
+        if (CharactersDeadNumber_Server >= 5)
+        {
+            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server);
+            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server);
+            int score_P1 = Score_P1_Server + negativeScore_P1;
+            int score_P2 = Score_P2_Server + negativeScore_P2;
+
+            if (score_P1 > score_P2)
+            {
+                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
+            }
+            else
+            {
+                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
+            }
+
+            return;
+        }
+        #endregion
+
+        else if (IsNewDeathHappern)
+        {
+            print("CharactersDeadNumber: " + CharactersDeadNumber_Server);
+            for (int i = 0; i < CharToRemove.Count; i++)
+            {
+                CharacterCardsCreationTime_Server.Remove(CharToRemove[i]);
+                CharacterCardsDeckInGame_Server.Remove(CharToRemove[i]);
+
+                CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
+                CharacterCardsCreationTime_Server.Add(CharactersType.Empty, Time.time);
+
+                CmdAskToFillEmptyCharInGameDeck(false);
+
+            }
+
+
+            RpcTellDeadCharacters(CharactersDeadItem_Server.ToArray(), CharactersDeadNumber_Server);
+
+        }
+
+        RpcTellCharactersHealthBar(CharacterLifeBar_Server.ToArray(), CharactersForLifeBar_Server.ToArray());
+
+
+
+
+    }
+
+    /*
+    [Command]
+    public void CmdAskToRemoveDeadCharacter(CharactersType character)
+    {
+        CharactersDeadNumber_Server ++;
+        print("Characters Dead : " + CharactersDeadNumber_Server);
+
+        if (CharactersDeadNumber_Server < 10)
+        {
+            CharacterCardsCreationTime_Server.Remove(character);
+            CharacterCardsDeckInGame_Server.Remove(character);
+
+            CharacterCardsDeckInGame_Server.Add(CharactersType.Empty);
+            CharacterCardsCreationTime_Server.Add(CharactersType.Empty, Time.time);
+
+            CmdAskToFillEmptyCharInGameDeck(false);
+
+        }
+        else if (CharactersDeadNumber_Server >= 10)
+        {
+            int negativeScore_P1 = GameManager.CalculateNegativeScore(CharCells_P1_Server, HouseCells_P1_Server);
+            int negativeScore_P2 = GameManager.CalculateNegativeScore(CharCells_P2_Server, HouseCells_P2_Server);
+            int score_P1 = Score_P1_Server + negativeScore_P1;
+            int score_P2 = Score_P2_Server + negativeScore_P2;
+
+            if (score_P1 > score_P2)
+            {
+                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
+            }
+            else
+            {
+                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
+            }
+
+        }
+
+
+    }
+    */
 
     #endregion
 
@@ -2381,15 +2621,17 @@ public class PlayerConnection : NetworkBehaviour
     }
 
 
-    #region RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
+    #region RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server, float[] CreationTime, float CurrentTime)
     /// <summary>
     /// Tell Clients About In-Game Character Deck
     /// </summary>
     /// <param name="characterCardsDeckInGame_Server"></param>
     [ClientRpc]
-    public void RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server)
+    public void RpcTellCharacterInGameDeck(CharactersType[] characterCardsDeckInGame_Server, float[] CreationTime, float CurrentTime)
     {
         CharacterCardsInGameDeck = characterCardsDeckInGame_Server;
+        CharacterCardsCreationTime = CreationTime;
+        ServerCurrentTime = CurrentTime;
         IsReadyForUpdateCharacterCardsOnScreen = true;
     }
 
@@ -2447,6 +2689,7 @@ public class PlayerConnection : NetworkBehaviour
         LoserPpoint = LoserPScore_S;
         LoserNpoint = LoserNScore_S;
 
+        StopAllCoroutines();
 
         IsGameFinished = true;
     }
@@ -2489,17 +2732,27 @@ public class PlayerConnection : NetworkBehaviour
         print("RPC: Flag => True");
     }
 
+
+    [ClientRpc]
+    public void RpcTellDeadCharacters(CharactersType[] DeadCharacters, int DeadChars)
+    {
+        DeadCharactersItems = DeadCharacters;
+        DeadCharactersNumberIngame = DeadChars;
+        IsReadyForUpdateDeadCaharacters = true;
+    }
+
+    [ClientRpc]
+    public void RpcTellCharactersHealthBar(float[] CharacterLifebar, CharactersType[] Characters)
+    {
+        CharactersLifeBarForUpdateBar = CharacterLifebar;
+        CharactersForUpdateBar = Characters;
+
+        IsReadyForUpdateCharHealthBar = true;
+    }
+
     #endregion
 
-
-
-
-    // To-Do:
-    // 1- Creat a custom HUD network manager
-    // 2- When Stop or disconnection button on HUD network manager pressed, gameManagerscript.Initialazation(true) should be called
-    // 3- Place back button in waiting room and room is full panel
-
-    // ==> To Continiue First : Handle When a player left the game the other should be noticed and end the game
-
-
 }
+
+
+// To-Do: Replace Key and Value of dictionary because in line 2490 there will be error because of same key name
