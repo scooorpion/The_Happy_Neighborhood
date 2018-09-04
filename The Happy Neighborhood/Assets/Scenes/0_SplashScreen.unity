@@ -337,7 +337,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 0feb0684e6158a6428e974b1aed70fda, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 3a48dba91943d6d46b5aae7e711bb812, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -461,7 +461,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 5853b318ccbac624d8ae0ea61bc30403, type: 3}
+  m_audioClip: {fileID: 8300000, guid: d592e27cadc22f8458fc526f6f0616ed, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.635
   m_Pitch: 1
@@ -802,7 +802,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: b8a21f8e77b75784db891c5394840222, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 1bdd21b6a78a2d0499bd593dfe95b077, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -1068,15 +1068,15 @@ MonoBehaviour:
   WaitTime_TeamLogo: 1.2
   WaitTime_GameLogo: 1.2
   WaitTime_Cutscene: 1.2
-  FadeInSpeed_TeamLogo: 1.2
+  FadeInSpeed_TeamLogo: 4
   ShowTime_TeamLogo: 2
-  FadeOutSpeed_TeamLogo: 1.1
-  FadeInSpeed_GameLogo: 1.2
+  FadeOutSpeed_TeamLogo: 1.47
+  FadeInSpeed_GameLogo: 4
   ShowTime_GameLogo: 2
-  FadeOutSpeed_GameLogo: 1.1
-  FadeInSpeed_Frame: 1.2
+  FadeOutSpeed_GameLogo: 1.37
+  FadeInSpeed_Frame: 0.89
   ShowTime_Frame: 1.2
-  FadeOutSpeed_Frame: 1.1
+  FadeOutSpeed_Frame: 0.89
 --- !u!114 &710038172
 MonoBehaviour:
   m_ObjectHideFlags: 0

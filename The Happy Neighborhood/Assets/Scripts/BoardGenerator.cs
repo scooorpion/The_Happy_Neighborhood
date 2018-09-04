@@ -57,7 +57,8 @@ public class BoardGenerator : MonoBehaviour
 
     public BoardType boardType;
     public GameObject[] NoConstructionPrefab;
-    public GameObject GridLinePrefab;
+    public GameObject GridLineVerticalPrefab;
+    public GameObject GridLineHorizontalPrefab;
     public GameObject GridCellPrefab;
     public GameObject BoardBackground;
     public Text UserNameTextBox;
@@ -150,7 +151,7 @@ public class BoardGenerator : MonoBehaviour
         for (int i = 0; i < (BoardCellsInRow+1); i++)
         {
             RectTransform gridRectTransform;
-            tempGridRow = Instantiate<GameObject>(GridLinePrefab);          // Generating Vertical Lines
+            tempGridRow = Instantiate<GameObject>(GridLineVerticalPrefab);          // Generating Vertical Lines
             gridRectTransform = tempGridRow.GetComponent<RectTransform>();  // Getting RectTransform Component
             tempGridRow.transform.SetParent(verticalParent, false);         // Setting the parent to stay clean in hierarchy
             gridRectTransform.anchoredPosition = new Vector3(firstGridPosition + (i * gridLinesDistnace), 0, 0);    // set the position for line
@@ -162,7 +163,7 @@ public class BoardGenerator : MonoBehaviour
         for (int i = 0; i < (BoardCellsInRow +1); i++)
         {
             RectTransform gridRectTransform;
-            tempGridRow = Instantiate<GameObject>(GridLinePrefab);          // Generating Horizontal Lines
+            tempGridRow = Instantiate<GameObject>(GridLineHorizontalPrefab);          // Generating Horizontal Lines
             gridRectTransform = tempGridRow.GetComponent<RectTransform>();  // Getting RectTransform Component
             tempGridRow.transform.SetParent(horizontalParent, false);       // Setting the parent to stay clean in hierarchy
             gridRectTransform.anchoredPosition = new Vector3(0, firstGridPosition + (i * gridLinesDistnace), 0);    // set the position for line

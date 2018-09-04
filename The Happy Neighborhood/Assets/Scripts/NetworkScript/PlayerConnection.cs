@@ -106,6 +106,8 @@ public class PlayerConnection : NetworkBehaviour
     static int CharactersInHouse_P1_Server;
     static int CharactersInHouse_P2_Server;
 
+    static float StartGameTime;
+
     static int CharactersDeadNumber_Server;
     static List<CharactersType> CharactersDeadItem_Server;
 
@@ -205,11 +207,6 @@ public class PlayerConnection : NetworkBehaviour
             gameManagerscript.HideErrorPanel();
         }
 
-        if(Input.GetKeyDown(KeyCode.G))
-        {
-            CmdAskToUpdateCharHealthBar();
-        }
-
         #region Check If the game is finished
         if (IsGameFinished)
         {
@@ -303,7 +300,7 @@ public class PlayerConnection : NetworkBehaviour
                     gameManagerscript.UpdateCharacterTileMap(GhostAttackedIndex, false);
                 }
 
-                soundManager.SFX_CharactersPlacementPlay();
+                //soundManager.SFX_GhostPlacedInHouse();
 
                 IsGhostAttackDone = false;
             }
@@ -373,6 +370,14 @@ public class PlayerConnection : NetworkBehaviour
             {
                 // !@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#!@#
                 gameManagerscript.UpdateCharacterDeck(CharacterCardsInGameDeck, CharacterCardsCreationTime,ServerCurrentTime);
+
+                string Deck = "";
+                foreach (var item in CharacterCardsInGameDeck)
+                {
+                    Deck += "[ " + item + " ]   ";
+                }
+                print(Deck);
+
                 IsReadyForUpdateCharacterCardsOnScreen = false;             // ===> Disable by couroutine
 
             }
@@ -588,10 +593,12 @@ public class PlayerConnection : NetworkBehaviour
     {
         if(isServer)
         {
-            StartCoroutine(UpdateCharacterBar(0.5f));
+            StartCoroutine(UpdateCharacterBar(1f));
         }
 
         FindObjectOfType<MyNetworkDiscovery>().StopBroadcast();
+
+        soundManager.FindingLobbyTrackStop();
 
         soundManager.SoundTrackPlay();
 
@@ -792,53 +799,46 @@ public class PlayerConnection : NetworkBehaviour
 
             int EnumCharacterLenght = Enum.GetNames(typeof(CharactersType)).Length;
 
-            CharactersType[] RemovedCharavter = new CharactersType[]
+            CharactersType[] CharacterListToBeAdded = new CharactersType[]
             {
-                CharactersType.Ghost,
-                CharactersType.Empty,
-                CharactersType.TripleGuys,
-                CharactersType.Animal,
-                CharactersType.GhostCatcher,
-                CharactersType.GuyNeedGarden,
-                CharactersType.GuyNeedParking,
-                CharactersType.GuyWithAnimal,
-                CharactersType.Baby,
-                CharactersType.Wizard,
-                CharactersType.Gangster,
-                CharactersType.DoubleGuys,
-                CharactersType.FourHouseGuy,
-                CharactersType.FamilyTwoGuys,
+                CharactersType.NoramlGuy,
+                CharactersType.RedGuy,
+                CharactersType.RedNoBlueGuy,
+                CharactersType.BlueGuy,
+                CharactersType.BlueNoYellow,
+                CharactersType.PurpuleGuy,
+                CharactersType.PurpleNoRedGuy,
+                CharactersType.OldGuy,
+                CharactersType.PenthouseGuy,
+                CharactersType.TwoHouseGuy,
                 CharactersType.ThreeHouseLGuy,
-                CharactersType.TwoHouseGuy_Up,
-                CharactersType.TwoHouseGuy_Down
+                CharactersType.FourHouseGuy
             };
 
-/*
+
             for (int i = 0; i < EnumCharacterLenght; i++)
             {
 
 
                 CharactersType CharacterTemp = (CharactersType)i;
 
-                // These Character shouldnt be added to deck based on game design
-                if (Array.IndexOf(RemovedCharavter, CharacterTemp) >= 0)
+                if (Array.IndexOf(CharacterListToBeAdded, CharacterTemp) >= 0)
                 {
-                    continue;
+                    for (int j = 0; j < 3; j++)  // Each card has 3 Ratio in a deck
+                    {
+                        CharactersDeckList_Server.Add(CharacterTemp);
+                    }
                 }
 
-                for (int j = 0; j < 3; j++)  // Each card has 3 Ratio in a deck
-                {
-                    CharactersDeckList_Server.Add(CharacterTemp);
-                }
 
-            }
+            }/*
             
                                     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                                     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                                     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                                     Changeed For Test
                                     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$*/
+                                    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
             for (int i = 0; i < 10; i++)
             {
@@ -856,7 +856,7 @@ public class PlayerConnection : NetworkBehaviour
             {
                 CharactersDeckList_Server.Add(CharactersType.BlueNoYellow);
             }
-
+*/
 
             #endregion
 
@@ -1002,6 +1002,8 @@ public class PlayerConnection : NetworkBehaviour
 
         if (IsFirstTimeCreateion)
         {
+            StartGameTime = Time.time;
+
             while (CharacterCardsDeckInGame_Server.Count < 4)
             {
                 CharactersType CharacterTemp;
@@ -1016,6 +1018,12 @@ public class PlayerConnection : NetworkBehaviour
                     RandomIndex = UnityEngine.Random.Range(0, CharactersDeckList_Server.Count);
 
                     CharacterTemp = CharactersDeckList_Server[RandomIndex];
+
+                    if (StartGameTime + CharDeckManager.CharInsertionTime(CharacterTemp) > Time.time)
+                    {
+                        RepeatedCard = true;
+                        continue;
+                    }
 
                     if (CharacterCardsDeckInGame_Server.Contains(CharacterTemp))
                     {
@@ -1049,6 +1057,12 @@ public class PlayerConnection : NetworkBehaviour
                     RandomIndex = UnityEngine.Random.Range(0, CharactersDeckList_Server.Count);
 
                     CharacterTemp = CharactersDeckList_Server[RandomIndex];
+
+                    if (StartGameTime + CharDeckManager.CharInsertionTime(CharacterTemp) > Time.time)
+                    {
+                        RepeatedCard = true;
+                        continue;
+                    }
 
                     if (CharacterCardsDeckInGame_Server.Contains(CharacterTemp))
                     {
@@ -1095,6 +1109,9 @@ public class PlayerConnection : NetworkBehaviour
 
         if (IsFirstTimeCreateion)
         {
+            StartGameTime = Time.time;
+            print("StartGame Time: " + StartGameTime);
+
             while (HouseCardsDeckInGame_Server.Count < 4)
             {
                 HouseCellsType HouseTemp;
@@ -1109,6 +1126,12 @@ public class PlayerConnection : NetworkBehaviour
                     RandomIndex = UnityEngine.Random.Range(0, HousesDeckList_Server.Count);
 
                     HouseTemp = HousesDeckList_Server[RandomIndex];
+
+                    if (StartGameTime + HouseDeckManager.HouseInsertionTime(HouseTemp) > Time.time)
+                    {
+                        RepeatedCard = true;
+                        continue;
+                    }
 
                     if (HouseCardsDeckInGame_Server.Contains(HouseTemp))
                     {
@@ -1126,7 +1149,7 @@ public class PlayerConnection : NetworkBehaviour
         {
             while (HouseCardsDeckInGame_Server.Contains(HouseCellsType.EmptyTile))
             {
-                HouseCellsType HouseTemp;
+                HouseCellsType HouseTemp ;
                 int RandomIndex;
                 bool RepeatedCard;
 
@@ -1138,6 +1161,12 @@ public class PlayerConnection : NetworkBehaviour
                     RandomIndex = UnityEngine.Random.Range(0, HousesDeckList_Server.Count);
 
                     HouseTemp = HousesDeckList_Server[RandomIndex];
+
+                    if (StartGameTime + HouseDeckManager.HouseInsertionTime(HouseTemp) > Time.time)
+                    {
+                        RepeatedCard = true;
+                        continue;
+                    }
 
                     if (HouseCardsDeckInGame_Server.Contains(HouseTemp))
                     {
@@ -2369,6 +2398,7 @@ public class PlayerConnection : NetworkBehaviour
 
         IsGhostIncreasing = false;
 
+        StartGameTime = 0;
 
 
     }
@@ -2419,7 +2449,6 @@ public class PlayerConnection : NetworkBehaviour
     [Command]
     public void CmdAskToUpdateCharHealthBar()
     {
-        print("Server => CmdAskToUpdateCharHealthBar");
         List<CharactersType> CharToRemove = new List<CharactersType>();
 
         CharacterLifeBar_Server.Clear();
@@ -2480,7 +2509,6 @@ public class PlayerConnection : NetworkBehaviour
 
         else if (IsNewDeathHappern)
         {
-            print("CharactersDeadNumber: " + CharactersDeadNumber_Server);
             for (int i = 0; i < CharToRemove.Count; i++)
             {
                 CharacterCardsCreationTime_Server.Remove(CharToRemove[i]);
@@ -2492,9 +2520,15 @@ public class PlayerConnection : NetworkBehaviour
                 CmdAskToFillEmptyCharInGameDeck(false);
 
             }
-
-
             RpcTellDeadCharacters(CharactersDeadItem_Server.ToArray(), CharactersDeadNumber_Server);
+
+            //List<float> CreationValues = new List<float>();
+            //foreach (var item in CharacterCardsCreationTime_Server.Values)
+            //{
+            //    CreationValues.Add(item);
+            //}
+
+            //RpcTellCharacterInGameDeck(CharacterCardsDeckInGame_Server.ToArray(), CreationValues.ToArray(), Time.time);
 
         }
 

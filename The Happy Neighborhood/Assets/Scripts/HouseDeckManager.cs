@@ -45,6 +45,47 @@ public class HouseDeckManager : MonoBehaviour
         HouseInfo.SetActive(false);
     }
 
+    public static float HouseInsertionTime(HouseCellsType HouseTile)
+    {
+        float tempHouseTime = 0;
 
+        switch (HouseTile)
+        {
+            case HouseCellsType.BlueTile:
+                tempHouseTime = -1;
+                break;
+            case HouseCellsType.RedTile:
+                tempHouseTime = -1;
+                break;
+            case HouseCellsType.PurpleTile:
+                tempHouseTime = -1;
+                break;
+            case HouseCellsType.YellowTile:
+                tempHouseTime = -1;
+                break;
+            case HouseCellsType.OldBlueTile:
+                tempHouseTime = 40;
+                break;
+            case HouseCellsType.OldRedTile:
+                tempHouseTime = 40;
+                break;
+            case HouseCellsType.OldPurpleTile:
+                tempHouseTime = 40;
+                break;
+            case HouseCellsType.OldYellowTile:
+                tempHouseTime = 40;
+                break;
+            case HouseCellsType.PentHouse:
+                tempHouseTime = 200;
+                break;
+            case HouseCellsType.Terrace:
+                tempHouseTime = 60;
+                break;
+            default:
+                break;
+        }
+
+        return tempHouseTime;
+    }
 }
 

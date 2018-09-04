@@ -10,7 +10,8 @@ public class MenuManager : MonoBehaviour
     public GameObject MainMenuPanel;
     public GameObject OptionPanel;
     public GameObject TutorialPanel;
-
+    public GameObject[] TutorialPages;
+    public GameObject CreditPanel;
     void Start()
     {
         //PlayerPrefs.DeleteAll();
@@ -25,6 +26,11 @@ public class MenuManager : MonoBehaviour
         OptionPanel.SetActive(false);
         MainMenuPanel.SetActive(false);
         PopupPanelForName.SetActive(false);
+        CreditPanel.SetActive(false);
+        for (int i = 0; i < TutorialPages.Length; i++)
+        {
+            TutorialPages[i].SetActive(false);
+        }
 
     }
 

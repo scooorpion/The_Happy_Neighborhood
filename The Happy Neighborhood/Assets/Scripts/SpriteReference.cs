@@ -96,6 +96,31 @@ public struct SpriteReference
     [SerializeField]
     public Sprite GhostNotInsideSprite;
 
+    [Header("Character Dead Sprite: ")]
+    [SerializeField]
+    public Sprite NoramlGuy_Dead;
+    [SerializeField]
+    public Sprite RedGuy_Dead;
+    [SerializeField]
+    public Sprite RedNoBlueGu_Dead;
+    [SerializeField]
+    public Sprite BlueGuy_Dead;
+    [SerializeField]
+    public Sprite BlueNoYellow_Dead;
+    [SerializeField]
+    public Sprite PurpuleGuy_Dead;
+    [SerializeField]
+    public Sprite PurpleNoRedGuy_Dead;
+    [SerializeField]
+    public Sprite OldGuy_Dead;
+    [SerializeField]
+    public Sprite PenthouseGuy_Dead;
+    [SerializeField]
+    public Sprite TwoHouseGuy_Dead;
+    [SerializeField]
+    public Sprite ThreeHouseLGuy_Dead;
+    [SerializeField]
+    public Sprite FourHouseGuy_Dead;
 
     [Header("Character's Part Sprite: ")]
 

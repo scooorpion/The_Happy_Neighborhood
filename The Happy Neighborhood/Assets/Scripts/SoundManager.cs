@@ -5,6 +5,7 @@ using UnityEngine;
 public class SoundManager : MonoBehaviour {
 
     public AudioSource MainSoundTrackAudioSource;
+    public AudioSource FindingServer;
     public AudioSource SFXAudioSource;
     public AudioClip Error;
     public AudioClip WrongACtion;
@@ -15,10 +16,28 @@ public class SoundManager : MonoBehaviour {
     public AudioClip OldHousePlacement;
     public AudioClip SelectingCard;
     public AudioClip GhostFly;
+    public AudioClip GhostPlacement;
+    public AudioClip DeathHappen;
 
     public void SoundTrackPlay()
     {
         MainSoundTrackAudioSource.Play();
+    }
+
+    public void FindingLobbyTrackPlay()
+    {
+        FindingServer.Play();
+    }
+
+    public void FindingLobbyTrackStop()
+    {
+        FindingServer.Stop();
+    }
+
+    public void SFX_DeathPlay()
+    {
+        SFXAudioSource.clip = DeathHappen;
+        SFXAudioSource.Play();
     }
 
     public void SFX_WrongACtionPlay()
@@ -33,6 +52,12 @@ public class SoundManager : MonoBehaviour {
         SFXAudioSource.Play();
     }
 
+    public void SFX_GhostPlacedInHouse()
+    {
+        SFXAudioSource.clip = GhostPlacement;
+        SFXAudioSource.Play();
+
+    }
 
     public void SFX_CharactersPlacementPlay()
     {

@@ -34,6 +34,7 @@ public class NetworkButtonManager : MonoBehaviour {
     public void CreateRoom()
     {
         soundManager.SFX_MenuButtonPlay();
+        soundManager.FindingLobbyTrackPlay();
 
         UIAnimator.SetBool("Find_Waiting", false);
         UIAnimator.SetBool("Create_waiting", true);
@@ -72,6 +73,7 @@ public class NetworkButtonManager : MonoBehaviour {
         networkManager.StopHost();
 
         soundManager.SFX_MenuButtonPlay();
+        soundManager.FindingLobbyTrackPlay();
 
         UIAnimator.SetBool("Create_waiting", false);
         UIAnimator.SetBool("Find_Waiting", true);
@@ -84,11 +86,14 @@ public class NetworkButtonManager : MonoBehaviour {
 
 
         networkDiscovery.StartListening();
+
     }
 
     public void ExitInGame()
     {
         soundManager.SFX_MenuButtonPlay();
+        soundManager.FindingLobbyTrackStop();
+
         networkManager.StopHost();
         SceneManager.LoadScene(1);
 

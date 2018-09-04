@@ -90,8 +90,11 @@ public class GameManager : MonoBehaviour
     public GameObject LoserPpoint;
     public GameObject LoserNpoint;
 
-    public GameObject DeathPlacePrefab;
+    //public GameObject DeathPlacePrefab;
 
+    public GameObject DeathPlaceParent;
+    public GameObject[] DeathCharPlaces;
+    public Sprite DefaultDeathSprite;
 
     public GameObject MyBoard;
     public GameObject EnemyBoard;
@@ -114,7 +117,6 @@ public class GameManager : MonoBehaviour
     public Transform MyGhostParent;
     public Transform EnemyGhostParent;
 
-    public Transform DeathPlaceParent;
 
     public static string enemyName;
 
@@ -169,6 +171,7 @@ public class GameManager : MonoBehaviour
         ErrorMessagePanel.SetActive(false);
         NetworkHudBtns.SetActive(true);
         FinishedPanel.SetActive(false);
+        DeathPlaceParent.SetActive(false);
         soundManager = FindObjectOfType<SoundManager>();
         spriteReference.FirstHouseSpriteRandomInitialization();
     }
@@ -230,6 +233,7 @@ public class GameManager : MonoBehaviour
         EnemyBoard.SetActive(true);
         CharacterDeck.SetActive(true);
         HouseDeck.SetActive(true);
+        DeathPlaceParent.SetActive(true);
     }
     #endregion
 
@@ -336,18 +340,52 @@ public class GameManager : MonoBehaviour
 
     public void ShowDeathChar(CharactersType[] DeadCharacter, int DeadCharsNumber)
     {
-        foreach (Transform child in DeathPlaceParent.transform)
+        PlayerConnection myConn = GameObject.FindGameObjectWithTag("MyConnection").GetComponent<PlayerConnection>();
+
+        soundManager.SFX_DeathPlay();
+
+        for (int i = 0; i < 5; i++)
         {
-            Destroy(child.gameObject);
+            DeathCharPlaces[i].GetComponent<Image>().sprite = DefaultDeathSprite;
         }
 
         for (int i = 0; i < DeadCharsNumber; i++)
         {
-            GameObject DeathPlace = Instantiate(DeathPlacePrefab);
-            DeathPlace.GetComponent<Transform>().SetParent(DeathPlaceParent.transform, false);
-            DeathPlace.GetComponent<DeathImage>().PlaceDeathCharInPic(SpriteBasedOnCharacterCellType(DeadCharacter[i]));
-
+            DeathCharPlaces[i].GetComponent<Image>().sprite = SpriteBasedOnDeathCharacter(DeadCharacter[i]);
         }
+
+        //foreach (Transform child in DeathPlaceParent.transform)
+        //{
+        //    Destroy(child.gameObject);
+        //}
+
+        //for (int i = 0; i < DeadCharsNumber; i++)
+        //{
+        //    GameObject DeathPlace = Instantiate(DeathPlacePrefab);
+        //    DeathPlace.GetComponent<Transform>().SetParent(DeathPlaceParent.transform, false);
+        //    DeathPlace.GetComponent<DeathImage>().PlaceDeathCharInPic(SpriteBasedOnDeathCharacter(DeadCharacter[i]));
+
+        //}
+
+
+
+
+        #region When a character dies, The seleced character should be checked not to be removed, if removed, then empty seleted card
+        int Counter = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            if (CharDeckManager.CharacterCardsDeckPickable[i].GetComponent<CharType>().charactersType == myConn.CharacterdCardSelected)
+            {
+                Counter ++;
+                break;
+            }
+        }
+
+        if(Counter == 0)
+        {
+            myConn.CardTypeSelected = CardType.NoSelection;
+        }
+        #endregion
     }
 
     public void UpdateHouseTileMap(HouseCellsType[] HouseCellsArray, bool IsMyBoard = true)
@@ -417,7 +455,9 @@ public class GameManager : MonoBehaviour
         }
 
         CharacterPlaceHolderImageComponenet.sprite = SpriteBasedOnCharacterCellType(CharactersType.Ghost);
-        
+
+        soundManager.SFX_GhostPlacedInHouse();
+
         Color tempColor = CharacterPlaceHolderImageComponenet.color;
         tempColor.a = 1;
         CharacterPlaceHolderImageComponenet.color = tempColor;
@@ -589,20 +629,20 @@ public class GameManager : MonoBehaviour
 
     public void UpdateCharactersHealthBar(float[] HealthBars, CharactersType[] Characters)
     {
-
-        for (int i = 0; i < 4; i++)
+        
+        for (int i = 0; i < Characters.Length; i++)
         {
-            for (int j = 0; j < 4; j++)
+            for (int j = 0; j < CharDeckManager.CharacterCardsDeckPickable.Length; j++)
             {
                 if (CharDeckManager.CharacterCardsDeckPickable[j].GetComponent<CharType>().charactersType == Characters[i])
                 {
-                    print("Update Character Bar: "+Characters[i]+" To : "+ HealthBars[i]);
                     CharDeckManager.CharacterCardsDeckPickable[j].GetComponentInParent<CharacterLife>().UpdateCharactersHealthBar(HealthBars[i]);
                     break;
                 }
 
             }
         }
+        
     }
 
     IEnumerator GhostFlying(float FlyingSpeed, int GhostNumber, bool IsItFirstTimeGhostIn)
@@ -901,6 +941,63 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    #region Sprite SpriteBasedOnDeathCharacter(CharactersType CharactersType)
+    /// <summary>
+    /// Return a Sprite of death Cahracter based on the enum character cell type
+    /// </summary>
+    /// <param name="CharactersType"></param>
+    /// <returns></returns>
+    public Sprite SpriteBasedOnDeathCharacter(CharactersType CharactersType)
+    {
+        Sprite tempCharacterSprite;
+
+        switch (CharactersType)
+        {
+            case CharactersType.NoramlGuy:
+                tempCharacterSprite = spriteReference.NoramlGuy_Dead;
+                break;
+            case CharactersType.RedGuy:
+                tempCharacterSprite = spriteReference.RedGuy_Dead;
+                break;
+            case CharactersType.RedNoBlueGuy:
+                tempCharacterSprite = spriteReference.RedNoBlueGu_Dead;
+                break;
+            case CharactersType.BlueGuy:
+                tempCharacterSprite = spriteReference.BlueGuy_Dead;
+                break;
+            case CharactersType.BlueNoYellow:
+                tempCharacterSprite = spriteReference.BlueNoYellow_Dead;
+                break;
+            case CharactersType.PurpuleGuy:
+                tempCharacterSprite = spriteReference.PurpuleGuy_Dead;
+                break;
+            case CharactersType.PurpleNoRedGuy:
+                tempCharacterSprite = spriteReference.PurpleNoRedGuy_Dead;
+                break;
+            case CharactersType.OldGuy:
+                tempCharacterSprite = spriteReference.OldGuy_Dead;
+                break;
+            case CharactersType.PenthouseGuy:
+                tempCharacterSprite = spriteReference.PenthouseGuy_Dead;
+                break;
+            case CharactersType.TwoHouseGuy:
+                tempCharacterSprite = spriteReference.TwoHouseGuy_Dead;
+                break;
+            case CharactersType.ThreeHouseLGuy:
+                tempCharacterSprite = spriteReference.ThreeHouseLGuy_Dead;
+                break;
+            case CharactersType.FourHouseGuy:
+                tempCharacterSprite = spriteReference.FourHouseGuy_Dead;
+                break;
+            default:
+                tempCharacterSprite = spriteReference.Empty;
+                break;
+        }
+
+        return tempCharacterSprite;
+    }
+
+    #endregion
 
     // ------------- Checking Index Functions -------------------
 

@@ -12,6 +12,7 @@ public class MenuButtonManager : MonoBehaviour
     public Text NameSaveWarningText;
     public Text NameEditWarningText;
 
+
     private MenuManager menuManager;
     private SoundManager soundManager;
     private Animator animator;
@@ -95,7 +96,53 @@ public class MenuButtonManager : MonoBehaviour
         soundManager.SFX_MenuButtonPlay();
         menuManager.MainMenuPanel.SetActive(false);
         menuManager.TutorialPanel.SetActive(true);
+
+        for (int i = 0; i < menuManager.TutorialPages.Length; i++)
+        {
+            menuManager.TutorialPages[i].SetActive(false);
+        }
+
+        menuManager.TutorialPages[0].SetActive(true);
     }
+
+    public void ShowCredit()
+    {
+        soundManager.SFX_MenuButtonPlay();
+        menuManager.MainMenuPanel.SetActive(false);
+        menuManager.CreditPanel.SetActive(true);
+    }
+
+    public void CreditBack()
+    {
+        soundManager.SFX_MenuButtonPlay();
+        menuManager.MainMenuPanel.SetActive(true);
+        menuManager.CreditPanel.SetActive(false);
+
+    }
+
+    public void NextPage(int NextPage)
+    {
+        soundManager.SFX_MenuButtonPlay();
+
+        for (int i = 0; i < menuManager.TutorialPages.Length; i++)
+        {
+            menuManager.TutorialPages[i].SetActive(false);
+        }
+        menuManager.TutorialPages[NextPage].SetActive(true);
+
+    }
+
+    public void LastPage(int PrevPage)
+    {
+        soundManager.SFX_MenuButtonPlay();
+
+        for (int i = 0; i < menuManager.TutorialPages.Length; i++)
+        {
+            menuManager.TutorialPages[i].SetActive(false);
+        }
+        menuManager.TutorialPages[PrevPage].SetActive(true);
+    }
+
 
     public void OKToHideTutorial()
     {

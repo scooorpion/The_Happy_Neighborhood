@@ -49,5 +49,53 @@ public class CharDeckManager : MonoBehaviour
         CharacterInfo.SetActive(false);
     }
 
+    public static float CharInsertionTime(CharactersType CharTile)
+    {
+        float tempCharTime = 0;
+
+        switch (CharTile)
+        {
+            case CharactersType.NoramlGuy:
+                tempCharTime = -1;
+                break;
+            case CharactersType.RedGuy:
+                tempCharTime = -1;
+                break;
+            case CharactersType.RedNoBlueGuy:
+                tempCharTime = 30;
+                break;
+            case CharactersType.BlueGuy:
+                tempCharTime = -1;
+                break;
+            case CharactersType.BlueNoYellow:
+                tempCharTime = 30;
+                break;
+            case CharactersType.PurpuleGuy:
+                tempCharTime = -1;
+                break;
+            case CharactersType.PurpleNoRedGuy:
+                tempCharTime = 30;
+                break;
+            case CharactersType.OldGuy:
+                tempCharTime = 20;
+                break;
+            case CharactersType.PenthouseGuy:
+                tempCharTime = 240;
+                break;
+            case CharactersType.TwoHouseGuy:
+                tempCharTime = 60;
+                break;
+            case CharactersType.ThreeHouseLGuy:
+                tempCharTime = 90;
+                break;
+            case CharactersType.FourHouseGuy:
+                tempCharTime = 180;
+                break;
+            default:
+                break;
+        }
+
+        return tempCharTime;
+    }
 
 }
