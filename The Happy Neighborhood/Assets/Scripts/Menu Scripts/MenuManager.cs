@@ -12,6 +12,9 @@ public class MenuManager : MonoBehaviour
     public GameObject TutorialPanel;
     public GameObject[] TutorialPages;
     public GameObject CreditPanel;
+
+    public GameObject Cloud;
+    public GameObject Wall;
     void Start()
     {
         //PlayerPrefs.DeleteAll();

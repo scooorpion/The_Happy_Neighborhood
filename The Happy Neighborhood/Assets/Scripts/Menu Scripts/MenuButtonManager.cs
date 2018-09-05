@@ -15,13 +15,13 @@ public class MenuButtonManager : MonoBehaviour
 
     private MenuManager menuManager;
     private SoundManager soundManager;
-    private Animator animator;
+    public Animator animator;
 
     private void Start()
     {
         menuManager = GetComponent<MenuManager>();
         soundManager = FindObjectOfType<SoundManager>();
-        animator = FindObjectOfType<Animator>();
+
         animator.enabled = false;
     }
 
@@ -32,8 +32,16 @@ public class MenuButtonManager : MonoBehaviour
     public void StartGame()
     {
         soundManager.SFX_MenuButtonPlay();
+
+        menuManager.TutorialPanel.SetActive(false);
+        menuManager.OptionPanel.SetActive(false);
+        menuManager.PopupPanelForName.SetActive(false);
+        menuManager.CreditPanel.SetActive(false);
+        menuManager.Cloud.SetActive(false);
+        menuManager.Wall.SetActive(false);
+
         StopAllCoroutines();
-        StartCoroutine(DelayLoadScene(2, 1f));
+        StartCoroutine(DelayLoadScene(2, 3f));
     }
     #endregion
 
@@ -70,7 +78,9 @@ public class MenuButtonManager : MonoBehaviour
     public void ShowOptionPanelBtn()
     {
         soundManager.SFX_MenuButtonPlay();
-        menuManager.MainMenuPanel.SetActive(false);
+        menuManager.CreditPanel.SetActive(false);
+        menuManager.TutorialPanel.SetActive(false);
+        menuManager.MainMenuPanel.SetActive(true);
         menuManager.OptionPanel.SetActive(true);
         NameEditInput.text = PlayerPrefs.GetString(MenuManager.UserNamePlayerPrefs);
     }
@@ -82,19 +92,35 @@ public class MenuButtonManager : MonoBehaviour
     /// </summary>
     public void SaveAndBackToMainMenubtn()
     {
-        if(EditName())
-        {
-            menuManager.MainMenuPanel.SetActive(true);
-            menuManager.OptionPanel.SetActive(false);
-        }
+        //if(EditName())
+        //{
+        //    menuManager.MainMenuPanel.SetActive(true);
+        //    menuManager.OptionPanel.SetActive(false);
+        //}
+        EditName();
     }
     #endregion
 
+    public void CloseBtn()
+    {
+        soundManager.SFX_MenuButtonPlay();
+        menuManager.TutorialPanel.SetActive(false);
+        menuManager.OptionPanel.SetActive(false);
+        menuManager.PopupPanelForName.SetActive(false);
+        menuManager.CreditPanel.SetActive(false);
+
+        menuManager.MainMenuPanel.SetActive(true);
+
+    }
 
     public void ShowTutorial()
     {
         soundManager.SFX_MenuButtonPlay();
-        menuManager.MainMenuPanel.SetActive(false);
+
+        menuManager.CreditPanel.SetActive(false);
+        menuManager.OptionPanel.SetActive(false);
+
+        menuManager.MainMenuPanel.SetActive(true);
         menuManager.TutorialPanel.SetActive(true);
 
         for (int i = 0; i < menuManager.TutorialPages.Length; i++)
@@ -108,7 +134,11 @@ public class MenuButtonManager : MonoBehaviour
     public void ShowCredit()
     {
         soundManager.SFX_MenuButtonPlay();
-        menuManager.MainMenuPanel.SetActive(false);
+
+        menuManager.OptionPanel.SetActive(false);
+        menuManager.TutorialPanel.SetActive(false);
+
+        menuManager.MainMenuPanel.SetActive(true);
         menuManager.CreditPanel.SetActive(true);
     }
 

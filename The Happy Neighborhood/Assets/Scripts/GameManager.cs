@@ -344,6 +344,8 @@ public class GameManager : MonoBehaviour
 
         soundManager.SFX_DeathPlay();
 
+        UIAnimator.SetInteger("DeathNumber", DeadCharsNumber);
+
         for (int i = 0; i < 5; i++)
         {
             DeathCharPlaces[i].GetComponent<Image>().sprite = DefaultDeathSprite;
