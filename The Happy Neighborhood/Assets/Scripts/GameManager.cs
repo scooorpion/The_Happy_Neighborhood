@@ -81,6 +81,11 @@ public class GameManager : MonoBehaviour
     public Text ConnctionLostPlayer;
     public GameObject FinishedPanel;
 
+    public Image WinnerIconReference;
+    public Sprite LoserIcon;
+    public Text WinnerLableTxt;
+    public Text WitchWinnerText;
+
     public GameObject WinnerName;
     public GameObject WinnerScore;
     public GameObject WinnerPpoint;
@@ -89,6 +94,7 @@ public class GameManager : MonoBehaviour
     public GameObject LoserScore;
     public GameObject LoserPpoint;
     public GameObject LoserNpoint;
+    public GameObject DeathPoint;
 
     //public GameObject DeathPlacePrefab;
 
@@ -117,7 +123,7 @@ public class GameManager : MonoBehaviour
     public Transform MyGhostParent;
     public Transform EnemyGhostParent;
 
-
+    private static int  DeathNumber = 0;
     public static string enemyName;
 
 
@@ -174,6 +180,9 @@ public class GameManager : MonoBehaviour
         DeathPlaceParent.SetActive(false);
         soundManager = FindObjectOfType<SoundManager>();
         spriteReference.FirstHouseSpriteRandomInitialization();
+        WinnerLableTxt.text = "The Winner";
+        WitchWinnerText.text = "";
+
     }
     #endregion
 
@@ -341,6 +350,8 @@ public class GameManager : MonoBehaviour
     public void ShowDeathChar(CharactersType[] DeadCharacter, int DeadCharsNumber)
     {
         PlayerConnection myConn = GameObject.FindGameObjectWithTag("MyConnection").GetComponent<PlayerConnection>();
+
+        DeathNumber = DeadCharsNumber;
 
         soundManager.SFX_DeathPlay();
 
@@ -1669,9 +1680,24 @@ public class GameManager : MonoBehaviour
         return tempNegativeScore;
     }
 
-    public void FinishGame(string winnerName,string winnerScore,string winnerPpoint,string winnerNpoint, string loserName, string loserScore, string loserPpoint, string loserNpoint)
+
+    public void FinishGame(string winnerName,string winnerScore,string winnerPpoint,string winnerNpoint, string loserName, string loserScore, string loserPpoint, string loserNpoint,int deathNumberInGame)
     {
-        soundManager.SFX_EndOfGamePlay();
+        soundManager.SoundTrackStop();
+
+        if (deathNumberInGame == 5)   // if the witch win the game
+        {
+            WinnerIconReference.sprite = LoserIcon;
+            WinnerLableTxt.text = "The Loser";
+            WinnerLableTxt.color = new Color(0.517f, 0, 0, 1);
+            WinnerName.GetComponent<Text>().color = new Color(0.517f, 0, 0, 1);
+            WitchWinnerText.text = "The Winner";
+            soundManager.WitchLaughter_SFX();
+        }
+        else
+        {
+            soundManager.SFX_EndOfGamePlay();
+        }
 
         WinnerName.GetComponent<Text>().text = winnerName;
         WinnerScore.GetComponent<Text>().text = winnerScore;
@@ -1681,6 +1707,7 @@ public class GameManager : MonoBehaviour
         LoserScore.GetComponent<Text>().text = loserScore;
         LoserPpoint.GetComponent<Text>().text = loserPpoint;
         LoserNpoint.GetComponent<Text>().text = loserNpoint;
+        DeathPoint.GetComponent<Text>().text = deathNumberInGame.ToString();
 
         FinishedPanel.SetActive(true);
     }

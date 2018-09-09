@@ -36,7 +36,7 @@ public class CellSelecting : MonoBehaviour
         if (myConnection.CardTypeSelected == CardType.NoSelection)
         {
             //print("No Selection");
-            gameManager.ShowWrongSelection();
+            //gameManager.ShowWrongSelection();
             return;
         }
 

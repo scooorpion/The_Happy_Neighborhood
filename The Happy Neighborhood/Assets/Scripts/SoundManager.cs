@@ -13,15 +13,24 @@ public class SoundManager : MonoBehaviour {
     public AudioClip EndOfGame;
     public AudioClip HousePlacement;
     public AudioClip MenuButtonSFX;
+    public AudioClip TutButtonSFX;
     public AudioClip OldHousePlacement;
     public AudioClip SelectingCard;
     public AudioClip GhostFly;
     public AudioClip GhostPlacement;
     public AudioClip DeathHappen;
+    public AudioClip CloseBtnSFX;
+    public AudioClip TurnSFX;
+    public AudioClip WitchLaaughter;
 
     public void SoundTrackPlay()
     {
         MainSoundTrackAudioSource.Play();
+    }
+
+    public void SoundTrackStop()
+    {
+        MainSoundTrackAudioSource.Stop();
     }
 
     public void FindingLobbyTrackPlay()
@@ -32,6 +41,18 @@ public class SoundManager : MonoBehaviour {
     public void FindingLobbyTrackStop()
     {
         FindingServer.Stop();
+    }
+
+    public void WitchLaughter_SFX()
+    {
+        SFXAudioSource.clip = WitchLaaughter;
+        SFXAudioSource.Play();
+    }
+
+    public void TurnAlarm_SFX()
+    {
+        SFXAudioSource.clip = TurnSFX;
+        SFXAudioSource.Play();
     }
 
     public void SFX_DeathPlay()
@@ -94,6 +115,18 @@ public class SoundManager : MonoBehaviour {
     public void SFX_SelectingCardPlay()
     {
         SFXAudioSource.clip = SelectingCard;
+        SFXAudioSource.Play();
+    }
+
+    public void SFX_TutButton()
+    {
+        SFXAudioSource.clip = TutButtonSFX;
+        SFXAudioSource.Play();
+    }
+
+    public void SFX_CloseBtn()
+    {
+        SFXAudioSource.clip = CloseBtnSFX;
         SFXAudioSource.Play();
     }
 

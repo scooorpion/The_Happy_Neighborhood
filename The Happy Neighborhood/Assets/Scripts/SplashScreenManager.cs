@@ -15,6 +15,7 @@ public class SplashScreenManager : MonoBehaviour
     public Image GameLogo;
     public Image CutScenePanel;
     public Image ForeGround;
+    public Image Background;
 
     public AudioSource CutsceneMusic;
     public AudioSource TeamLogo_SFX;
@@ -168,6 +169,8 @@ public class SplashScreenManager : MonoBehaviour
             TimeCounter += Time.deltaTime;
             if (TimeCounter > ShowTime_GameLogo)
             {
+                Background.color = new Color(0.99f,0.98f,0.47f,1);
+
                 TimeCounter = 1;
                 GameLogo_State = ScreenState.ToDisapear;
             }

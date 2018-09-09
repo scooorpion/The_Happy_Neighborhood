@@ -221,7 +221,7 @@ public class PlayerConnection : NetworkBehaviour
                 LoserName = UserName;
             }
 
-            gameManagerscript.FinishGame(WinnerName, WinnerScore.ToString(), WinnerPpoint.ToString(), WinnerNpoint.ToString(), LoserName, LoserScore.ToString(), LoserPpoint.ToString(), LoserNpoint.ToString());
+            gameManagerscript.FinishGame(WinnerName, WinnerScore.ToString(), WinnerPpoint.ToString(), WinnerNpoint.ToString(), LoserName, LoserScore.ToString(), LoserPpoint.ToString(), LoserNpoint.ToString(),DeadCharactersNumberIngame);
             IsGameFinished = false;
         }
         #endregion
@@ -309,6 +309,7 @@ public class PlayerConnection : NetworkBehaviour
             {
                 gameManagerscript.ShowDeathChar(DeadCharactersItems, DeadCharactersNumberIngame);
                 IsReadyForUpdateDeadCaharacters = false;
+                StartCoroutine(DelayUpdateCharDeck(0.2f));
             }
 
             if(IsReadyForUpdateCharHealthBar)
@@ -403,6 +404,7 @@ public class PlayerConnection : NetworkBehaviour
 
                 if (ServerTurn == MyTurnID)
                 {
+                    soundManager.TurnAlarm_SFX();
                     CmdAskToUpdateItsTurnVariable();
                     string Log = ("Command Server to Update Turn ===> [Client: " + MyTurnID + " ]");
                     HandleTextFile.WriteString(Log);
@@ -447,6 +449,12 @@ public class PlayerConnection : NetworkBehaviour
         #endregion
 
 
+    }
+
+    IEnumerator DelayUpdateCharDeck(float WaitTime)
+    {
+        yield return new WaitForSeconds(WaitTime);
+        IsReadyForUpdateCharacterCardsOnScreen = true;
     }
 
     IEnumerator DisableFlag(bool[] FlagToDisable, float WaitTime)
@@ -1367,7 +1375,7 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellGhostAttacked(cellNumber, 1);
             }
 
-            if (CharactersInHouse_P1_Server == 5 || CharactersInHouse_P2_Server == 5)
+            if (CharactersInHouse_P1_Server == 10 || CharactersInHouse_P2_Server == 10)
             {
                 IsGameFinished = true;
                 CmdCheckForFinishTheGame(IsGameFinished);
@@ -2048,7 +2056,7 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellCharacterCells(CharCells_P1_Server,true);
 
                 //print("CharactersInHouse_P1_Server: " + CharactersInHouse_P1_Server);
-                if (CharactersInHouse_P1_Server == 5)
+                if (CharactersInHouse_P1_Server == 10)
                 {
                     // Finish the game 
                     IsGameFinished = true;
@@ -2123,7 +2131,7 @@ public class PlayerConnection : NetworkBehaviour
                 RpcTellCharacterCells(CharCells_P2_Server,true);
 
                 print("CharactersInHouse_P2_Server: " + CharactersInHouse_P2_Server);
-                if (CharactersInHouse_P2_Server == 5)
+                if (CharactersInHouse_P2_Server == 10)
                 {
                     // Finish the game 
                     IsGameFinished = true;
@@ -2181,11 +2189,11 @@ public class PlayerConnection : NetworkBehaviour
 
             if (score_P1 > score_P2)
             {
-                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
+                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2,CharactersDeadNumber_Server);
             }
             else
             {
-                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
+                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1, CharactersDeadNumber_Server);
             }
 
         }
@@ -2267,7 +2275,7 @@ public class PlayerConnection : NetworkBehaviour
             RpcTellScore(Score_P1_Server, 1);
             RpcTellCharacterCells(CharCells_P1_Server, true);
 
-            if (CharactersInHouse_P1_Server == 5)
+            if (CharactersInHouse_P1_Server == 10)
             {
                 // Finish the game 
                 IsGameFinished = true;
@@ -2292,7 +2300,7 @@ public class PlayerConnection : NetworkBehaviour
             RpcTellScore(Score_P2_Server, 2);
             RpcTellCharacterCells(CharCells_P2_Server, true);
 
-            if (CharactersInHouse_P2_Server == 5)
+            if (CharactersInHouse_P2_Server == 10)
             {
                 // Finish the game 
                 IsGameFinished = true;
@@ -2312,11 +2320,11 @@ public class PlayerConnection : NetworkBehaviour
 
             if (score_P1 > score_P2)
             {
-                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
+                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2, CharactersDeadNumber_Server);
             }
             else
             {
-                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
+                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1, CharactersDeadNumber_Server);
             }
 
         }
@@ -2418,11 +2426,11 @@ public class PlayerConnection : NetworkBehaviour
 
             if (score_P1 > score_P2)
             {
-                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
+                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2, CharactersDeadNumber_Server);
             }
             else
             {
-                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
+                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1, CharactersDeadNumber_Server);
             }
 
         }
@@ -2496,11 +2504,11 @@ public class PlayerConnection : NetworkBehaviour
 
             if (score_P1 > score_P2)
             {
-                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2);
+                RpcTellGameFinished(1, score_P1, Score_P1_Server, negativeScore_P1, 2, score_P2, Score_P2_Server, negativeScore_P2, CharactersDeadNumber_Server);
             }
             else
             {
-                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1);
+                RpcTellGameFinished(2, score_P2, Score_P2_Server, negativeScore_P2, 1, score_P1, Score_P1_Server, negativeScore_P1, CharactersDeadNumber_Server);
             }
 
             return;
@@ -2712,7 +2720,7 @@ public class PlayerConnection : NetworkBehaviour
     #endregion
 
     [ClientRpc]
-    public void RpcTellGameFinished(int WinnerID_S, int WinnerScor_S, int WinnerPScore_S, int WinnerNScore_S, int LoserID_S, int LoserScor_S, int LoserPScore_S, int LoserNScore_S)
+    public void RpcTellGameFinished(int WinnerID_S, int WinnerScor_S, int WinnerPScore_S, int WinnerNScore_S, int LoserID_S, int LoserScor_S, int LoserPScore_S, int LoserNScore_S,int DeathNumber)
     {
         WinnerID = WinnerID_S;
         WinnerScore = WinnerScor_S;
@@ -2722,7 +2730,7 @@ public class PlayerConnection : NetworkBehaviour
         LoserScore = LoserScor_S;
         LoserPpoint = LoserPScore_S;
         LoserNpoint = LoserNScore_S;
-
+        DeadCharactersNumberIngame = DeathNumber;
         StopAllCoroutines();
 
         IsGameFinished = true;

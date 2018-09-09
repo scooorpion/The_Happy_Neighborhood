@@ -80,7 +80,7 @@ public class CharDeckManager : MonoBehaviour
                 tempCharTime = 20;
                 break;
             case CharactersType.PenthouseGuy:
-                tempCharTime = 240;
+                tempCharTime = 200;
                 break;
             case CharactersType.TwoHouseGuy:
                 tempCharTime = 60;

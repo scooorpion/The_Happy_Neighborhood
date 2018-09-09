@@ -16,6 +16,9 @@ public class NetworkButtonManager : MonoBehaviour {
     public GameObject CreateRoomBtn;
     public GameObject FindRoomBtn;
 
+    public GameObject DifficultyLevelDropDownPanel;
+    public Dropdown DifficultyLevel;
+
     public Animator UIAnimator;
 
 
@@ -28,7 +31,13 @@ public class NetworkButtonManager : MonoBehaviour {
         hudManager = FindObjectOfType<HUDNetworkManagerCostumized>();
         CreateRoomBtn.SetActive(true);
         FindRoomBtn.SetActive(true);
+        DifficultyLevelDropDownPanel.SetActive(true);
 
+    }
+
+    public void ValueChange()
+    {
+        soundManager.SFX_MenuButtonPlay();
     }
 
     public void CreateRoom()
@@ -40,9 +49,25 @@ public class NetworkButtonManager : MonoBehaviour {
         UIAnimator.SetBool("Create_waiting", true);
 
         CreateRoomBtn.SetActive(false);
+        DifficultyLevelDropDownPanel.SetActive(false);
         FindRoomBtn.SetActive(true);
 
+        switch (DifficultyLevel.value)
+        {
+            case 0:
+                CharacterLife.difficultyLevel = global::DifficultyLevel.NormalWitch;
+                break;
 
+            case 1:
+                CharacterLife.difficultyLevel = global::DifficultyLevel.EvilWitch;
+                break;
+
+            case 2:
+                CharacterLife.difficultyLevel = global::DifficultyLevel.CrazyWitch;
+                break;
+            default:
+                break;
+        }
 
         networkDiscovery.StopBroadcast();
 
@@ -78,6 +103,7 @@ public class NetworkButtonManager : MonoBehaviour {
         UIAnimator.SetBool("Create_waiting", false);
         UIAnimator.SetBool("Find_Waiting", true);
 
+        DifficultyLevelDropDownPanel.SetActive(true);
         CreateRoomBtn.SetActive(true);
         FindRoomBtn.SetActive(false);
 

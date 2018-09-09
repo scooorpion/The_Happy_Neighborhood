@@ -76,7 +76,7 @@ public class HouseDeckManager : MonoBehaviour
                 tempHouseTime = 40;
                 break;
             case HouseCellsType.PentHouse:
-                tempHouseTime = 200;
+                tempHouseTime = 180;
                 break;
             case HouseCellsType.Terrace:
                 tempHouseTime = 60;

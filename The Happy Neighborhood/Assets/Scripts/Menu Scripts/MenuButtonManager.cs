@@ -32,6 +32,7 @@ public class MenuButtonManager : MonoBehaviour
     public void StartGame()
     {
         soundManager.SFX_MenuButtonPlay();
+        soundManager.SoundTrackStop();
 
         menuManager.TutorialPanel.SetActive(false);
         menuManager.OptionPanel.SetActive(false);
@@ -92,18 +93,16 @@ public class MenuButtonManager : MonoBehaviour
     /// </summary>
     public void SaveAndBackToMainMenubtn()
     {
-        //if(EditName())
-        //{
-        //    menuManager.MainMenuPanel.SetActive(true);
-        //    menuManager.OptionPanel.SetActive(false);
-        //}
-        EditName();
+        if (EditName())
+        {
+            CloseBtn();
+        }
     }
     #endregion
 
     public void CloseBtn()
     {
-        soundManager.SFX_MenuButtonPlay();
+        soundManager.SFX_CloseBtn();
         menuManager.TutorialPanel.SetActive(false);
         menuManager.OptionPanel.SetActive(false);
         menuManager.PopupPanelForName.SetActive(false);
@@ -152,7 +151,7 @@ public class MenuButtonManager : MonoBehaviour
 
     public void NextPage(int NextPage)
     {
-        soundManager.SFX_MenuButtonPlay();
+        soundManager.SFX_TutButton();
 
         for (int i = 0; i < menuManager.TutorialPages.Length; i++)
         {
@@ -164,7 +163,7 @@ public class MenuButtonManager : MonoBehaviour
 
     public void LastPage(int PrevPage)
     {
-        soundManager.SFX_MenuButtonPlay();
+        soundManager.SFX_TutButton();
 
         for (int i = 0; i < menuManager.TutorialPages.Length; i++)
         {
@@ -210,7 +209,6 @@ public class MenuButtonManager : MonoBehaviour
 
         if (UserName != "")
         {
-            soundManager.SFX_MenuButtonPlay();
             PlayerPrefs.SetString(MenuManager.UserNamePlayerPrefs, UserName);
             return true;
         }
@@ -218,12 +216,17 @@ public class MenuButtonManager : MonoBehaviour
         {
             soundManager.SFX_ErrorPlay();
             NameEditWarningText.text = "WARNING: Wrong Input!";
+            StartCoroutine(HideError());
             return false;
         }
     }
     #endregion
 
-
+    IEnumerator HideError()
+    {
+        yield return new WaitForSeconds(1);
+        NameEditWarningText.text = "";
+    }
 
     #region DelayLoadScene(int SceneIndex, float WaitingTime) [Coroutine]
     /// <summary>

@@ -27,7 +27,7 @@ public class MenuManager : MonoBehaviour
     {
         TutorialPanel.SetActive(false);
         OptionPanel.SetActive(false);
-        MainMenuPanel.SetActive(false);
+        
         PopupPanelForName.SetActive(false);
         CreditPanel.SetActive(false);
         for (int i = 0; i < TutorialPages.Length; i++)

@@ -127,41 +127,36 @@ MonoBehaviour:
   ValidHouses: 
   CharacterNames: 
   spriteReference_CharacterHelp:
-    NoramlGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    DoubleGuys_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    TripleGuys_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    RedGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    RedNoBlueGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+    NoramlGuy_Help: {fileID: 21300000, guid: 0381aaab9112f7f489e19c4e2d8549ee, type: 3}
+    DoubleGuys_Help: {fileID: 0}
+    TripleGuys_Help: {fileID: 0}
+    RedGuy_Help: {fileID: 21300000, guid: c25add14b5e2d1d4b921b8d69e0a780b, type: 3}
+    RedNoBlueGuy_Help: {fileID: 21300000, guid: 328da2f45c7a5b84ead968414aa2a204,
       type: 3}
-    BlueGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    BlueNoYellow_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+    BlueGuy_Help: {fileID: 21300000, guid: fdb4654debaa557488ab9676ea761b7e, type: 3}
+    BlueNoYellow_Help: {fileID: 21300000, guid: 8544240475eac2f40bb86e968ecf661c,
       type: 3}
-    PurpuleGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    PurpleNoRedGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+    PurpuleGuy_Help: {fileID: 21300000, guid: b7042ffb2912d26429fccf4f01d4e8df, type: 3}
+    PurpleNoRedGuy_Help: {fileID: 21300000, guid: 850f0998273891640a1d3d69fd27d1aa,
       type: 3}
-    OldGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    PenthouseGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+    OldGuy_Help: {fileID: 21300000, guid: 9539e9bb78e2c35428a4ec539cda688d, type: 3}
+    PenthouseGuy_Help: {fileID: 21300000, guid: 28c0caa616f021645afbf872e8358fc4,
       type: 3}
-    TwoHouseGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    ThreeHouseLGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+    TwoHouseGuy_Help: {fileID: 21300000, guid: 21ed649718498c448ad6b961dae5fdd8, type: 3}
+    ThreeHouseLGuy_Help: {fileID: 21300000, guid: f8284caae597c5147b6d2681433c9318,
       type: 3}
-    FourHouseGuy_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
+    FourHouseGuy_Help: {fileID: 21300000, guid: 007b78b3c5e0523409f011224112dc95,
       type: 3}
-    FamilyTwoGuys_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
-      type: 3}
-    Ghost_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    Animal_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    GuyWithAnimal_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
-      type: 3}
-    GuyNeedParking_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
-      type: 3}
-    GuyNeedGarden_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
-      type: 3}
-    Baby_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    GhostCatcher_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070,
-      type: 3}
-    Gangster_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
-    Wizard_Help: {fileID: 21300000, guid: 77097f55f2fd1e747a8fe999033ae070, type: 3}
+    FamilyTwoGuys_Help: {fileID: 0}
+    Ghost_Help: {fileID: 0}
+    Animal_Help: {fileID: 0}
+    GuyWithAnimal_Help: {fileID: 0}
+    GuyNeedParking_Help: {fileID: 0}
+    GuyNeedGarden_Help: {fileID: 0}
+    Baby_Help: {fileID: 0}
+    GhostCatcher_Help: {fileID: 0}
+    Gangster_Help: {fileID: 0}
+    Wizard_Help: {fileID: 0}
 --- !u!114 &114962582652705250
 MonoBehaviour:
   m_ObjectHideFlags: 1
